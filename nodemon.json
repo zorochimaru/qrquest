@@ -1,0 +1,9 @@
+{
+    "watch": ["server"],
+    "env": {
+      "PORT": "5000"
+    },
+    "ext": "ts,json",
+    "ignore": ["server/**/*.spec.ts"],
+    "exec": "ts-node ./server/app.ts" 
+  }

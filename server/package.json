@@ -1,0 +1,40 @@
+{
+  "name": "quest",
+  "version": "1.0.0",
+  "description": "Web application for quests",
+  "main": "server/app.ts",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production node dist/app.js",
+    "serve": "nodemon",
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.12",
+    "@types/express-session": "^1.17.3",
+    "@types/node": "^15.12.4",
+    "@types/nodemailer": "^6.4.2",
+    "@types/validator": "^13.1.4",
+    "mysql2": "^2.2.5",
+    "nodemon": "^2.0.7",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
+  },
+  "dependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/dotenv": "^8.2.0",
+    "@types/jsonwebtoken": "^8.5.2",
+    "bcrypt": "^5.0.1",
+    "connect-session-sequelize": "^7.1.1",
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.17.2",
+    "jsonwebtoken": "^8.5.1",
+    "nodemailer": "^6.6.2",
+    "reflect-metadata": "^0.1.13",
+    "sequelize": "^6.6.2",
+    "sequelize-typescript": "^2.1.0"
+  }
+}

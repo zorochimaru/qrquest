@@ -3,14 +3,6 @@ import sequelize from './util/database';
 import AuthRouter from './routes/auth.route';
 import session from 'express-session';
 import sequelizeStore from 'connect-session-sequelize'
-import dotenv from 'dotenv';
- 
-dotenv.config({path: `.env.${process.env.NODE_ENV}`});
- 
-console.log(process.env.PORT);
-
-console.log(process.env.NODE_ENV);
-
 
 const SequelizeStore = sequelizeStore(session.Store);
 
@@ -33,10 +25,10 @@ app.use((req, res, next) => {
 
 
 app.use(session({
-    secret: 'jojoisagay',
+    secret: process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: false,
-    store
+    store,
 }))
 
 app.use('/auth', AuthRouter);
@@ -49,7 +41,7 @@ app.use((_req, res) => {
 sequelize
     .sync({ force: true })
     .then(() => {
-        app.listen(process.env.PORT);
+        app.listen(process.env.PORT || 5000);
     }).catch(err => {
         console.log(err);
     })

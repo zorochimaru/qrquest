@@ -8,10 +8,6 @@ const database_1 = __importDefault(require("./util/database"));
 const auth_route_1 = __importDefault(require("./routes/auth.route"));
 const express_session_1 = __importDefault(require("express-session"));
 const connect_session_sequelize_1 = __importDefault(require("connect-session-sequelize"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
-console.log(process.env.PORT);
-console.log(process.env.NODE_ENV);
 const SequelizeStore = connect_session_sequelize_1.default(express_session_1.default.Store);
 const app = express_1.default();
 const store = new SequelizeStore({
@@ -27,10 +23,10 @@ app.use((req, res, next) => {
     next();
 });
 app.use(express_session_1.default({
-    secret: 'jojoisagay',
+    secret: process.env.JWT_SECRET,
     resave: false,
     saveUninitialized: false,
-    store
+    store,
 }));
 app.use('/auth', auth_route_1.default);
 app.use((_req, res) => {
@@ -39,7 +35,7 @@ app.use((_req, res) => {
 database_1.default
     .sync({ force: true })
     .then(() => {
-    app.listen(process.env.PORT);
+    app.listen(process.env.PORT || 5000);
 }).catch(err => {
     console.log(err);
 });

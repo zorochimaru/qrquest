@@ -49,6 +49,9 @@ class AuthController {
             const name = req.body.name;
             const password = req.body.password;
             const confirmPassword = req.body.confirmPassword;
+            if (password !== confirmPassword) {
+                return res.status(400).send({ message: 'Passwords doesn\'t match' });
+            }
             try {
                 const findedUser = yield user_model_1.default.findOne({ where: { email } });
                 if (findedUser) {
@@ -59,22 +62,22 @@ class AuthController {
                 const createdUser = yield newUser.save();
                 jsonwebtoken_1.default.sign({
                     user: createdUser.id,
-                }, process.env.EMIAL_SECRET, { expiresIn: '1h' }, (err, emailToken) => {
-                    const url = ``;
-                });
-                const mailOptions = {
-                    from: 'rasim.karimli@gmail.com',
-                    to: email,
-                    subject: 'Sending Email using Node.js',
-                    text: 'That was easy!'
-                };
-                yield transporter.sendMail(mailOptions, function (error, info) {
-                    if (error) {
-                        res.status(400).send(error);
-                    }
-                    else {
-                        res.send('Email sent to: ' + info.envelope.to.toString());
-                    }
+                }, process.env.EMAIL_SECRET, { expiresIn: '1h' }, (err, emailToken) => {
+                    const url = `http://${process.env.HOST}:${process.env.PORT}/auth/confirmation/${emailToken}`;
+                    const mailOptions = {
+                        from: 'rasim.karimli@gmail.com',
+                        to: email,
+                        subject: 'Confrim Email',
+                        html: `Please click to this link to confirm your's account: <a href="${url}">${url}</a>`
+                    };
+                    transporter.sendMail(mailOptions, function (error, info) {
+                        if (error) {
+                            res.status(400).send(error);
+                        }
+                        else {
+                            res.send('Email sent to: ' + info.envelope.to.toString());
+                        }
+                    });
                 });
             }
             catch (e) {
@@ -106,6 +109,18 @@ class AuthController {
                 }
                 res.sendStatus(200);
             });
+        });
+        this.confirm = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const token = req.params.token;
+            try {
+                const user = jsonwebtoken_1.default.verify(token, process.env.EMAIL_SECRET);
+                const userId = user.user;
+                yield user_model_1.default.update({ status: user_model_1.STATUS.ACTIVE }, { where: { id: userId } });
+                res.send('Account activated');
+            }
+            catch (e) {
+                res.status(401).send(String(e));
+            }
         });
     }
 }

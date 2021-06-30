@@ -7,13 +7,17 @@ export enum STATUS {
   'NON_ACTIVE',
   'BAN'
 };
-
+export enum ROLE {
+  'ADMIN',
+  'USER'
+}
 interface UserAttributes {
   id: string
   name: string
   email: string,
   password: string,
-  status: STATUS
+  status: STATUS,
+  role: ROLE,
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
@@ -31,9 +35,17 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @Column({
     type: DataType.STRING(15),
-    allowNull: false
+    allowNull: false,
+    defaultValue: STATUS.NON_ACTIVE
   })
-  status!: string
+  status!: STATUS
+
+  @Column({
+    type: DataType.STRING(15),
+    allowNull: false,
+    defaultValue: ROLE.USER
+  })
+  role!: ROLE
 
   @Column({
     type: DataType.STRING(30),

@@ -8,10 +8,10 @@ const mysql2_1 = __importDefault(require("mysql2"));
 const sequelize = new sequelize_typescript_1.Sequelize({
     dialect: 'mysql',
     dialectModule: mysql2_1.default,
-    database: 'quest',
-    username: 'root',
-    password: 'zorochimaru',
-    host: 'localhost',
+    database: process.env.DB_BASE,
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASS,
+    host: process.env.HOST,
     port: process.env.DB_PORT,
     modelPaths: [__dirname + '/../models/**/*.model.ts'],
     modelMatch: (filename, member) => {

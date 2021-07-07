@@ -18,7 +18,7 @@ interface UserAttributes {
   password: string,
   status: STATUS,
   role: ROLE,
-}
+} 
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
 

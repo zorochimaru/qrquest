@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/react-redux": "^7.1.16",
     "@types/sequelize": "^4.28.9",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^6.6.2",
@@ -8,6 +9,7 @@
   "devDependencies": {
     "@types/node": "^15.12.4",
     "@types/validator": "^13.1.4",
+    "react-redux": "^7.2.4",
     "sequelize-typescript": "^2.1.0"
   }
 }

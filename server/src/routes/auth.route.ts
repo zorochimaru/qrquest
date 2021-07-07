@@ -16,4 +16,9 @@ router.post('/signin', AuthController.signIn);
 
 router.post('/logout', AuthController.logOut);
 
+router.post('/test', (req, res) => {
+    console.log(req.body);
+    res.sendStatus(200); 
+})
+
 export default router;

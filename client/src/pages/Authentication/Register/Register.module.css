@@ -1,0 +1,13 @@
+.wrapper {
+    height: 100vh;
+}
+.card {
+    height: 450px;
+    width: 300px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}

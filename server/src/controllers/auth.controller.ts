@@ -16,7 +16,6 @@ class AuthController {
         const name = req.body.name;
         const password = req.body.password;
         const confirmPassword = req.body.confirmPassword;
-
         if (password !== confirmPassword) {
             return res.status(400).send({ message: 'Passwords doesn\'t match' })
         }
@@ -114,15 +113,18 @@ class AuthController {
         try {
             const findUser = await User.findOne({ where: { email } });
             if (!findUser) {
-                return res.status(404).send({ message: 'No user with this email' });
+                return res.status(400).send('No user with this email');
             }
-            const doMatchPasswords = await bcrypt.compare(password, findUser.password);
-            if (doMatchPasswords) {
-                req.session.isLoggedIn = true;
-                res.send({ name: findUser.name });
+
+            if (findUser) {
+                const doMatchPasswords = await bcrypt.compare(password, findUser.password);
+                if (doMatchPasswords) {
+                    req.session.isLoggedIn = true;
+                    res.send({ name: findUser.name });
+                }
             }
         } catch (e) {
-            res.status(400).send(e);
+            res.status(400).send({ message: e });
         }
     }
 

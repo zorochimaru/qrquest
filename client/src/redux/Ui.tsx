@@ -6,11 +6,13 @@ export interface Notification {
 }
 
 export interface UI {
-    notifications: Notification[]
+    notifications: Notification[],
+    isLoading: boolean
 };
 
 const initialState: UI = {
-    notifications: []
+    notifications: [],
+    isLoading: false
 };
 
 const uiSlice = createSlice({
@@ -27,6 +29,9 @@ const uiSlice = createSlice({
         },
         closeNotification(state, action: PayloadAction<number>) {
             state.notifications.splice(action.payload, 1);
+        },
+        setLoading(state, action: PayloadAction<boolean>) {
+            state.isLoading = action.payload
         }
     }
 })

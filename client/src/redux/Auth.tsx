@@ -28,67 +28,17 @@ const authSlice = createSlice({
         },
     },
 });
-
+declare module 'axios' {
+    export interface AxiosRequestConfig {
+        errorHandle?: boolean;
+    }
+}
 export const register = (data: {
     email: string, password: string, confirmPassword: string,
     name: string
 }) => {
-    return async (dispatch: any) => {
-        dispatch(
-            uiActions.addNotification({
-                status: 'info',
-                text: 'Sending email...'
-            })
-        )
-        const sendRequest = async () => {
-            const responce = await axios.post(`http://localhost:5000/auth/signup`, data);
-            if (responce.statusText !== 'OK') {
-                throw new Error('Login failed!');
-            }
-            return responce
-        }
-        try {
-            const res = await sendRequest();
-            dispatch(
-                uiActions.addNotification({
-                    status: 'success',
-                    text: res.data
-                })
-            )
-        } catch (error) {
-
-            for (const err of error.response?.data?.errors) {
-                dispatch(
-                    uiActions.addNotification({
-                        status: 'error',
-                        text: err.message
-                    })
-                )
-
-            }
-            if (error.response?.data.message) {
-                dispatch(
-                    uiActions.addNotification({
-                        status: 'error',
-                        text: error.response?.data?.message
-                    })
-                )
-            } if(!error.response?.data?.message && !error.response?.data?.errors) {
-                dispatch(
-                    uiActions.addNotification({
-                        status: 'error',
-                        text: 'Register failed!'
-                    })
-                )
-
-            }
-
-
-
-
-
-        }
-
+    return (dispatch: any) => {
+        axios.post(`http://localhost:5000/auth/signup`, data);
     }
 }
 

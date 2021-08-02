@@ -4,10 +4,10 @@ import { RootState } from "../redux/store";
 
 
 export const PrivateRoute = (props: any) => {
-    const isLoged = useSelector((state: RootState ) => state.auth.isLoged);
+    const user = useSelector((state: RootState) => state.auth.user);
     let { as: Comp, ...otherProps } = props;
 
-    return isLoged ? (
+    return user ? (
         <Comp {...otherProps} />
     ) : (
         <Redirect to="/login" replace={true} noThrow={true} />

@@ -1,12 +1,16 @@
 import { Backdrop, CircularProgress } from "@material-ui/core";
 import { Router } from "@reach/router";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import AlertComponent from "./components/Alert";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { ConfirmationPage } from "./pages/Authentication/Confirmation/Confirmation";
 import LoginPage from "./pages/Authentication/Login/Login";
 import RegisterPage from "./pages/Authentication/Register/Register";
+import ResetPage from "./pages/Authentication/Reset/Reset";
+import { HomePage } from "./pages/Home/Home";
+import { getUser, setAuthToken } from "./redux/Auth";
 import { RootState } from "./redux/store";
 import { uiActions } from "./redux/Ui";
 
@@ -15,8 +19,47 @@ function App() {
   const notifications = useSelector((state: RootState) => state.ui.notifications);
   const isLoading = useSelector((state: RootState) => state.ui.isLoading);
 
+  // Set API url to axios
+  axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+  axios.defaults.withCredentials = true;
 
-  function errorResponseHandler(error: any) {
+  useEffect(() => {
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (accessToken) {
+      setAuthToken(accessToken);
+      dispatch(getUser())
+    }
+
+  }, [dispatch]);
+
+  function responseNotificationHandler(response: AxiosResponse<any>) {
+    dispatch(
+      uiActions.setLoading(false)
+    );
+    return response
+  }
+
+  async function refreshAccessToken() {
+    try {
+      const response = await axios.get<{ accessToken: string }>(`/auth/refresh-token`);
+      if (response) {
+        setAuthToken(response.data.accessToken);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function errorResponseHandler(error: any) {
+    dispatch(
+      uiActions.setLoading(false)
+    );
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      refreshAccessToken();
+      return axios(originalRequest);
+    }
     // check for errorHandle config
     if (error.config.hasOwnProperty('errorHandle') && error.config.errorHandle === false) {
       return Promise.reject(error);
@@ -84,24 +127,26 @@ function App() {
   }
 
   axios.interceptors.request.use((successfulReq) => {
+    // Set loader
     dispatch(
       uiActions.setLoading(true)
     );
+
+    // Set Auth header if has jwt token
+    const accessToken = sessionStorage.getItem('accessToken');
+    if (accessToken) {
+      setAuthToken(accessToken);
+    }
+
     return successfulReq;
   }, error => {
     return Promise.reject(error);
   });
 
   axios.interceptors.response.use(
-    response => {
-      dispatch(
-        uiActions.setLoading(false)
-      );
-      return response
-    },
+    responseNotificationHandler,
     errorResponseHandler
   );
-
 
   return (
     <>
@@ -118,12 +163,10 @@ function App() {
       </div>
 
       <Router>
-        <PrivateRoute path='/'>
-          <h1>Home page </h1>
-        </PrivateRoute>
-
+        <PrivateRoute as={HomePage} path="/" />
         <RegisterPage path="register" />
         <LoginPage path="login" />
+        <ResetPage path="reset" />
         <ConfirmationPage path="/confirmation/:id"></ConfirmationPage>
       </Router>
     </>

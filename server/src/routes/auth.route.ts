@@ -14,11 +14,11 @@ router.get('/confirm-password/:token', AuthController.confirmPassword);
 
 router.post('/signin', AuthController.signIn);
 
+router.get('/get-user', AuthController.getUser);
+
 router.post('/logout', AuthController.logOut);
 
-router.post('/test', (req, res) => {
-    console.log(req.body);
-    res.sendStatus(200); 
-})
+router.get('/refresh-token', AuthController.refreshToken);
+
 
 export default router;

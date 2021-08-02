@@ -1,117 +1,145 @@
 import { navigate } from '@reach/router';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { API_URL } from '../services/CONSTANTS';
-import { uiActions } from './Ui';
+import { show5SecNotification, uiActions } from './Ui';
+import jwt_decode from "jwt-decode";
 export interface User {
     id: string,
     name: string,
+    status: string,
+    role: string,
+    email: string,
 }
 
 export interface AuthState {
-    isLoged: boolean,
-    user?: User
+    user?: User,
+    accessToken?: string,
+    jwtExpiry?: string,
+
 };
 
-const initialState: AuthState = { isLoged: false };
+const initialState: AuthState = {};
 const authSlice = createSlice({
     name: 'authentication',
     initialState,
     reducers: {
+        setJwtToken(state, action: PayloadAction<AuthState>) {
+            state.accessToken = action.payload.accessToken;
+        },
         login(state, action: PayloadAction<AuthState>) {
-            state.isLoged = action.payload.isLoged;
             state.user = action.payload.user;
         },
         logOut(state: AuthState) {
-            state.isLoged = false;
             state.user = undefined;
+            state.accessToken = undefined;
         },
     },
 });
-declare module 'axios' {
-    export interface AxiosRequestConfig {
-        errorHandle?: boolean;
-    }
-}
+
 export const register = (data: {
     email: string, password: string, confirmPassword: string,
     name: string
 }) => {
-    return (dispatch: any) => {
-        axios.post(`http://localhost:5000/auth/signup`, data);
+    return async (dispatch: any) => {
+        const response = await axios.post(`/auth/signup`, data);
+        if (response) {
+            dispatch(
+                show5SecNotification({
+                    status: 'success',
+                    text: response.data.uiMessage
+                })
+            );
+        }
     }
 }
 
 export const login = (data: { email: string, password: string }) => {
     return async (dispatch: any) => {
-        dispatch(
-            uiActions.addNotification({
-                status: 'info',
-                text: 'Sending email...'
-            })
-        )
-        const sendRequest = async () => {
-            const responce = await axios(`http://localhost:5000/auth/signin`, { data, method: 'POST' });
-            if (responce.statusText !== 'OK') {
-                throw new Error('Login failed!');
-            }
-        }
-        try {
-            await sendRequest();
+        const response = await axios.post(`/auth/signin`, data);
+        if (response) {
+            dispatch(authActions.setJwtToken(response.data.accessToken))
+            setAuthToken(response.data.accessToken);
+            sessionStorage.setItem('accessToken', response.data.accessToken);
             dispatch(
                 uiActions.addNotification({
                     status: 'success',
                     text: 'Loged!'
                 })
             )
-        } catch (error) {
-            dispatch(
-                uiActions.addNotification({
-                    status: 'error',
-                    text: error.response?.data ? error.response.data : 'Login failed!'
-                })
-            )
-        }
 
+            const t = setTimeout(() => {
+                uiActions.closeNotification(0);
+                clearTimeout(t);
+            }, 5000);
+            dispatch(getUser());
+        }
     }
 }
 
 export const confirmEmail = (id: string) => {
     return async (dispatch: any) => {
+        // process.env.
+        await fetch(`confirmation/${id}`);
         dispatch(
             uiActions.addNotification({
-                status: 'info',
-                text: 'Sending email...'
+                status: 'success',
+                text: 'Loged!'
             })
         )
-        const sendRequest = async () => {
-            const responce = await fetch(API_URL + `confirmation/${id}`)
-                .catch(err => {
-                    throw new Error(err);
-                });
-            if (!responce.ok) {
-                throw new Error('Opppse');
-            }
-        }
+        // TODO redirect to home
+        const t = setTimeout(() => {
+            uiActions.closeNotification(0);
+            clearTimeout(t);
+        }, 5000);
+
+    }
+}
+
+export const resetPassword = (email: string) => {
+    return async (dispatch: any) => {
         try {
-            await sendRequest();
-            dispatch(
-                uiActions.addNotification({
-                    status: 'success',
-                    text: 'Email sent!'
-                })
-            )
+            const response = await axios.post(`/auth/reset`, { email });
+            dispatch(uiActions.addNotification({ status: 'success', text: response.data.uiMessage }))
         } catch (error) {
-            dispatch(
-                uiActions.addNotification({
-                    status: 'error',
-                    text: 'Email not sent!'
-                })
-            )
+            console.log(error)
+        }
+    }
+}
+
+export const getUser = () => {
+    return async (dispatch: any) => {
+        try {
+            const response = await axios.get<User>(`/auth/get-user`);
+            dispatch(authActions.login({ user: response.data }));
+            navigate(`/`);
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export const logout = () => {
+    return async (dispatch: any) => {
+        dispatch(authActions.setJwtToken({ accessToken: undefined }));
+    }
+}
+
+export const setAuthToken = (token: string) => {
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+}
+
+export const test = () => {
+    return async (dispatch: any) => {
+        try {
+            const response = await axios.get<any>(`/test`);
+            console.log(response.data);
+        } catch (error) {
+            console.log(error)
         }
 
     }
 }
+
 export const authActions = authSlice.actions;
 
 export default authSlice.reducer;

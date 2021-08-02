@@ -3,13 +3,13 @@ import { Table, Model, Column } from 'sequelize-typescript'
 import { DataType } from 'sequelize-typescript';
 import { Optional } from 'sequelize/types';
 export enum STATUS {
-  'ACTIVE',
-  'NON_ACTIVE',
-  'BAN'
+  'ACTIVE' = 'ACTIVE',
+  'NON_ACTIVE' = 'NON_ACTIVE',
+  'BAN' = 'BAN'
 };
 export enum ROLE {
-  'ADMIN',
-  'USER'
+  'ADMIN' = 'ADMIN',
+  'USER' = 'USER'
 }
 interface UserAttributes {
   id: string
@@ -18,7 +18,7 @@ interface UserAttributes {
   password: string,
   status: STATUS,
   role: ROLE,
-} 
+}
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
 

@@ -2,20 +2,17 @@ import { Paper, Button, TextField, Grid } from "@material-ui/core";
 import { Link, RouteComponentProps } from "@reach/router";
 import { FC, useRef } from "react";
 import { useDispatch } from "react-redux"
-import { login } from "../../../redux/Auth";
-import classes from './Login.module.css';
+import { resetPassword } from "../../../redux/Auth";
 
-const LoginPage: FC<RouteComponentProps> = () => {
+import classes from './Reset.module.css';
+
+const ResetPage: FC<RouteComponentProps> = () => {
     const dispatch = useDispatch();
     const email = useRef<HTMLInputElement>(null);
-    const password = useRef<HTMLInputElement>(null);
 
-    const handleLogin = () => {
+    const handleReset = () => {
         const regEmail = email.current!.value;
-        const regPass = password.current!.value;
-        if (regEmail && regPass) {
-            dispatch(login({ email: regEmail, password: regPass }));
-        }
+        dispatch(resetPassword(regEmail));
     }
 
 
@@ -36,14 +33,13 @@ const LoginPage: FC<RouteComponentProps> = () => {
                 >
                     <img src="logo.png" alt="" />
                     <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
-                    <TextField inputRef={password} id="pass" placeholder="password" type="password" variant="outlined" />
                     <Grid container
                         justify="space-around" alignItems="center" >
-                        <Button onClick={handleLogin} variant="contained" color="primary">
-                            Login
+                        <Button onClick={handleReset} variant="contained" color="primary">
+                            Send
                         </Button>
-                        <Link to={'/reset'}>
-                            Reset password
+                        <Link to={'/login'}>
+                            Login
                         </Link>
                         <Link to={'/register'}>
                             Register
@@ -57,4 +53,4 @@ const LoginPage: FC<RouteComponentProps> = () => {
 
     )
 }
-export default LoginPage;
+export default ResetPage;

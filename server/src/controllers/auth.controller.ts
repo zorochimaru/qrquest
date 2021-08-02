@@ -1,7 +1,8 @@
 import nodemailer from 'nodemailer';
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import User, { ROLE, STATUS } from '../models/user.model';
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -46,7 +47,7 @@ class AuthController {
                         if (error) {
                             res.status(400).send(error);
                         } else {
-                            res.send('Email sent to: ' + info.envelope.to.toString());
+                            res.send({ uiMessage: 'Email sent to: ' + info.envelope.to.toString() });
                         }
                     });
                 });
@@ -113,18 +114,26 @@ class AuthController {
         try {
             const findUser = await User.findOne({ where: { email } });
             if (!findUser) {
-                return res.status(400).send('No user with this email');
+                return res.status(400).send({ message: 'No user with this email' });
             }
 
             if (findUser) {
                 const doMatchPasswords = await bcrypt.compare(password, findUser.password);
                 if (doMatchPasswords) {
-                    req.session.isLoggedIn = true;
-                    res.send({ name: findUser.name });
+                    const jwtPayload = {
+                        userId: findUser.id,
+                    }
+                    const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '10s' });
+                    const refreshToken = jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '30s' });
+                    req.session.logedUser = {
+                        user: findUser,
+                        refreshToken
+                    };
+                    res.send({ accessToken });
                 }
             }
         } catch (e) {
-            res.status(400).send({ message: e });
+            res.status(500).send({ message: e.toString() });
         }
     }
 
@@ -138,6 +147,29 @@ class AuthController {
 
     }
 
+    refreshToken = async (req: Request, res: Response) => {
+        const refreshToken = req.session.logedUser?.refreshToken;
+        console.log(refreshToken);
+        if (refreshToken) {
+            jwt.verify(refreshToken, process.env.JWT_SECRET, (err, refreshT) => {
+                if (err) {
+                    res.sendStatus(403);
+                }
+                req.session.logedUser = {
+                    user: req.session.logedUser?.user!,
+                    refreshToken: jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: "6h" })
+                };
+                const jwtPayload = {
+                    userId: req.session.logedUser?.user.id,
+                }
+                const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
+                res.send({ accessToken });
+            })
+        } else {
+            res.send('Alinmadi REIS!');
+        }
+    }
+
     confirm = async (req: Request, res: Response) => {
         const token = req.params.token;
         try {
@@ -149,5 +181,29 @@ class AuthController {
             res.status(401).send(String(e));
         }
     }
+
+    getUser = async (req: Request, res: Response) => {
+        const authHeader = req.headers.authorization;
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) return res.sendStatus(401);
+
+        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+            if (err) return res.sendStatus(403);
+            if (user) {
+                const sendUser = {
+                    id: user.id,
+                    status: user.status,
+                    role: user.role,
+                    name: user.name,
+                    email: user.email,
+                }
+                res.send(sendUser);
+            }
+        })
+
+    }
+
+
 }
 export default new AuthController();

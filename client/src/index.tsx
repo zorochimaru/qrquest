@@ -5,7 +5,8 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import store from './redux/store';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+// !Change to createMuiTheme on production and replace StrictMode to Fragment
+import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { azAZ } from '@material-ui/core/locale';
  
 

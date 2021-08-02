@@ -1,8 +1,10 @@
-export {}
+import User from "../models/user.model";
+
+export { }
 
 declare module 'express-session' {
   interface SessionData {
-    isLoggedIn: boolean;
+    logedUser: { user: User, refreshToken: string },
   }
 }
 
@@ -17,7 +19,9 @@ declare global {
       DB_PASS: string,
       EMAIL_SECRET: string,
       JWT_SECRET: string,
-      HOST: string
+      HOST: string,
+      SESSION_SECRET: string,
+      SESSION_MAX_AGE: number,
     }
   }
 }

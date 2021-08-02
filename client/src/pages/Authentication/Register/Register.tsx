@@ -10,12 +10,14 @@ const RegisterPage: FC<RouteComponentProps> = () => {
     const email = useRef<HTMLInputElement>(null);
     const nickname = useRef<HTMLInputElement>(null);
     const password = useRef<HTMLInputElement>(null);
+    const rePassword = useRef<HTMLInputElement>(null);
 
     const handleRegister = () => {
         const regEmail = email.current!.value;
         const regPass = password.current!.value;
+        const reRegPass = rePassword.current!.value;
         const regNickname = nickname.current!.value;
-        dispatch(register({ email: regEmail, password: regPass, confirmPassword: regPass, name: regNickname }));
+        dispatch(register({ email: regEmail, password: regPass, confirmPassword: reRegPass, name: regNickname }));
     }
 
 
@@ -38,11 +40,15 @@ const RegisterPage: FC<RouteComponentProps> = () => {
                     <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
                     <TextField inputRef={nickname} id="nickname" placeholder="name" variant="outlined" />
                     <TextField inputRef={password} id="pass" placeholder="password" type="password" variant="outlined" />
+                    <TextField inputRef={rePassword} id="rePass" placeholder="repeat password" type="password" variant="outlined" />
                     <Grid container
-                        justify="space-around" >
+                        justify="space-around" alignItems="center" >
                         <Button onClick={handleRegister} variant="contained" color="primary">
                             Register
                         </Button>
+                        <Link to={'/reset'}>
+                            Reset password
+                        </Link>
                         <Link to={'/login'}>
                             Login
                         </Link>

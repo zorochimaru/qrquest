@@ -117,20 +117,26 @@ class AuthController {
                 return res.status(400).send({ message: 'No user with this email' });
             }
 
-            if (findUser) {
+            if (findUser && findUser.status === STATUS.ACTIVE) {
                 const doMatchPasswords = await bcrypt.compare(password, findUser.password);
                 if (doMatchPasswords) {
                     const jwtPayload = {
                         userId: findUser.id,
                     }
                     const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '10s' });
-                    const refreshToken = jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '30s' });
+                    const refreshToken = jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '15s' });
                     req.session.logedUser = {
                         user: findUser,
                         refreshToken
                     };
                     res.send({ accessToken });
                 }
+            }
+            if (findUser && findUser.status === STATUS.NON_ACTIVE) {
+                return res.status(400).send({ message: 'Acivate user' });
+            }
+            if (findUser && findUser.status === STATUS.BAN) {
+                return res.status(400).send({ message: 'Your account is baned' });
             }
         } catch (e) {
             res.status(500).send({ message: e.toString() });
@@ -149,24 +155,27 @@ class AuthController {
 
     refreshToken = async (req: Request, res: Response) => {
         const refreshToken = req.session.logedUser?.refreshToken;
-        console.log(refreshToken);
         if (refreshToken) {
             jwt.verify(refreshToken, process.env.JWT_SECRET, (err, refreshT) => {
                 if (err) {
-                    res.sendStatus(403);
+                    res.clearCookie('connect.sid', {
+                        path: '/',
+                        //   secure: true,
+                        httpOnly: true,
+                    }).sendStatus(403);
                 }
-                req.session.logedUser = {
-                    user: req.session.logedUser?.user!,
-                    refreshToken: jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: "6h" })
-                };
                 const jwtPayload = {
                     userId: req.session.logedUser?.user.id,
                 }
-                const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '1h' });
+                const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '10s' });
                 res.send({ accessToken });
             })
         } else {
-            res.send('Alinmadi REIS!');
+            res.clearCookie('connect.sid', {
+                path: '/',
+                //   secure: true,
+                httpOnly: true,
+            }).sendStatus(403);
         }
     }
 

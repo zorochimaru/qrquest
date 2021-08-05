@@ -1,13 +1,12 @@
 import { Redirect } from "@reach/router";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
+ 
 
 
 export const PrivateRoute = (props: any) => {
-    const user = useSelector((state: RootState) => state.auth.user);
+    const accessToken = sessionStorage.getItem('accessToken');
     let { as: Comp, ...otherProps } = props;
 
-    return user ? (
+    return accessToken ? (
         <Comp {...otherProps} />
     ) : (
         <Redirect to="/login" replace={true} noThrow={true} />

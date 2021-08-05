@@ -10,7 +10,7 @@ import LoginPage from "./pages/Authentication/Login/Login";
 import RegisterPage from "./pages/Authentication/Register/Register";
 import ResetPage from "./pages/Authentication/Reset/Reset";
 import { HomePage } from "./pages/Home/Home";
-import { getUser, setAuthToken } from "./redux/Auth";
+import { authActions, getUser, setAuthToken } from "./redux/Auth";
 import { RootState } from "./redux/store";
 import { uiActions } from "./redux/Ui";
 
@@ -39,11 +39,14 @@ function App() {
     return response
   }
 
-  async function refreshAccessToken() {
+  async function refreshToken(originalRequest: any) {
+    originalRequest._retry = true;
     try {
       const response = await axios.get<{ accessToken: string }>(`/auth/refresh-token`);
       if (response) {
         setAuthToken(response.data.accessToken);
+        originalRequest.headers['Authorization'] = 'Bearer ' + response.data.accessToken
+        return axios(originalRequest);
       }
     } catch (error) {
       console.log(error);
@@ -51,14 +54,15 @@ function App() {
   }
 
   async function errorResponseHandler(error: any) {
-    dispatch(
-      uiActions.setLoading(false)
-    );
+    // dispatch(
+    //   uiActions.setLoading(false)
+    // );
+    if (error.response.status === 403) {
+      dispatch(authActions.logOut());
+    }
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      refreshAccessToken();
-      return axios(originalRequest);
+      refreshToken(originalRequest);
     }
     // check for errorHandle config
     if (error.config.hasOwnProperty('errorHandle') && error.config.errorHandle === false) {
@@ -96,29 +100,6 @@ function App() {
     }
 
 
-    // ! REFRESH SESSION CODE
-    // const originalRequest = error.config
-    // const refreshToken = localStorage.getItem("refresh")
-    // if (error.response && error.response.status === 401 && error.config && !error.config.__isRetryRequest && refreshToken) {
-    //   originalRequest._retry = true
-
-    //   return fetch('http://127.0.0.1:8000/api/token/refresh/', {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //       refresh: refreshToken,
-    //     }),
-    //   })
-    //     .then((res) => res.json())
-    //     .then((res) => {
-    //       localStorage.setItem("access", res.access)
-    //       originalRequest.headers['Authorization'] = 'Bearer ' + res.access
-    //       return axios(originalRequest)
-    //     })
-    // }
-
     setTimeout(() => {
       dispatch(
         uiActions.closeNotification(0)
@@ -137,9 +118,9 @@ function App() {
     if (accessToken) {
       setAuthToken(accessToken);
     }
-
     return successfulReq;
   }, error => {
+
     return Promise.reject(error);
   });
 

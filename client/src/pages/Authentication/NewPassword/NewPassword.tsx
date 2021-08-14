@@ -2,20 +2,23 @@ import { Paper, Button, TextField, Grid } from "@material-ui/core";
 import { Link, RouteComponentProps } from "@reach/router";
 import { FC, useRef } from "react";
 import { useDispatch } from "react-redux"
-import { login } from "../../../redux/Auth";
-import classes from './Login.module.css';
+import { resetPassword } from "../../../redux/Auth";
 
-const LoginPage: FC<RouteComponentProps> = () => {
+import classes from './NewPassword.module.css';
+
+interface confIdProps extends RouteComponentProps {
+    token?: string;
+}
+export const NewPasswordPage: FC<RouteComponentProps> = (props: confIdProps) => {
     const dispatch = useDispatch();
-    const email = useRef<HTMLInputElement>(null);
+    const token = props.token!;
     const password = useRef<HTMLInputElement>(null);
+    const rePassword = useRef<HTMLInputElement>(null);
 
-    const handleLogin = () => {
-        const regEmail = email.current!.value;
+    const handleResetPassword = () => {
         const regPass = password.current!.value;
-        if (regEmail && regPass) {
-            dispatch(login({ email: regEmail, password: regPass }));
-        }
+        const reRegPass = rePassword.current!.value;
+        dispatch(resetPassword(token, regPass, reRegPass));
     }
 
 
@@ -35,19 +38,14 @@ const LoginPage: FC<RouteComponentProps> = () => {
                     alignItems="center"
                 >
                     <img src="/logo.png" alt="" />
-                    <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
-                    <TextField inputRef={password} id="pass" placeholder="password" type="password" variant="outlined" />
+                    
+                    <TextField inputRef={password} id="pass" placeholder="password" required type="password" variant="outlined" />
+                    <TextField inputRef={rePassword} id="rePass" placeholder="repeat password" required type="password" variant="outlined" />
                     <Grid container
                         justify="space-around" alignItems="center" >
-                        <Button onClick={handleLogin} variant="contained" color="primary">
-                            Login
+                        <Button onClick={handleResetPassword} variant="contained" color="primary">
+                            Send
                         </Button>
-                        <Link to={'/reset'}>
-                            Reset password
-                        </Link>
-                        <Link to={'/register'}>
-                            Register
-                        </Link>
                     </Grid>
 
                 </Grid>
@@ -57,4 +55,4 @@ const LoginPage: FC<RouteComponentProps> = () => {
 
     )
 }
-export default LoginPage;
+export default NewPasswordPage;

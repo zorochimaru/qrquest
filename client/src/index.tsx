@@ -8,7 +8,8 @@ import store from './redux/store';
 // !Change to createMuiTheme on production and replace StrictMode to Fragment
 import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { azAZ } from '@material-ui/core/locale';
- 
+import { SnackbarProvider } from 'notistack';
+
 
 const theme = createMuiTheme({
   palette: {
@@ -22,9 +23,9 @@ ReactDOM.render(
 
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-
-        <App />
-
+        <SnackbarProvider maxSnack={3}>
+          <App />
+        </SnackbarProvider >
       </ThemeProvider>
     </Provider>
   </React.StrictMode>,

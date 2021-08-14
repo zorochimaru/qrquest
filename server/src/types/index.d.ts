@@ -22,6 +22,7 @@ declare global {
       HOST: string,
       SESSION_SECRET: string,
       SESSION_MAX_AGE: number,
+      DOMAIN: string,
     }
   }
 }

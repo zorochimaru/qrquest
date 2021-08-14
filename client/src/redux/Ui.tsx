@@ -1,8 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CloseReason, SnackbarKey, SnackbarMessage, VariantType } from "notistack";
+
 
 export interface Notification {
-    status: 'success' | 'info' | 'warning' | 'error',
-    text: string
+    message: SnackbarMessage,
+    options?: {
+        variant?: VariantType,
+        action?(key: SnackbarKey): void,
+        onClose?(event: React.SyntheticEvent<any> | null, reason: CloseReason, key?: SnackbarKey): void
+    },
+    key?: SnackbarKey,
+    dismissed?: boolean
 }
 
 export interface UI {
@@ -20,18 +28,17 @@ const uiSlice = createSlice({
     initialState,
     reducers: {
         addNotification(state, action: PayloadAction<Notification>) {
-            if (state.notifications.length < 3) {
-                state.notifications.push({ status: action.payload.status, text: action.payload.text });
-            } else {
-                state.notifications.splice(0, 1);
-                state.notifications.push({ status: action.payload.status, text: action.payload.text });
-            }
+            state.notifications.push({ ...action.payload, key: action.payload.key || new Date().getTime() + Math.random() });
         },
-        closeNotification(state, action: PayloadAction<number>) {
-            state.notifications.splice(action.payload, 1);
+        closeNotification(state, action: PayloadAction<string | number | null>) {
+            state.notifications = state.notifications.map(notification => (
+                (!action?.payload || notification.key === action!.payload)
+                    ? { ...notification, dismissed: true }
+                    : { ...notification }
+            ))
         },
-        closeLastNotification(state) {
-            state.notifications.splice(state.notifications.length - 1, 1);
+        removeNotification(state, action: PayloadAction<string | number>) {
+            state.notifications = state.notifications.filter(not => not.key !== action.payload);
         },
         setLoading(state, action: PayloadAction<boolean>) {
             state.isLoading = action.payload
@@ -39,14 +46,7 @@ const uiSlice = createSlice({
     }
 })
 
-export const show5SecNotification = (notification: Notification) => {
-    return async (dispatch: any) => {
-        dispatch(uiActions.addNotification(notification));
-        setTimeout(() => {
-            dispatch(uiActions.closeLastNotification());
-        }, 5000);
-    }
-}
+
 
 export const uiActions = uiSlice.actions;
 

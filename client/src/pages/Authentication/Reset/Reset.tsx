@@ -2,17 +2,16 @@ import { Paper, Button, TextField, Grid } from "@material-ui/core";
 import { Link, RouteComponentProps } from "@reach/router";
 import { FC, useRef } from "react";
 import { useDispatch } from "react-redux"
-import { resetPassword } from "../../../redux/Auth";
-
+import { sendResetPasswordEmail } from "../../../redux/Auth";
 import classes from './Reset.module.css';
 
 const ResetPage: FC<RouteComponentProps> = () => {
     const dispatch = useDispatch();
     const email = useRef<HTMLInputElement>(null);
-
+  
     const handleReset = () => {
         const regEmail = email.current!.value;
-        dispatch(resetPassword(regEmail));
+        dispatch(sendResetPasswordEmail(regEmail));
     }
 
 
@@ -31,19 +30,13 @@ const ResetPage: FC<RouteComponentProps> = () => {
                     justify="center"
                     alignItems="center"
                 >
-                    <img src="logo.png" alt="" />
+                    <img src="/logo.png" alt="" />
                     <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
                     <Grid container
                         justify="space-around" alignItems="center" >
                         <Button onClick={handleReset} variant="contained" color="primary">
-                            Send
+                            Change password
                         </Button>
-                        <Link to={'/login'}>
-                            Login
-                        </Link>
-                        <Link to={'/register'}>
-                            Register
-                        </Link>
                     </Grid>
 
                 </Grid>

@@ -1,12 +1,17 @@
-import { Backdrop, CircularProgress } from "@material-ui/core";
+import { Backdrop, CircularProgress, Button } from "@material-ui/core";
 import { Router } from "@reach/router";
 import axios, { AxiosResponse } from "axios";
+
+
+
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import AlertComponent from "./components/Alert";
+import Notifier from "./components/Notifier";
+
 import { PrivateRoute } from "./components/PrivateRoute";
 import { ConfirmationPage } from "./pages/Authentication/Confirmation/Confirmation";
 import LoginPage from "./pages/Authentication/Login/Login";
+import NewPasswordPage from "./pages/Authentication/NewPassword/NewPassword";
 import RegisterPage from "./pages/Authentication/Register/Register";
 import ResetPage from "./pages/Authentication/Reset/Reset";
 import { HomePage } from "./pages/Home/Home";
@@ -16,12 +21,11 @@ import { uiActions } from "./redux/Ui";
 
 function App() {
   const dispatch = useDispatch();
-  const notifications = useSelector((state: RootState) => state.ui.notifications);
   const isLoading = useSelector((state: RootState) => state.ui.isLoading);
-
   // Set API url to axios
   axios.defaults.baseURL = process.env.REACT_APP_API_URL;
   axios.defaults.withCredentials = true;
+
 
   useEffect(() => {
     const accessToken = sessionStorage.getItem('accessToken');
@@ -29,7 +33,6 @@ function App() {
       setAuthToken(accessToken);
       dispatch(getUser())
     }
-
   }, [dispatch]);
 
   function responseNotificationHandler(response: AxiosResponse<any>) {
@@ -54,9 +57,6 @@ function App() {
   }
 
   async function errorResponseHandler(error: any) {
-    // dispatch(
-    //   uiActions.setLoading(false)
-    // );
     if (error.response.status === 403) {
       dispatch(authActions.logOut());
     }
@@ -75,8 +75,8 @@ function App() {
         for (const err of error.response?.data?.errors) {
           dispatch(
             uiActions.addNotification({
-              status: 'error',
-              text: err.message
+              message: err.message,
+              options: { variant: 'error' }
             })
           )
         }
@@ -84,8 +84,13 @@ function App() {
       if (error.response?.data?.message) {
         dispatch(
           uiActions.addNotification({
-            status: 'error',
-            text: error.response.data.message
+            message: error.response.data.message,
+            options: {
+              variant: 'error',
+              action: (key: string | number) => (
+                <Button onClick={() => dispatch(uiActions.closeNotification(key))}>dismiss me</Button>
+              )
+            }
           })
         )
       }
@@ -93,18 +98,13 @@ function App() {
     if (!error.response) {
       dispatch(
         uiActions.addNotification({
-          status: 'error',
-          text: 'Network error - make sure API is running'
+          message: error.response.data.message,
+          options: {
+            variant: 'error',
+          }
         })
       )
     }
-
-
-    setTimeout(() => {
-      dispatch(
-        uiActions.closeNotification(0)
-      )
-    }, 5000);
   }
 
   axios.interceptors.request.use((successfulReq) => {
@@ -131,24 +131,21 @@ function App() {
 
   return (
     <>
+      <Notifier />
       <Backdrop style={{
         zIndex: 1000,
         color: '#fff',
       }} open={isLoading} >
         <CircularProgress color="inherit" />
       </Backdrop>
-      <div style={{ position: 'fixed', left: 0, right: 0 }}>
-        {notifications.length !== 0 ? notifications.map((notification, i) =>
-          <AlertComponent key={i} text={notification.text} status={notification.status} />
-        ) : null}
-      </div>
-
+     
       <Router>
         <PrivateRoute as={HomePage} path="/" />
         <RegisterPage path="register" />
         <LoginPage path="login" />
         <ResetPage path="reset" />
-        <ConfirmationPage path="/confirmation/:id"></ConfirmationPage>
+        <ConfirmationPage path="confirmation/:token"></ConfirmationPage>
+        <NewPasswordPage path="confirm-password/:token"></NewPasswordPage>
       </Router>
     </>
   );

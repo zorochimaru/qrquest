@@ -5,18 +5,21 @@ import { useDispatch } from 'react-redux'
 import { confirmEmail } from '../../../redux/Auth'
 
 interface confIdProps extends RouteComponentProps {
-    id?: string;
+    token?: string;
 }
 export const ConfirmationPage: FC<RouteComponentProps> = (props: confIdProps) => {
-    const id = props.id!;
+
+    const token = props.token;
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(confirmEmail(id))
-    }, [dispatch, id])
+        if (token) {
+            dispatch(confirmEmail(token))
+        }
+    }, [dispatch, token])
 
     return (
-        <div>
-            <h1>Confirmation page</h1>
+        <div style={{height: '100vh', width: '100%', display: 'grid', placeItems: 'center'}}>
+           Confirmation in process
         </div>
     )
 }

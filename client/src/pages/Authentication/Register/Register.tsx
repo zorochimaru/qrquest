@@ -36,7 +36,7 @@ const RegisterPage: FC<RouteComponentProps> = () => {
                     justify="center"
                     alignItems="center"
                 >
-                    <img src="logo.png" alt="" />
+                    <img src="/logo.png" alt="" />
                     <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
                     <TextField inputRef={nickname} id="nickname" placeholder="name" variant="outlined" />
                     <TextField inputRef={password} id="pass" placeholder="password" type="password" variant="outlined" />

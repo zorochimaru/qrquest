@@ -1,7 +1,9 @@
 import { navigate } from '@reach/router';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { show5SecNotification, uiActions } from './Ui';
+import { uiActions } from './Ui';
+
+
 export interface User {
     id: string,
     name: string,
@@ -38,9 +40,9 @@ export const register = (data: {
         const response = await axios.post(`/auth/signup`, data);
         if (response) {
             dispatch(
-                show5SecNotification({
-                    status: 'success',
-                    text: response.data.uiMessage
+                uiActions.addNotification({
+                    message: response.data.uiMessage,
+                    options: { variant: 'success' }
                 })
             );
         }
@@ -52,46 +54,64 @@ export const login = (data: { email: string, password: string }) => {
         const response = await axios.post(`/auth/signin`, data);
         if (response) {
             setAuthToken(response.data.accessToken);
-            dispatch(
-                uiActions.addNotification({
-                    status: 'success',
-                    text: 'Loged!'
-                })
-            )
-
-            const t = setTimeout(() => {
-                uiActions.closeNotification(0);
-                clearTimeout(t);
-            }, 5000);
+            uiActions.addNotification({
+                message: 'Loged!',
+                options: { variant: 'success' }
+            })
             dispatch(getUser());
         }
     }
 }
 
-export const confirmEmail = (id: string) => {
+export const confirmEmail = (token: string) => {
     return async (dispatch: any) => {
-        // process.env.
-        await fetch(`confirmation/${id}`);
-        dispatch(
-            uiActions.addNotification({
-                status: 'success',
-                text: 'Loged!'
-            })
-        )
-        // TODO redirect to home
-        const t = setTimeout(() => {
-            uiActions.closeNotification(0);
-            clearTimeout(t);
-        }, 5000);
 
+        const responce = await fetch(`/auth/confirmation/${token}`);
+        if (responce.ok) {
+            dispatch(
+                uiActions.addNotification({
+                    message: 'Confirmed!',
+                    options: {
+                        variant: 'success'
+                    }
+                })
+            )
+
+            navigate('/');
+
+        }
     }
 }
 
-export const resetPassword = (email: string) => {
+export const sendResetPasswordEmail = (email: string) => {
+
     return async (dispatch: any) => {
         try {
-            const response = await axios.post(`/auth/reset`, { email });
-            dispatch(uiActions.addNotification({ status: 'success', text: response.data.uiMessage }))
+            const response = await axios.post(`/auth/reset-password`, { email });
+            if (response.status === 200) {
+                dispatch(uiActions.addNotification({
+                    options: { variant: 'success' },
+                    message: response.data.message
+                }))
+                navigate('/');
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export const resetPassword = (token: string, password: string, confirmPassword: string) => {
+
+    return async (dispatch: any) => {
+        try {
+            const response = await axios.post(`/auth/confirm-password`, { token, password, confirmPassword });
+            if (response.status === 200) {
+                dispatch(uiActions.addNotification({
+                    options: { variant: 'success' },
+                    message: response.data.message
+                }))
+            }
         } catch (error) {
             console.log(error)
         }
@@ -102,7 +122,7 @@ export const getUser = () => {
     return async (dispatch: any) => {
         try {
             const response = await axios.get<User>(`/auth/get-user`);
-            if(response){
+            if (response) {
                 dispatch(authActions.login({ user: response.data }));
                 navigate(`/`);
             }
@@ -112,7 +132,7 @@ export const getUser = () => {
     }
 }
 
- 
+
 
 export const setAuthToken = (token: string) => {
     axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;

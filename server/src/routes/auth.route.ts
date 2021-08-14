@@ -8,9 +8,9 @@ router.post('/signup', AuthController.signUp);
 
 router.get('/confirmation/:token', AuthController.confirm);
 
-router.get('/reset', AuthController.resetPass);
+router.post('/reset-password', AuthController.resetPass);
 
-router.get('/confirm-password/:token', AuthController.confirmPassword);
+router.post('/confirm-password', AuthController.confirmPassword);
 
 router.post('/signin', AuthController.signIn);
 

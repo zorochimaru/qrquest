@@ -4,6 +4,7 @@ import User, { ROLE, STATUS } from '../models/user.model';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import Op from 'sequelize';
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -17,26 +18,14 @@ class AuthController {
         const name = req.body.name;
         const password = req.body.password;
         const confirmPassword = req.body.confirmPassword;
-        if (password !== confirmPassword) {
-            return res.status(400).send({ message: 'Passwords doesn\'t match' })
-        }
-
-        try {
-            const findedUser = await User.findOne({ where: { email } });
-            if (findedUser) {
-                return res.status(409).send({ message: 'Already have this user' });
-            }
-            const hashedPass = await bcrypt.hash(password, 12);
-            const newUser = User.build({ email, name, password: hashedPass, status: STATUS.NON_ACTIVE, role: ROLE.USER });
-            const createdUser = await newUser.save();
-
+        function sendEmailWithToken(userId: string) {
             jwt.sign({
-                user: createdUser.id,
+                userId,
             },
                 process.env.EMAIL_SECRET,
                 { expiresIn: '1h' },
                 (err, emailToken) => {
-                    const url = `http://${process.env.HOST}:${process.env.PORT}/auth/confirmation/${emailToken}`;
+                    const url = `${process.env.DOMAIN}/confirmation/${emailToken}`;
                     const mailOptions = {
                         from: 'rasim.karimli@gmail.com',
                         to: email,
@@ -47,20 +36,70 @@ class AuthController {
                         if (error) {
                             res.status(400).send(error);
                         } else {
-                            res.send({ uiMessage: 'Email sent to: ' + info.envelope.to.toString() });
+                            res.send({ message: 'Email sent to: ' + info.envelope.to.toString() });
                         }
                     });
                 });
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).send({ message: 'Passwords doesn\'t match' })
+        }
+
+        try {
+            const findedUser = await User.findOne({ where: { email } });
+            if (findedUser) {
+                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt < new Date(Date.now() - (10 * 1000))) {
+                    sendEmailWithToken(findedUser.id);
+                }
+                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt > new Date(Date.now() - (10 * 1000))) {
+                    res.status(409).send({ message: 'Already have this user, please activate or retry after 1 hour' });
+                }
+
+            }
+            if (!findedUser) {
+                const hashedPass = await bcrypt.hash(password, 12);
+                const newUser = User.build({ email, name, password: hashedPass, status: STATUS.NON_ACTIVE, role: ROLE.USER });
+                const createdUser = await newUser.save();
+
+                sendEmailWithToken(createdUser.id);
+            }
+
+
 
         } catch (e) {
             res.status(400).send(e);
         }
     };
 
+    confirm = async (req: Request, res: Response) => {
+        const token = req.params.token;
+
+        try {
+
+            jwt.verify(token, process.env.EMAIL_SECRET, async (err, userId) => {
+                if (err) {
+                    return res.status(400).send({ message: 'Confirmation token is out of date!' });
+                }
+                const id = (userId as any).userId;
+                const updatedUser = await User.update({ status: STATUS.ACTIVE }, { where: { id, status: STATUS.NON_ACTIVE } });
+                if (updatedUser[0]) {
+                    res.sendStatus(200);
+                } else {
+                    res.status(400).send({ message: 'User already confirmed' });
+                }
+
+            })
+
+        } catch (e) {
+            res.status(400).send(String(e));
+        }
+    }
+
     resetPass = (req: Request, res: Response) => {
         const email = req.body.email;
+
         jwt.sign({
-            email,
+            email
         },
             process.env.EMAIL_SECRET,
             { expiresIn: '1h' },
@@ -68,7 +107,7 @@ class AuthController {
                 try {
                     const findedUser = await User.findOne({ where: { email } });
                     if (findedUser) {
-                        const url = `http://${process.env.HOST}:${process.env.PORT}/auth/confirm-password/${token}`;
+                        const url = `${process.env.DOMAIN}/confirm-password/${token}`;
                         const mailOptions = {
                             from: 'rasim.karimli@gmail.com',
                             to: email,
@@ -79,8 +118,10 @@ class AuthController {
                             if (error) {
                                 return res.status(400).send(error);
                             }
-                            res.send('Email sent to: ' + info.envelope.to.toString());
+                            res.send({ message: 'Email sent to: ' + info.envelope.to.toString() });
                         });
+                    } else {
+                        res.status(400).send({ message: 'No user with this email' });
                     }
                 } catch (e) {
                     res.status(400).send(e);
@@ -90,19 +131,24 @@ class AuthController {
     }
 
     confirmPassword = async (req: Request, res: Response) => {
-        const token = req.params.token;
-        const newPassword = req.body.password;
+        const token = req.body.token;
+        const password = req.body.password;
         const confirmPassword = req.body.confirmPassword;
-        if (newPassword !== confirmPassword) {
-            return res.status(400).send('Passwords not match');
+        if (password !== confirmPassword) {
+            return res.status(400).send({ message: 'Passwords doesn\'t match' })
         }
+
 
         const email = jwt.verify(token, process.env.EMAIL_SECRET);
         const decryUserEmail = (email as any).email;
         try {
-            const hashedPass = await bcrypt.hash(newPassword, 12);
-            await User.update({ password: hashedPass }, { where: { email: decryUserEmail } });
-            res.send('Confirmed');
+            const hashedPass = await bcrypt.hash(password, 12);
+            const updated = await User.update({ password: hashedPass }, { where: { email: decryUserEmail } });
+            if (updated[0]) {
+                res.send({message: 'Password successfully has been reset'});
+            } else {
+                res.status(400).send({ message: 'No user with this email' });
+            }
         } catch (error) {
             return res.status(400).send(error);
         }
@@ -111,6 +157,7 @@ class AuthController {
     signIn = async (req: Request, res: Response) => {
         const email = req.body.email;
         const password = req.body.password;
+        
         try {
             const findUser = await User.findOne({ where: { email } });
             if (!findUser) {
@@ -130,6 +177,8 @@ class AuthController {
                         refreshToken
                     };
                     res.send({ accessToken });
+                } else {
+                    res.status(400).send({ message: 'Wrong password!' });
                 }
             }
             if (findUser && findUser.status === STATUS.NON_ACTIVE) {
@@ -176,18 +225,6 @@ class AuthController {
                 //   secure: true,
                 httpOnly: true,
             }).sendStatus(403);
-        }
-    }
-
-    confirm = async (req: Request, res: Response) => {
-        const token = req.params.token;
-        try {
-            const user = jwt.verify(token, process.env.EMAIL_SECRET);
-            const userId = (user as any).user;
-            await User.update({ status: STATUS.ACTIVE }, { where: { id: userId } });
-            res.send('Account activated');
-        } catch (e) {
-            res.status(401).send(String(e));
         }
     }
 

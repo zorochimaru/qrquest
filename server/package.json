@@ -4,8 +4,8 @@
   "description": "Web application for quests",
   "main": "server/app.ts",
   "scripts": {
-    "start": "node -r dotenv/config dist/app.js dotenv_config_path=.env.production",
     "serve_dev": "nodemon",
+    "start": "node -r dotenv/config dist/app.js dotenv_config_path=.env.production",
     "build": "tsc",
     "build_serve": "tsc & node -r dotenv/config dist/app.js dotenv_config_path=.env.production"
   },

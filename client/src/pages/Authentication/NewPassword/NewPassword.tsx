@@ -1,5 +1,5 @@
 import { Paper, Button, TextField, Grid } from "@material-ui/core";
-import { Link, RouteComponentProps } from "@reach/router";
+import { RouteComponentProps } from "@reach/router";
 import { FC, useRef } from "react";
 import { useDispatch } from "react-redux"
 import { resetPassword } from "../../../redux/Auth";
@@ -38,7 +38,7 @@ export const NewPasswordPage: FC<RouteComponentProps> = (props: confIdProps) => 
                     alignItems="center"
                 >
                     <img src="/logo.png" alt="" />
-                    
+
                     <TextField inputRef={password} id="pass" placeholder="password" required type="password" variant="outlined" />
                     <TextField inputRef={rePassword} id="rePass" placeholder="repeat password" required type="password" variant="outlined" />
                     <Grid container

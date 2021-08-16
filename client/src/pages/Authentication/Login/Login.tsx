@@ -36,20 +36,21 @@ const LoginPage: FC<RouteComponentProps> = () => {
                 >
                     <img src="/logo.png" alt="" />
                     <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
-                    <TextField inputRef={password} id="pass" placeholder="password" type="password" variant="outlined" />
+                    <TextField style={{marginTop: 15}} inputRef={password} id="pass" placeholder="password" type="password" variant="outlined" />
                     <Grid container
                         justify="space-around" alignItems="center" >
-                        <Button onClick={handleLogin} variant="contained" color="primary">
+                        <Button onClick={handleLogin} variant="contained" color="primary" style={{marginTop: 15}}>
                             Login
                         </Button>
-                        <Link to={'/reset'}>
-                            Reset password
-                        </Link>
-                        <Link to={'/register'}>
-                            Register
-                        </Link>
                     </Grid>
-
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 15 }}>
+                        <Link to={'/reset'} style={{ textDecoration: 'none' }}>
+                            <Button variant="contained" color="default">Reset password</Button>
+                        </Link>
+                        <Link to={'/register'} style={{ textDecoration: 'none' }}>
+                            <Button variant="contained" color="default">Register</Button>
+                        </Link>
+                    </div>
                 </Grid>
             </Paper>
         </Grid>

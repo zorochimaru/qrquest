@@ -48,10 +48,13 @@ class AuthController {
         try {
             const findedUser = await User.findOne({ where: { email } });
             if (findedUser) {
-                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt < new Date(Date.now() - (10 * 1000))) {
+                if (findedUser.status === STATUS.ACTIVE) {
+                    res.status(400).send({ message: 'Already have this user, please login' });
+                }
+                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt < new Date(Date.now() - (6 * 60 * 60 * 1000))) {
                     sendEmailWithToken(findedUser.id);
                 }
-                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt > new Date(Date.now() - (10 * 1000))) {
+                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt > new Date(Date.now() - (6 * 60 * 60 * 1000))) {
                     res.status(409).send({ message: 'Already have this user, please activate or retry after 1 hour' });
                 }
 
@@ -145,7 +148,7 @@ class AuthController {
             const hashedPass = await bcrypt.hash(password, 12);
             const updated = await User.update({ password: hashedPass }, { where: { email: decryUserEmail } });
             if (updated[0]) {
-                res.send({message: 'Password successfully has been reset'});
+                res.send({ message: 'Password successfully has been reset' });
             } else {
                 res.status(400).send({ message: 'No user with this email' });
             }
@@ -157,7 +160,7 @@ class AuthController {
     signIn = async (req: Request, res: Response) => {
         const email = req.body.email;
         const password = req.body.password;
-        
+
         try {
             const findUser = await User.findOne({ where: { email } });
             if (!findUser) {
@@ -170,8 +173,8 @@ class AuthController {
                     const jwtPayload = {
                         userId: findUser.id,
                     }
-                    const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '10s' });
-                    const refreshToken = jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '15s' });
+                    const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '30m' });
+                    const refreshToken = jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '6h' });
                     req.session.logedUser = {
                         user: findUser,
                         refreshToken
@@ -216,7 +219,7 @@ class AuthController {
                 const jwtPayload = {
                     userId: req.session.logedUser?.user.id,
                 }
-                const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '10s' });
+                const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '30m' });
                 res.send({ accessToken });
             })
         } else {
@@ -234,17 +237,22 @@ class AuthController {
 
         if (!token) return res.sendStatus(401);
 
-        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        jwt.verify(token, process.env.JWT_SECRET, async (err, userIdPayload) => {
             if (err) return res.sendStatus(403);
-            if (user) {
-                const sendUser = {
-                    id: user.id,
-                    status: user.status,
-                    role: user.role,
-                    name: user.name,
-                    email: user.email,
+            if (userIdPayload) {
+                const userId = userIdPayload.userId;
+                const findUser = await User.findOne({ where: { id: userId } });
+                if (findUser) {
+                    const sendUser = {
+                        id: findUser.id,
+                        status: findUser.status,
+                        role: findUser.role,
+                        name: findUser.name,
+                        email: findUser.email,
+                    }
+                    res.send(sendUser);
                 }
-                res.send(sendUser);
+                res.sendStatus(401);
             }
         })
 

@@ -4,7 +4,6 @@ import { useSnackbar } from 'notistack';
 import { RootState } from '../redux/store';
 import { uiActions } from '../redux/Ui';
 
-
 let displayed: any[] = [];
 
 const Notifier = () => {

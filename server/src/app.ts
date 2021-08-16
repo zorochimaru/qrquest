@@ -15,7 +15,7 @@ const store = new SequelizeStore({
 
 
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: ["http://localhost:3000", "http://192.168.31.175:3000"], credentials: true }));
 // app.set('trust proxy', 1) // specify a single subnet
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()) // To parse the incoming requests with JSON payloads
@@ -42,13 +42,13 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store,
-    // cookie: {
-    // maxAge: 1000 * 60 * 60 * 6,
-    // path: '/',
-    // sameSite: 'lax',
-    // httpOnly: true,
-    // secure: true,
-    // }
+    cookie: {
+        maxAge: 60,
+        path: '/',
+        sameSite: 'lax',
+        httpOnly: true,
+        // secure: true,
+    }
 }))
 
 app.use('/auth', AuthRouter);
@@ -63,7 +63,7 @@ app.use((_req, res) => {
 
 
 sequelize
-    .sync({ force: true })
+    .sync({ force: false })
     .then(() => {
         app.listen(process.env.PORT || 5000);
     }).catch(err => {

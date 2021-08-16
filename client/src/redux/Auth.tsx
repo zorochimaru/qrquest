@@ -41,7 +41,7 @@ export const register = (data: {
         if (response) {
             dispatch(
                 uiActions.addNotification({
-                    message: response.data.uiMessage,
+                    message: response.data.message,
                     options: { variant: 'success' }
                 })
             );
@@ -53,7 +53,7 @@ export const login = (data: { email: string, password: string }) => {
     return async (dispatch: any) => {
         const response = await axios.post(`/auth/signin`, data);
         if (response) {
-            setAuthToken(response.data.accessToken);
+            sessionStorage.setItem('accessToken', response.data.accessToken);
             uiActions.addNotification({
                 message: 'Loged!',
                 options: { variant: 'success' }
@@ -131,12 +131,20 @@ export const getUser = () => {
         }
     }
 }
+ 
 
-
-
-export const setAuthToken = (token: string) => {
-    axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
-    sessionStorage.setItem('accessToken', token);
+export const logOut = () => {
+    return async (dispatch: any) => {
+        try {
+            const response = await axios.post(`/auth/logout`);
+            if (response) {
+                dispatch(authActions.logOut());
+                navigate(`/login`);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }
 
 export const test = () => {

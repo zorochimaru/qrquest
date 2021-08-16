@@ -43,16 +43,18 @@ const RegisterPage: FC<RouteComponentProps> = () => {
                     <TextField inputRef={rePassword} id="rePass" placeholder="repeat password" type="password" variant="outlined" />
                     <Grid container
                         justify="space-around" alignItems="center" >
-                        <Button onClick={handleRegister} variant="contained" color="primary">
+                        <Button onClick={handleRegister} variant="contained" color="primary" style={{ marginTop: 15 }}>
                             Register
                         </Button>
-                        <Link to={'/reset'}>
-                            Reset password
-                        </Link>
-                        <Link to={'/login'}>
-                            Login
-                        </Link>
                     </Grid>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 15 }}>
+                        <Link to={'/reset'} style={{ textDecoration: 'none' }}>
+                            <Button variant="contained" color="default">Reset password</Button>
+                        </Link>
+                        <Link to={'/login'} style={{ textDecoration: 'none' }}>
+                            <Button variant="contained" color="default">Login</Button>
+                        </Link>
+                    </div>
                 </Grid>
             </Paper>
         </Grid>

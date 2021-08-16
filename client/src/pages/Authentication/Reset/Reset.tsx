@@ -8,7 +8,7 @@ import classes from './Reset.module.css';
 const ResetPage: FC<RouteComponentProps> = () => {
     const dispatch = useDispatch();
     const email = useRef<HTMLInputElement>(null);
-  
+
     const handleReset = () => {
         const regEmail = email.current!.value;
         dispatch(sendResetPasswordEmail(regEmail));
@@ -37,7 +37,16 @@ const ResetPage: FC<RouteComponentProps> = () => {
                         <Button onClick={handleReset} variant="contained" color="primary">
                             Change password
                         </Button>
+
                     </Grid>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 15 }}>
+                            <Link to={'/register'} style={{ textDecoration: 'none' }}>
+                                <Button variant="contained" color="default">Register</Button>
+                            </Link>
+                            <Link to={'/login'} style={{ textDecoration: 'none' }}>
+                                <Button variant="contained" color="default">Login</Button>
+                            </Link>
+                        </div>
 
                 </Grid>
             </Paper>

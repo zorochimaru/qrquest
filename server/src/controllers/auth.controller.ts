@@ -4,7 +4,7 @@ import User, { ROLE, STATUS } from '../models/user.model';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
-import Op from 'sequelize';
+
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -51,10 +51,10 @@ class AuthController {
                 if (findedUser.status === STATUS.ACTIVE) {
                     res.status(400).send({ message: 'Already have this user, please login' });
                 }
-                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt < new Date(Date.now() - (6 * 60 * 60 * 1000))) {
+                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt < new Date(Date.now() - (60 * 60 * 1000))) {
                     sendEmailWithToken(findedUser.id);
                 }
-                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt > new Date(Date.now() - (6 * 60 * 60 * 1000))) {
+                if (findedUser.status === STATUS.NON_ACTIVE && findedUser.createdAt > new Date(Date.now() - (60 * 60 * 1000))) {
                     res.status(409).send({ message: 'Already have this user, please activate or retry after 1 hour' });
                 }
 
@@ -173,13 +173,15 @@ class AuthController {
                     const jwtPayload = {
                         userId: findUser.id,
                     }
-                    const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '30m' });
-                    const refreshToken = jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '6h' });
+                    const accessToken = await jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '30m' });
+                    const refreshToken = await jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '6h' });
                     req.session.logedUser = {
                         user: findUser,
                         refreshToken
                     };
+
                     res.send({ accessToken });
+
                 } else {
                     res.status(400).send({ message: 'Wrong password!' });
                 }
@@ -200,7 +202,7 @@ class AuthController {
             if (err) {
                 return res.status(500).send(err);
             }
-            res.sendStatus(200);
+            res.clearCookie('connect.sid').sendStatus(200);
         })
 
     }
@@ -210,11 +212,7 @@ class AuthController {
         if (refreshToken) {
             jwt.verify(refreshToken, process.env.JWT_SECRET, (err, refreshT) => {
                 if (err) {
-                    res.clearCookie('connect.sid', {
-                        path: '/',
-                        //   secure: true,
-                        httpOnly: true,
-                    }).sendStatus(403);
+                    res.clearCookie('connect.sid').sendStatus(403);
                 }
                 const jwtPayload = {
                     userId: req.session.logedUser?.user.id,

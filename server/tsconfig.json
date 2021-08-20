@@ -4,7 +4,7 @@
     },
   "files": [
     "src/app.ts",
-    "src/types/index.d.ts"
+    "src/types/index.d.ts",
   ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */

@@ -65,7 +65,7 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
     unique: true,
     validate: {
       isEmail: {
-        msg: 'Слышь! Псина! Имейл вводи!'
+        msg: 'Email is required!'
       }
     }
   })

@@ -131,7 +131,7 @@ export const getUser = () => {
         }
     }
 }
- 
+
 
 export const logOut = () => {
     return async (dispatch: any) => {
@@ -147,17 +147,7 @@ export const logOut = () => {
     }
 }
 
-export const test = () => {
-    return async (dispatch: any) => {
-        try {
-            await axios.get<any>(`/test`);
-            // console.log(response.data);
-        } catch (error) {
-            // console.log(error)
-        }
-
-    }
-}
+ 
 
 export const authActions = authSlice.actions;
 

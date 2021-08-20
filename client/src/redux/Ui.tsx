@@ -13,12 +13,12 @@ export interface Notification {
     dismissed?: boolean
 }
 
-export interface UI {
+export interface UIState {
     notifications: Notification[],
     isLoading: boolean
 };
 
-const initialState: UI = {
+const initialState: UIState = {
     notifications: [],
     isLoading: false
 };

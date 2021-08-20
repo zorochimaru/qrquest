@@ -1,10 +1,11 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import sequelize from './util/database';
 import AuthRouter from './routes/auth.route';
+import NewsRouter from './routes/news.route';
 import session from 'express-session';
 import sequelizeStore from 'connect-session-sequelize'
 import cors from "cors";
-import jwt from 'jsonwebtoken';
+
 const SequelizeStore = sequelizeStore(session.Store);
 
 const app = express();
@@ -13,55 +14,38 @@ const store = new SequelizeStore({
     db: sequelize,
 });
 
-
-
+// CORS
 app.use(cors({ origin: ["http://localhost:3000", "http://192.168.31.175:3000"], credentials: true }));
-// app.set('trust proxy', 1) // specify a single subnet
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()) // To parse the incoming requests with JSON payloads
 
-function isAuth(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (!token) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.JWT_SECRET as string, (err: any) => {
-
-        if (err) {
-            console.log(err);
-            return res.sendStatus(401);
-        }
-        next();
-    })
-}
-
+// SESSION
 app.use(session({
-    // !change secret
-    secret: process.env.JWT_SECRET,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store,
     cookie: {
-        maxAge: 60,
+        maxAge: 1000 * 60 * 60 * 6,
         path: '/',
-        sameSite: 'lax',
+        sameSite: true,
         httpOnly: true,
-        // secure: true,
+        secure: false,
     }
 }))
 
+// ROUTES
 app.use('/auth', AuthRouter);
 
-app.get('/test', isAuth, (req, res, next) => {
-    res.send(`${13}`)
-})
+app.use('/news', NewsRouter);
 
+// 404 PAGE
 app.use((_req, res) => {
     res.status(404).send('<h1>Page 404 not found</h1>')
 });
 
-
+// LISTEN AFTER DB CONNECTION
 sequelize
     .sync({ force: false })
     .then(() => {

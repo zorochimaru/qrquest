@@ -1,0 +1,23 @@
+.main_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 40px;
+}
+.news_wrapper {
+  /* width: 100%; */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.news_item {
+  flex: 1 1 300px;
+  width: 300px;
+}
+.media {
+  height: 140px;
+}
+.description {
+
+}

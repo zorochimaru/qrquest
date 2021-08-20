@@ -1,6 +1,5 @@
 import User from "../models/user.model";
-
-export { }
+ 
 
 declare module 'express-session' {
   interface SessionData {

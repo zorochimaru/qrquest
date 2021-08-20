@@ -7,7 +7,7 @@ import { confirmEmail } from '../../../redux/Auth'
 interface confIdProps extends RouteComponentProps {
     token?: string;
 }
-export const ConfirmationPage: FC<RouteComponentProps> = (props: confIdProps) => {
+const ConfirmationPage: FC<RouteComponentProps> = (props: confIdProps) => {
 
     const token = props.token;
     const dispatch = useDispatch();
@@ -23,3 +23,4 @@ export const ConfirmationPage: FC<RouteComponentProps> = (props: confIdProps) =>
         </div>
     )
 }
+export default ConfirmationPage;

@@ -1,10 +1,12 @@
-import { ReactNode, useEffect } from "react";
+import React, { ReactNode, Suspense, useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import ROLES from "../../models/roles.model";
 import { RootState } from "../../redux/store"
 import BorderColorIcon from '@material-ui/icons/BorderColor';
-import { Card, CardActionArea, CardMedia, CardContent, makeStyles, Typography } from "@material-ui/core";
+import { Card, CardActionArea, Backdrop, CircularProgress, CardMedia, CardContent, makeStyles, Typography, createStyles, Theme } from "@material-ui/core";
+import { Router } from "@reach/router";
+const NewsController = React.lazy(() => import('./NewsController/NewsController'));
 
 interface MenuItem {
     text: string,
@@ -25,25 +27,31 @@ const MODERATOR_MENU_ITEMS: MenuItem[] = [
         link: '/news-control'
     },
 ]
-const useStyles = makeStyles({
-    root: {
-        minWidth: 275,
-    },
-    bullet: {
-        display: 'inline-block',
-        margin: '0 2px',
-        transform: 'scale(0.8)',
-    },
-    title: {
-        fontSize: 14,
-    },
-    pos: {
-        marginBottom: 12,
-    },
-    media: {
-        height: 140,
-    },
-});
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        root: {
+            minWidth: 275,
+        },
+        bullet: {
+            display: 'inline-block',
+            margin: '0 2px',
+            transform: 'scale(0.8)',
+        },
+        title: {
+            fontSize: 14,
+        },
+        pos: {
+            marginBottom: 12,
+        },
+        media: {
+            height: 140,
+        },
+        backdrop: {
+            zIndex: theme.zIndex.drawer + 1,
+            color: '#fff',
+        },
+    }),
+);
 const ControlPage = () => {
 
     const user = useSelector((state: RootState) => state.auth.user);
@@ -80,6 +88,14 @@ const ControlPage = () => {
                 </Card>
             ))
             }
+            <Suspense fallback={
+                <Backdrop className={classes.backdrop} open={true} >
+                    <CircularProgress color="inherit" />
+                </Backdrop>}>
+                <Router>
+                    <NewsController path="news-controller/:id" />
+                </Router>
+            </Suspense>
         </>
     )
 }

@@ -12,7 +12,7 @@ function isAuth(req: Request, res: Response, next: NextFunction) {
 
         if (err) {
             console.log(err);
-            return res.sendStatus(403);
+            return res.sendStatus(401);
         }
         next();
     })

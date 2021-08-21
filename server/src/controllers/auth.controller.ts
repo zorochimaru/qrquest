@@ -170,17 +170,13 @@ class AuthController {
             if (findUser && findUser.status === STATUS.ACTIVE) {
                 const doMatchPasswords = await bcrypt.compare(password, findUser.password);
                 if (doMatchPasswords) {
-                    const jwtPayload = {
-                        userId: findUser.id,
-                    }
-                    const accessToken = await jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '30m' });
-                    const refreshToken = await jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '6h' });
+                    const refreshToken = await jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '30s' });
                     req.session.logedUser = {
                         user: findUser,
                         refreshToken
                     };
 
-                    res.send({ accessToken });
+                    res.sendStatus(200);
 
                 } else {
                     res.status(400).send({ message: 'Wrong password!' });
@@ -209,16 +205,40 @@ class AuthController {
 
     refreshToken = async (req: Request, res: Response) => {
         const refreshToken = req.session.logedUser?.refreshToken;
-        if (refreshToken) {
-            jwt.verify(refreshToken, process.env.JWT_SECRET, (err, refreshT) => {
+        const logedUser = req.session.logedUser?.user;
+        if (refreshToken && logedUser) {
+            jwt.verify(refreshToken, process.env.JWT_SECRET, async (err) => {
                 if (err) {
                     res.clearCookie('connect.sid').sendStatus(403);
                 }
                 const jwtPayload = {
-                    userId: req.session.logedUser?.user.id,
+                    userId: logedUser?.id,
                 }
-                const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '30m' });
-                res.send({ accessToken });
+                const newRefreshToken = await jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '6h' });
+
+                req.session.regenerate((err) => {
+                    if (err) {
+                        res.clearCookie('connect.sid', {
+                            path: '/',
+                            //   secure: true,
+                            httpOnly: true,
+                        }).sendStatus(403);
+                    }
+                    req.session.logedUser = {
+                        user: logedUser,
+                        refreshToken: newRefreshToken
+                    };
+                    const accessToken = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: '15m' });
+                    const user = {
+                        id: logedUser?.id,
+                        name: logedUser?.name,
+                        status: logedUser?.status,
+                        role: logedUser?.role,
+                        email: logedUser?.email,
+                    }
+                    res.send({ accessToken, user });
+                });
+
             })
         } else {
             res.clearCookie('connect.sid', {
@@ -230,30 +250,11 @@ class AuthController {
     }
 
     getUser = async (req: Request, res: Response) => {
-        const authHeader = req.headers.authorization;
-        const token = authHeader && authHeader.split(' ')[1];
-
-        if (!token) return res.sendStatus(401);
-
-        jwt.verify(token, process.env.JWT_SECRET, async (err, userIdPayload) => {
-            if (err) return res.sendStatus(403);
-            if (userIdPayload) {
-                const userId = userIdPayload.userId;
-                const findUser = await User.findOne({ where: { id: userId } });
-                if (findUser) {
-                    const sendUser = {
-                        id: findUser.id,
-                        status: findUser.status,
-                        role: findUser.role,
-                        name: findUser.name,
-                        email: findUser.email,
-                    }
-                    res.send(sendUser);
-                }
-                res.sendStatus(401);
-            }
-        })
-
+        if (req.session.logedUser) {
+            this.refreshToken(req, res);
+        } else {
+            res.sendStatus(204);
+        }
     }
 
 

@@ -25,6 +25,7 @@ const authSlice = createSlice({
     reducers: {
         login(state, action: PayloadAction<AuthState>) {
             state.user = action.payload.user;
+            state.accessToken = action.payload.accessToken;
         },
         logOut(state: AuthState) {
             state.user = undefined;
@@ -53,13 +54,13 @@ export const register = (data: {
 export const login = (data: { email: string, password: string }) => {
     return async (dispatch: any) => {
         const response = await axios.post(`/auth/signin`, data);
-        if (response) {
-            sessionStorage.setItem('accessToken', response.data.accessToken);
+        if (response.status === 200) {
             uiActions.addNotification({
                 message: 'Loged!',
                 options: { variant: 'success' }
             })
             dispatch(getUser());
+            navigate(`/`);
         }
     }
 }
@@ -122,10 +123,9 @@ export const resetPassword = (token: string, password: string, confirmPassword: 
 export const getUser = () => {
     return async (dispatch: any) => {
         try {
-            const response = await axios.get<User>(`/auth/get-user`);
+            const response = await axios.get<AuthState>(`/auth/get-user`);
             if (response) {
-                dispatch(authActions.login({ user: response.data }));
-                navigate(`/`);
+                dispatch(authActions.login(response.data));
             }
         } catch (error) {
             console.log(error)
@@ -148,7 +148,7 @@ export const logOut = () => {
     }
 }
 
- 
+
 
 export const authActions = authSlice.actions;
 

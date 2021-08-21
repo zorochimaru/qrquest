@@ -8,6 +8,7 @@ class NewsController {
 
             const createdNews = await News.create({ ...body, authorId });
             res.send({ message: `${createdNews.title} created` });
+       
         } catch (error) {
             res.status(400).send(error);
         }

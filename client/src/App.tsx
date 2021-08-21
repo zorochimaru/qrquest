@@ -26,7 +26,6 @@ const RegisterPage = React.lazy(() => import('./pages/Authentication/Register/Re
 const ResetPage = React.lazy(() => import('./pages/Authentication/Reset/Reset'));
 const ConfirmationPage = React.lazy(() => import('./pages/Authentication/Confirmation/Confirmation'));
 const NewPasswordPage = React.lazy(() => import('./pages/Authentication/NewPassword/NewPassword'));
-const NewsController = React.lazy(() => import('./pages/Control/NewsController/NewsController'));
 const ControlPage = React.lazy(() => import('./pages/Control/ControlPage'));
 
 
@@ -102,16 +101,17 @@ function App() {
   const [openSidebar, setOpen] = useState(false);
   const dispatch = useDispatch();
   const isLoading = useSelector((state: RootState) => state.ui.isLoading);
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   // Set API url to axios
   axios.defaults.baseURL = process.env.REACT_APP_API_URL;
   axios.defaults.withCredentials = true;
 
 
   useEffect(() => {
-    const accessToken = sessionStorage.getItem('accessToken');
-    if (accessToken) {
-      dispatch(getUser())
-    }
+    // const accessToken = sessionStorage.getItem('accessToken');
+    // if (accessToken) {
+    dispatch(getUser())
+    // }
   }, [dispatch]);
 
   const handleDrawerOpen = () => {
@@ -126,7 +126,6 @@ function App() {
     try {
       const response = await axios.get<{ accessToken: string }>(`/auth/refresh-token`);
       if (response) {
-        sessionStorage.setItem('accessToken', response.data.accessToken);
         originalRequest.headers['Authorization'] = 'Bearer ' + response.data.accessToken
         return axios(originalRequest);
       }
@@ -202,7 +201,7 @@ function App() {
     );
 
     // Set Auth header if has jwt token
-    const accessToken = sessionStorage.getItem('accessToken');
+
     if (accessToken) {
       successfulReq.headers.common['Authorization'] = 'Bearer ' + accessToken;
     }
@@ -251,7 +250,6 @@ function App() {
             <ResetPage path="reset" />
             <ConfirmationPage path="confirmation/:token" />
             <NewPasswordPage path="confirm-password/:token" />
-            <NewsController path="news-controller/:id" />
             <PrivateRoute as={ControlPage} path="control-panel" />
             <Page404 path="*" />
           </Router>

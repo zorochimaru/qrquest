@@ -16,6 +16,7 @@ const HomePage: FC<RouteComponentProps> = () => {
     const [page, setPage] = useState(1);
     const [perPage] = useState(10);
     const newsList = useSelector((state: RootState) => state.news.list);
+    const user = useSelector((state: RootState) => state.auth.user);
     const totalPages = useSelector((state: RootState) => state.news.totalPages);
 
     useEffect(() => {
@@ -45,7 +46,7 @@ const HomePage: FC<RouteComponentProps> = () => {
 
     return (
         <div className={classes.main_wrapper}>
-            <button onClick={handleCreateNews}>Create one</button>
+            <button onClick={handleCreateNews}>Create one</button>{user?.name}
             <div className={classes.news_wrapper}>
                 {newsList?.map(item =>
                 (

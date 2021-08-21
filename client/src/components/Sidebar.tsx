@@ -31,7 +31,7 @@ const Sidebar = (props: any) => {
     useEffect(() => {
 
         setMenu(menuItems);
-        if (user && user?.role === ROLES.ADMIN) {
+        if (user && (user?.role === ROLES.ADMIN || user?.role === ROLES.MODERATOR)) {
             setMenu(prev => [{
                 text: 'Control panel',
                 icon: <AssignmentIcon />,

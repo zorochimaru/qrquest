@@ -1,8 +1,8 @@
 import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, TablePagination } from "@material-ui/core";
 import { FC, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createNews } from "../../redux/News";
-import { RootState } from "../../redux/store";
+import { createNews } from "../../../redux/News";
+import { RootState } from "../../../redux/store";
 import classes from "./NewsController.module.css";
 import { RouteComponentProps } from "@reach/router";
 

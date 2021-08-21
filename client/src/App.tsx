@@ -7,24 +7,27 @@ import {
 } from "@material-ui/core";
 import { Router } from "@reach/router";
 import axios, { AxiosResponse } from "axios";
-
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/Header";
 import Notifier from "./components/Notifier";
-
-import ConfirmationPage from "./pages/Authentication/Confirmation/Confirmation";
-import LoginPage from "./pages/Authentication/Login/Login";
-import NewPasswordPage from "./pages/Authentication/NewPassword/NewPassword";
-import RegisterPage from "./pages/Authentication/Register/Register";
-import ResetPage from "./pages/Authentication/Reset/Reset";
-import HomePage from "./pages/Home/Home";
-import NewsController from "./pages/NewsController/NewsController";
 import { authActions, getUser } from "./redux/Auth";
 import { RootState } from "./redux/store";
 import { uiActions } from "./redux/Ui";
 import clsx from 'clsx';
 import Sidebar from "./components/Sidebar";
+import Page404 from "./pages/Page404/Page404";
+import { PrivateRoute } from "./components/PrivateRoute";
+
+
+const HomePage = React.lazy(() => import('./pages/Home/Home'));
+const LoginPage = React.lazy(() => import('./pages/Authentication/Login/Login'));
+const RegisterPage = React.lazy(() => import('./pages/Authentication/Register/Register'));
+const ResetPage = React.lazy(() => import('./pages/Authentication/Reset/Reset'));
+const ConfirmationPage = React.lazy(() => import('./pages/Authentication/Confirmation/Confirmation'));
+const NewPasswordPage = React.lazy(() => import('./pages/Authentication/NewPassword/NewPassword'));
+const NewsController = React.lazy(() => import('./pages/Control/NewsController/NewsController'));
+const ControlPage = React.lazy(() => import('./pages/Control/ControlPage'));
 
 
 
@@ -85,6 +88,10 @@ const useStyles = makeStyles((theme: Theme) =>
         duration: theme.transitions.duration.enteringScreen,
       }),
       marginLeft: 0,
+    },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: '#fff',
     },
   }),
 );
@@ -222,25 +229,33 @@ function App() {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      <Header open={openSidebar}  handleDrawerOpen={handleDrawerOpen} classes={classes}></Header>
+      <Header open={openSidebar} handleDrawerOpen={handleDrawerOpen} classes={classes}></Header>
 
       <Sidebar classes={classes} theme={theme} handleDrawerClose={handleDrawerClose} openSidebar={openSidebar} />
-      
+
       <main
         className={clsx(classes.content, {
           [classes.contentShift]: openSidebar,
         })}
       >
         <div className={classes.drawerHeader} />
-        <Router>
-          <HomePage path="/" />
-          <RegisterPage path="register" />
-          <LoginPage path="login" />
-          <ResetPage path="reset" />
-          <ConfirmationPage path="confirmation/:token" />
-          <NewPasswordPage path="confirm-password/:token" />
-          <NewsController path="news-controller/:id" />
-        </Router>
+
+        <Suspense fallback={
+          <Backdrop className={classes.backdrop} open={true} >
+            <CircularProgress color="inherit" />
+          </Backdrop>}>
+          <Router>
+            <HomePage path="/" />
+            <LoginPage path="login" />
+            <RegisterPage path="register" />
+            <ResetPage path="reset" />
+            <ConfirmationPage path="confirmation/:token" />
+            <NewPasswordPage path="confirm-password/:token" />
+            <NewsController path="news-controller/:id" />
+            <PrivateRoute as={ControlPage} path="control-panel" />
+            <Page404 path="*" />
+          </Router>
+        </Suspense>
       </main>
     </div>
 

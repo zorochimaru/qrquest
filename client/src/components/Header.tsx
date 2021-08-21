@@ -7,6 +7,8 @@ import { RootState } from "../redux/store";
 import { useState } from "react";
 import { logOut } from "../redux/Auth";
 import clsx from 'clsx';
+import { navigate } from "@reach/router";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -26,7 +28,7 @@ const Header = (props: any) => {
     const classes = useStyles();
     const user = useSelector((state: RootState) => state.auth.user);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+    const openAccountContextMenu = Boolean(anchorEl);
     const dispatch = useDispatch();
 
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -41,12 +43,16 @@ const Header = (props: any) => {
         setAnchorEl(null);
         dispatch(logOut());
     };
+
+    const handleLogin = () => {
+        navigate('/login');
+    };
     return (
 
         <AppBar
             position="fixed"
             className={clsx(props.classes.appBar, {
-                [props.classes.appBarShift]: props.open,
+                [props.classes.appBarShift]: props.openSidebar,
             })}
         >
             <Toolbar>
@@ -55,7 +61,7 @@ const Header = (props: any) => {
                     aria-label="open drawer"
                     edge="start"
                     onClick={props.handleDrawerOpen}
-                    className={clsx(props.classes.menuButton, props.open && props.classes.hide)}
+                    className={clsx(props.classes.menuButton, props.openSidebar && props.classes.hide)}
                 >
                     <MenuIcon />
                 </IconButton>
@@ -64,7 +70,7 @@ const Header = (props: any) => {
                 </Typography>
 
                 <div>
-                    <IconButton
+                    {user ? <IconButton
                         aria-label="account of current user"
                         aria-controls="menu-appbar"
                         aria-haspopup="true"
@@ -72,7 +78,8 @@ const Header = (props: any) => {
                         color="inherit"
                     >
                         <AccountCircle />
-                    </IconButton>
+                    </IconButton> : <IconButton  color="inherit" onClick={handleLogin}>  <ExitToAppIcon /> </IconButton>}
+
                     <Menu
                         id="menu-appbar"
                         anchorEl={anchorEl}
@@ -85,66 +92,18 @@ const Header = (props: any) => {
                             vertical: 'top',
                             horizontal: 'right',
                         }}
-                        open={open}
+                        open={openAccountContextMenu}
                         onClose={handleClose}
                     >
-                        {user ? (
-                            < MenuItem onClick={handleLogout}>LogOut</MenuItem>
-                        ) :
-                            < MenuItem onClick={handleLogout}>LogIn</MenuItem>
-                        }
+
+                        < MenuItem onClick={handleLogout}>LogOut</MenuItem>
+
                     </Menu>
                 </div>
             </Toolbar>
         </AppBar >
 
-
-
-        // <AppBar position="static">
-        //     <Toolbar>
-        //         <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-        //             <MenuIcon />
-        //         </IconButton>
-        //         <Typography variant="h6" className={classes.title}>
-        //             {document.title}
-        //         </Typography>
-        //         {user && (
-        //             <div>
-        //                 <IconButton
-        //                     aria-label="account of current user"
-        //                     aria-controls="menu-appbar"
-        //                     aria-haspopup="true"
-        //                     onClick={handleMenu}
-        //                     color="inherit"
-        //                 >
-        //                     <AccountCircle />
-        //                 </IconButton>
-        //                 <Menu
-        //                     id="menu-appbar"
-        //                     anchorEl={anchorEl}
-        //                     anchorOrigin={{
-        //                         vertical: 'top',
-        //                         horizontal: 'right',
-        //                     }}
-        //                     keepMounted
-        //                     transformOrigin={{
-        //                         vertical: 'top',
-        //                         horizontal: 'right',
-        //                     }}
-        //                     open={open}
-        //                     onClose={handleClose}
-        //                 >
-        //                     {/* <MenuItem onClick={handleClose}>Profile</MenuItem> */}
-        //                     <MenuItem onClick={handleLogout}>LogOut</MenuItem>
-        //                 </Menu>
-        //             </div>
-        //         )}
-        //     </Toolbar>
-        // </AppBar>
-
-
-
-    )
+     )
 }
 
 export default Header

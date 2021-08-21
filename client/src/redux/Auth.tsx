@@ -1,6 +1,7 @@
 import { navigate } from '@reach/router';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import ROLES from '../models/roles.model';
 import { uiActions } from './Ui';
 
 
@@ -8,7 +9,7 @@ export interface User {
     id: string,
     name: string,
     status: string,
-    role: string,
+    role: ROLES,
     email: string,
 }
 

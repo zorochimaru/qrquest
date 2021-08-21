@@ -15,8 +15,6 @@ const HomePage: FC<RouteComponentProps> = () => {
     const dispatch = useDispatch();
     const [page, setPage] = useState(1);
     const [perPage] = useState(10);
-
-
     const newsList = useSelector((state: RootState) => state.news.list);
     const totalPages = useSelector((state: RootState) => state.news.totalPages);
 
@@ -24,9 +22,14 @@ const HomePage: FC<RouteComponentProps> = () => {
         dispatch(getNews({ page, perPage }));
     }, [dispatch, page, perPage]);
 
+    useEffect(() => {
+        document.title = 'Quest news';
+    }, []);
+
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     }
+
     const handleCreateNews = () => {
         const data = {
             title: 'First news',
@@ -35,9 +38,11 @@ const HomePage: FC<RouteComponentProps> = () => {
         }
         dispatch(createNews(data));
     }
+
     const handleDetailsClick = (id: string) => {
         navigate(`/news-controller/${id}`);
     }
+
     return (
         <div className={classes.main_wrapper}>
             <button onClick={handleCreateNews}>Create one</button>
@@ -49,9 +54,7 @@ const HomePage: FC<RouteComponentProps> = () => {
                             className={classes.media}
                             image={item.imgUrl}
                         />
-
                         <CardContent>
-
                             <Typography variant="h5" component="h2">
                                 {item.title}
                             </Typography>

@@ -3,9 +3,6 @@ import {
   CircularProgress,
   createStyles,
   CssBaseline,
-  Divider,
-  Drawer,
-  IconButton,
   makeStyles, Theme, useTheme
 } from "@material-ui/core";
 import { Router } from "@reach/router";
@@ -27,9 +24,9 @@ import { authActions, getUser } from "./redux/Auth";
 import { RootState } from "./redux/store";
 import { uiActions } from "./redux/Ui";
 import clsx from 'clsx';
- 
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import Sidebar from "./components/Sidebar";
+
+
 
 const drawerWidth = 240;
 
@@ -95,13 +92,13 @@ const useStyles = makeStyles((theme: Theme) =>
 function App() {
   const classes = useStyles();
   const theme = useTheme();
-  const [open, setOpen] = useState(false);
+  const [openSidebar, setOpen] = useState(false);
   const dispatch = useDispatch();
   const isLoading = useSelector((state: RootState) => state.ui.isLoading);
   // Set API url to axios
   axios.defaults.baseURL = process.env.REACT_APP_API_URL;
   axios.defaults.withCredentials = true;
-  const user = useSelector((state: RootState) => state.auth.user)
+
 
   useEffect(() => {
     const accessToken = sessionStorage.getItem('accessToken');
@@ -225,53 +222,13 @@ function App() {
         <CircularProgress color="inherit" />
       </Backdrop>
 
-      {/* <AppBar
-        position="fixed"
-        className={clsx(classes.appBar, {
-          [classes.appBarShift]: open,
-        })}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerOpen}
-            className={clsx(classes.menuButton, open && classes.hide)}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap>
-            Persistent drawer
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
+      <Header open={openSidebar}  handleDrawerOpen={handleDrawerOpen} classes={classes}></Header>
 
-      {user ? <Header open={open} handleDrawerOpen={handleDrawerOpen} classes={classes}></Header> : null}
-
-
-
-
-      <Drawer
-        className={classes.drawer}
-        variant="persistent"
-        anchor="left"
-        open={open}
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-      >
-        <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </div>
-        <Divider />
-
-      </Drawer>
+      <Sidebar classes={classes} theme={theme} handleDrawerClose={handleDrawerClose} openSidebar={openSidebar} />
+      
       <main
         className={clsx(classes.content, {
-          [classes.contentShift]: open,
+          [classes.contentShift]: openSidebar,
         })}
       >
         <div className={classes.drawerHeader} />

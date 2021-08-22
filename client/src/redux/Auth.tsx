@@ -16,9 +16,12 @@ export interface User {
 export interface AuthState {
     user?: User,
     accessToken?: string,
+    firstLoging: boolean,
 };
 
-const initialState: AuthState = {};
+const initialState: AuthState = {
+    firstLoging: true
+};
 const authSlice = createSlice({
     name: 'authentication',
     initialState,
@@ -26,6 +29,7 @@ const authSlice = createSlice({
         login(state, action: PayloadAction<AuthState>) {
             state.user = action.payload.user;
             state.accessToken = action.payload.accessToken;
+            state.firstLoging = false;
         },
         logOut(state: AuthState) {
             state.user = undefined;

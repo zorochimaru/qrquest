@@ -1,6 +1,6 @@
 import { Button, Card, CardActions, CardMedia } from '@material-ui/core';
 import { Pagination } from '@material-ui/lab';
-import { navigate, RouteComponentProps } from '@reach/router'
+import { navigate, RouteComponentProps, useLocation } from '@reach/router'
 import { useState } from 'react';
 import { FC, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
@@ -26,6 +26,7 @@ const HomePage: FC<RouteComponentProps> = () => {
     useEffect(() => {
         document.title = 'Quest news';
     }, []);
+
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);

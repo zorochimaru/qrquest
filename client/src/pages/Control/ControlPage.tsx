@@ -1,32 +1,25 @@
-import React, { ReactNode, Suspense, useEffect } from "react";
+import React, { FC, Suspense, useEffect } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import ROLES from "../../models/roles.model";
 import { RootState } from "../../redux/store"
-import BorderColorIcon from '@material-ui/icons/BorderColor';
-import { Card, CardActionArea, Backdrop, CircularProgress, CardMedia, CardContent, makeStyles, Typography, createStyles, Theme } from "@material-ui/core";
-import { Router } from "@reach/router";
+import { Card, CardActionArea, Backdrop, CircularProgress, CardContent, makeStyles, Typography, createStyles, Theme } from "@material-ui/core";
+import { Link, Location, navigate, Redirect, RouteComponentProps, Router, useLocation } from "@reach/router";
 const NewsController = React.lazy(() => import('./NewsController/NewsController'));
 
 interface MenuItem {
     text: string,
-    icon: ReactNode,
     link: string,
+    roles: ROLES[],
 }
-const ADMIN_MENU_ITEMS: MenuItem[] = [
+const MENU_ITEMS: MenuItem[] = [
     {
         text: 'News controller',
-        icon: <BorderColorIcon />,
-        link: '/news-control'
+        link: '/news-control',
+        roles: [ROLES.ADMIN, ROLES.MODERATOR]
     },
 ]
-const MODERATOR_MENU_ITEMS: MenuItem[] = [
-    {
-        text: 'News controller',
-        icon: <BorderColorIcon />,
-        link: '/news-control'
-    },
-]
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
@@ -52,50 +45,37 @@ const useStyles = makeStyles((theme: Theme) =>
         },
     }),
 );
-const ControlPage = () => {
+const ControlPage: FC<RouteComponentProps> = (props) => {
 
     const user = useSelector((state: RootState) => state.auth.user);
-    const [menuList, setMenuList] = useState<MenuItem[]>([]);
+    const [menuList] = useState<MenuItem[]>(MENU_ITEMS);
     const classes = useStyles();
-    useEffect(() => {
-        if (user?.role === ROLES.ADMIN) {
-            setMenuList(ADMIN_MENU_ITEMS)
-        }
-        if (user?.role === ROLES.MODERATOR) {
-            setMenuList(MODERATOR_MENU_ITEMS)
-        }
-    }, [user])
+    const location = useLocation();
+
+    const handleClick = (link: string) => {
+        navigate(location.pathname + link);
+    }
+
     return (
         <>
+
             {menuList.map(item => (
-                <Card className={classes.root} key={item.text}>
-                    <CardActionArea>
+                user && item.roles.includes(user.role) ?
 
-                        <CardMedia
-                            className={classes.media}
-                            children={item.icon}
-                        />
-                        <CardContent>
+                    <Card onClick={() => handleClick(item.link)} className={classes.root} key={item.text}>
+                        <CardActionArea>
+                            <CardContent>
+                                <Typography variant="h5" component="h2">
+                                    {item.text}
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
 
-                            <Typography variant="h5" component="h2">
-                                {item.text}
-                            </Typography>
-
-
-                        </CardContent>
-
-                    </CardActionArea>
-                </Card>
+                    : null
             ))
             }
-            <Suspense fallback={
-                <Backdrop className={classes.backdrop} open={true} >
-                    <CircularProgress color="inherit" />
-                </Backdrop>}>
-                <Router>
-                    <NewsController path="news-controller/:id" />
-                </Router>
-            </Suspense>
+         
         </>
     )
 }

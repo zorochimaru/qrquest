@@ -19,7 +19,6 @@ import Sidebar from "./components/Sidebar";
 import Page404 from "./pages/Page404/Page404";
 import { PrivateRoute } from "./components/PrivateRoute";
 
-
 const HomePage = React.lazy(() => import('./pages/Home/Home'));
 const LoginPage = React.lazy(() => import('./pages/Authentication/Login/Login'));
 const RegisterPage = React.lazy(() => import('./pages/Authentication/Register/Register'));
@@ -27,11 +26,10 @@ const ResetPage = React.lazy(() => import('./pages/Authentication/Reset/Reset'))
 const ConfirmationPage = React.lazy(() => import('./pages/Authentication/Confirmation/Confirmation'));
 const NewPasswordPage = React.lazy(() => import('./pages/Authentication/NewPassword/NewPassword'));
 const ControlPage = React.lazy(() => import('./pages/Control/ControlPage'));
-
+const NewsController = React.lazy(() => import('./pages/Control/NewsController/NewsController'));
 
 
 const drawerWidth = 240;
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -108,10 +106,7 @@ function App() {
 
 
   useEffect(() => {
-    // const accessToken = sessionStorage.getItem('accessToken');
-    // if (accessToken) {
     dispatch(getUser())
-    // }
   }, [dispatch]);
 
   const handleDrawerOpen = () => {
@@ -243,15 +238,19 @@ function App() {
           <Backdrop className={classes.backdrop} open={true} >
             <CircularProgress color="inherit" />
           </Backdrop>}>
+
           <Router>
+            <Page404 default />
             <HomePage path="/" />
             <LoginPage path="login" />
             <RegisterPage path="register" />
             <ResetPage path="reset" />
             <ConfirmationPage path="confirmation/:token" />
             <NewPasswordPage path="confirm-password/:token" />
-            <PrivateRoute as={ControlPage} path="control-panel" />
-            <Page404 path="*" />
+            <PrivateRoute path="control-panel" >
+              <ControlPage path="/" />
+              <NewsController path="news-control" />
+            </PrivateRoute>
           </Router>
         </Suspense>
       </main>

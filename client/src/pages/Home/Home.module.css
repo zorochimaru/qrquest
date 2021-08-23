@@ -6,18 +6,14 @@
   padding: 20px 40px;
 }
 .news_wrapper {
-  /* width: 100%; */
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
 }
 .news_item {
-  flex: 1 1 300px;
-  width: 300px;
+  width: 330px;
 }
 .media {
   height: 140px;
 }
-.description {
-
-}
+ 

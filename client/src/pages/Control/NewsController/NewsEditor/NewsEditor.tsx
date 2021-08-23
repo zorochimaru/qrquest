@@ -4,8 +4,6 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import CloseIcon from '@material-ui/icons/Close';
 import { News } from "../../../../redux/News";
 import axios from "axios";
-import { RootState } from "../../../../redux/store";
-import { useSelector } from "react-redux";
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement },
     ref: React.Ref<unknown>,

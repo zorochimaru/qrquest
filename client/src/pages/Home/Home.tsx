@@ -4,7 +4,7 @@ import { navigate, RouteComponentProps } from '@reach/router'
 import { useState } from 'react';
 import { FC, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
-import { createNews, getNews } from '../../redux/News'
+import { getNews } from '../../redux/News'
 import { RootState } from '../../redux/store'
 import classes from './Home.module.css';
 import Typography from '@material-ui/core/Typography';
@@ -16,7 +16,6 @@ const HomePage: FC<RouteComponentProps> = () => {
     const [page, setPage] = useState(1);
     const [perPage] = useState(10);
     const newsList = useSelector((state: RootState) => state.news.list);
-    const user = useSelector((state: RootState) => state.auth.user);
     const totalPages = useSelector((state: RootState) => state.news.totalPages);
 
     useEffect(() => {
@@ -32,14 +31,6 @@ const HomePage: FC<RouteComponentProps> = () => {
         setPage(value);
     }
 
-    const handleCreateNews = () => {
-        const data = {
-            title: 'First news',
-            text: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Libero consequuntur quas quis hic voluptatum quod neque exercitationem amet, dolorum itaque iusto sequi possimus inventore maxime, eius molestiae illum quidem? Distinctio expedita eaque a illum tempore eligendi, odit labore officiis quibusdam.',
-            imgUrl: 'https://cdn.animenewsnetwork.com/thumbnails/crop900x350gE9/herald/117499/33.the-great-jahy-preview-jb.png.jpg',
-        }
-        dispatch(createNews(data));
-    }
 
     const handleDetailsClick = (id: string) => {
         navigate(`/news-controller/${id}`);
@@ -47,7 +38,7 @@ const HomePage: FC<RouteComponentProps> = () => {
 
     return (
         <div className={classes.main_wrapper}>
-            <button onClick={handleCreateNews}>Create one</button>{user?.name}
+
             <div className={classes.news_wrapper}>
                 {newsList?.map(item =>
                 (

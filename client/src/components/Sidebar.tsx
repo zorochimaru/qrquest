@@ -2,12 +2,12 @@ import { Divider, Drawer, IconButton, ListItem, ListItemIcon, ListItemText } fro
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+
 import { navigate } from '@reach/router';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
-import { logOut } from '../redux/Auth';
-import { ReactComponentElement, useCallback, useEffect, useState } from 'react';
+
+import { ReactComponentElement, useEffect, useState } from 'react';
 import ROLES from '../models/roles.model';
 
 

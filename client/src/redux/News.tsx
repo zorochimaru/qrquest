@@ -5,17 +5,20 @@ export interface News {
     id: string,
     title: string,
     text: string,
-    authorId: string,
+    authorId?: string,
     link?: string,
     imgUrl?: string,
 }
 export interface NewsState {
-    list?: News[],
+    list: News[],
     totalPages?: number
-    totalItems?: number
+    totalItems: number
 }
 
-const initialState: NewsState = {};
+const initialState: NewsState = {
+    list: [],
+    totalItems: 0
+};
 
 const newsSlice = createSlice({
     name: 'news',

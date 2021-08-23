@@ -1,11 +1,11 @@
-import React, { FC, Suspense, useEffect } from "react";
+import { FC } from "react";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import ROLES from "../../models/roles.model";
 import { RootState } from "../../redux/store"
-import { Card, CardActionArea, Backdrop, CircularProgress, CardContent, makeStyles, Typography, createStyles, Theme } from "@material-ui/core";
-import { Link, Location, navigate, Redirect, RouteComponentProps, Router, useLocation } from "@reach/router";
-const NewsController = React.lazy(() => import('./NewsController/NewsController'));
+import { Card, CardActionArea, CardContent, makeStyles, Typography, createStyles, Theme } from "@material-ui/core";
+import { navigate, RouteComponentProps, useLocation } from "@reach/router";
+
 
 interface MenuItem {
     text: string,
@@ -75,7 +75,7 @@ const ControlPage: FC<RouteComponentProps> = (props) => {
                     : null
             ))
             }
-         
+
         </>
     )
 }

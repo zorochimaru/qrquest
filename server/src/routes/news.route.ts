@@ -10,7 +10,7 @@ router.get('/', NewsController.getNews);
 
 router.post('/create', isAuth, NewsController.addNews);
 
-// router.put('/edit', NewsController.addNews);
+router.put('/:id', NewsController.editNews);
 
 // router.delete('/delete', NewsController.addNews);
 

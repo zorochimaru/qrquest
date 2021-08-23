@@ -8,7 +8,21 @@ class NewsController {
 
             const createdNews = await News.create({ ...body, authorId });
             res.send({ message: `${createdNews.title} created` });
-       
+
+        } catch (error) {
+            res.status(400).send(error);
+        }
+    }
+    editNews = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id;
+            const body = req.body;
+            const authorId = req.session.logedUser?.user.id;
+            const updatedNews = await News.update({ ...body, authorId }, { where: { id } })
+            if (updatedNews) {
+                return res.sendStatus(200);
+            }
+            throw Error();
         } catch (error) {
             res.status(400).send(error);
         }
@@ -20,7 +34,7 @@ class NewsController {
             const limit = +params.perPage!;
             const newsResponce = await News.findAndCountAll({ limit, offset });
             const totalPages = Math.ceil(newsResponce.count / limit);
-            
+
             res.send({ list: newsResponce.rows, totalPages, totalItems: newsResponce.count });
         } catch (error) {
             res.status(400).send(error);

@@ -59,7 +59,7 @@ const HomePage: FC<RouteComponentProps> = () => {
                             </Typography>
                         </CardContent>
                         <CardActions>
-                            <Button onClick={() => handleDetailsClick(item.id)} size="small">Learn More</Button>
+                            <Button onClick={() => handleDetailsClick(item.id!)} size="small">Learn More</Button>
                         </CardActions>
                     </Card>
                 )

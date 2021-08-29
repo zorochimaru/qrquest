@@ -19,6 +19,7 @@ declare global {
       EMAIL_SECRET: string,
       JWT_SECRET: string,
       HOST: string,
+      API_LINK: string,
       SESSION_SECRET: string,
       SESSION_MAX_AGE: number,
       DOMAIN: string,

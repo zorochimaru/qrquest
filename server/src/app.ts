@@ -9,6 +9,8 @@ import cors from "cors";
 const SequelizeStore = sequelizeStore(session.Store);
 
 const app = express();
+// app.use(express.static('uploads'));  
+app.use('/uploads', express.static('uploads')); 
 
 const store = new SequelizeStore({
     db: sequelize,
@@ -19,7 +21,6 @@ app.use(cors({ origin: ["http://localhost:3000", "http://192.168.31.175:3000"], 
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()) // To parse the incoming requests with JSON payloads
-
 // SESSION
 app.use(session({
     secret: process.env.SESSION_SECRET,

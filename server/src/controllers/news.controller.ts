@@ -1,12 +1,19 @@
 import { Request, Response } from 'express';
+import multer from 'multer';
 import News from '../models/news.model';
+import File from '../models/file.model';
 class NewsController {
     addNews = async (req: Request, res: Response) => {
         try {
             const body = req.body;
+            const file = req.file;
             const authorId = req.session.logedUser?.user.id;
-
-            const createdNews = await News.create({ ...body, authorId });
+            await File.create(file);
+            const createdNews = await News.create({
+                ...body,
+                imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : null,
+                authorId
+            });
             res.send({ message: `${createdNews.title} created` });
 
         } catch (error) {
@@ -32,10 +39,21 @@ class NewsController {
             const params = req.query;
             const offset = (+params.page! - 1) * +params.perPage!;
             const limit = +params.perPage!;
-            const newsResponce = await News.findAndCountAll({ limit, offset });
+            const newsResponce = await News.findAndCountAll({
+                limit, offset, order: [['createdAt', 'DESC']],
+            });
             const totalPages = Math.ceil(newsResponce.count / limit);
 
             res.send({ list: newsResponce.rows, totalPages, totalItems: newsResponce.count });
+        } catch (error) {
+            res.status(400).send(error);
+        }
+    }
+    deleteNews = async (req: Request, res: Response) => {
+        try {
+            const id = req.params.id;
+            await News.destroy({ where: { id } })
+            res.send({ message: `Item deleted` });
         } catch (error) {
             res.status(400).send(error);
         }

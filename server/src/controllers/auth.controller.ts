@@ -86,7 +86,7 @@ class AuthController {
                 const id = (userId as any).userId;
                 const updatedUser = await User.update({ status: STATUS.ACTIVE }, { where: { id, status: STATUS.NON_ACTIVE } });
                 if (updatedUser[0]) {
-                    res.sendStatus(200);
+                    res.send({message: `User confirmed`});
                 } else {
                     res.status(400).send({ message: 'User already confirmed' });
                 }

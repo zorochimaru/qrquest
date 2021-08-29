@@ -2,7 +2,7 @@ import { navigate } from '@reach/router';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import ROLES from '../models/roles.model';
-import { uiActions } from './Ui';
+import { Notification, uiActions } from './Ui';
 
 
 export interface User {
@@ -58,7 +58,7 @@ export const register = (data: {
 export const login = (data: { email: string, password: string }) => {
     return async (dispatch: any) => {
         const response = await axios.post(`/auth/signin`, data);
-        if (response.status === 200) {
+        if (response?.status === 200) {
             uiActions.addNotification({
                 message: 'Loged!',
                 options: { variant: 'success' }
@@ -72,20 +72,18 @@ export const login = (data: { email: string, password: string }) => {
 export const confirmEmail = (token: string) => {
     return async (dispatch: any) => {
 
-        const responce = await fetch(`/auth/confirmation/${token}`);
-        if (responce.ok) {
+        const responce = await axios.get<Notification>(`/auth/confirmation/${token}`);
+        if (responce?.status === 200) {
             dispatch(
                 uiActions.addNotification({
-                    message: 'Confirmed!',
+                    message: responce.data.message,
                     options: {
                         variant: 'success'
                     }
                 })
-            )
-
-            navigate('/');
-
+            )    
         }
+        navigate('/');
     }
 }
 

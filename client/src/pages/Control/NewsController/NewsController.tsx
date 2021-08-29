@@ -1,7 +1,7 @@
-import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, TableFooter } from "@material-ui/core";
+import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, TableFooter, Button } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getNews, News } from "../../../redux/News";
+import { getNews, News, newsActions } from "../../../redux/News";
 import { RootState } from "../../../redux/store";
 
 import { RouteComponentProps } from "@reach/router";
@@ -19,8 +19,8 @@ const columns: Column[] = [
 
 const NewsController: FC<RouteComponentProps> = () => {
     const dispatch = useDispatch();
-    const [page, setPage] = useState(1);
-    const [perPage, setPerPage] = useState(5);
+    const perPage = useSelector((state: RootState) => state.news.perPage);
+    const page = useSelector((state: RootState) => state.news.page);
     const [activeNews, setActiveNews] = useState<News | null>(null);
     const newsList = useSelector((state: RootState) => state.news.list);
     const totalItems = useSelector((state: RootState) => state.news.totalItems);
@@ -30,7 +30,7 @@ const NewsController: FC<RouteComponentProps> = () => {
     }, [dispatch, page, perPage]);
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
-        setPage(value + 1);
+        dispatch(newsActions.changePage(value + 1))
     }
 
     const handleEdit = (item: News) => {
@@ -41,24 +41,22 @@ const NewsController: FC<RouteComponentProps> = () => {
     const handleChangeRowsPerPage = (
         event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => {
-        setPerPage(parseInt(event.target.value, 10));
-        setPage(1);
+        dispatch(newsActions.changePerPage(parseInt(event.target.value, 10)));
+        dispatch(newsActions.changePage(1));
     };
     const handleClickOpen = () => {
         setOpenDialog(true);
     };
 
     const handleClose = (refresh: boolean) => {
-        if (refresh) {
-            dispatch(getNews({ page, perPage }));
-        }
+        setActiveNews(null);
         setOpenDialog(false);
     };
     return (
         <>
-            <NewsEditor activeNews={activeNews} open={openDialog} handleClose={handleClose} />
-
-            <Paper  >
+            <NewsEditor activeNews={activeNews} page={page} perPage={perPage} open={openDialog} handleClose={handleClose} />
+            <Button style={{ marginBottom: 20 }} color="primary" variant="contained" onClick={handleClickOpen}>Create new</Button>
+            <Paper>
                 <TableContainer >
                     <Table stickyHeader aria-label="sticky table">
                         <TableHead>

@@ -96,7 +96,7 @@ const useStyles = makeStyles((theme: Theme) =>
 function App() {
   const classes = useStyles();
   const theme = useTheme();
-  const [openSidebar, setOpen] = useState(false);
+  const [openSidebar, setOpenSidebar] = useState(false);
   const dispatch = useDispatch();
   const isLoading = useSelector((state: RootState) => state.ui.isLoading);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
@@ -110,12 +110,13 @@ function App() {
   }, [dispatch]);
 
   const handleDrawerOpen = () => {
-    setOpen(true);
+    setOpenSidebar(true);
   };
 
   const handleDrawerClose = () => {
-    setOpen(false);
+    setOpenSidebar(false);
   };
+
   async function refreshToken(originalRequest: any) {
     originalRequest._retry = true;
     try {

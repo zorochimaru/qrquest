@@ -1,61 +1,61 @@
 import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, TableFooter, Button } from "@material-ui/core";
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getNews, News, newsActions } from "../../../redux/News";
 import { RootState } from "../../../redux/store";
 
 import { RouteComponentProps } from "@reach/router";
 import TablePagination from '@material-ui/core/TablePagination';
-import NewsEditor from "./NewsEditor/NewsEditor";
+import QuestionEditor from "./QuestionEditor/QuestionEditor";
+import { getQuestion, Question, questionActions } from "../../../redux/Questions";
+
 interface Column {
-    id: 'title';
+    id: 'question';
     label: string;
     minWidth?: number;
 }
 
 const columns: Column[] = [
-    { id: 'title', label: 'Title', minWidth: 170 },
+    { id: 'question', label: 'Question', minWidth: 170 },
 ];
 
-const NewsController: FC<RouteComponentProps> = () => {
+const QuestionController: FC<RouteComponentProps> = () => {
     const dispatch = useDispatch();
-    const perPage = useSelector((state: RootState) => state.news.perPage);
-    const page = useSelector((state: RootState) => state.news.page);
-    const [activeNews, setActiveNews] = useState<News | null>(null);
-    const newsList = useSelector((state: RootState) => state.news.list);
-    const totalItems = useSelector((state: RootState) => state.news.totalItems);
+    const [activeQuestion, setActiveQuestion] = useState<Question | null>(null);
+    const perPage = useSelector((state: RootState) => state.question.perPage);
+    const page = useSelector((state: RootState) => state.question.page);
+    const questionsList = useSelector((state: RootState) => state.question.list);
+    const totalItems = useSelector((state: RootState) => state.question.totalItems);
     const [openDialog, setOpenDialog] = useState(false);
     useEffect(() => {
-        dispatch(getNews({ page, perPage }));
+        dispatch(getQuestion({ page, perPage }));
     }, [dispatch, page, perPage]);
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
-        dispatch(newsActions.changePage(value + 1))
+        dispatch(questionActions.changePage(value + 1))
     }
 
-    const handleEdit = (item: News) => {
-        setActiveNews(item);
+    const handleEdit = (item: Question) => {
+        setActiveQuestion(item);
         handleClickOpen();
     }
 
     const handleChangeRowsPerPage = (
         event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     ) => {
-        dispatch(newsActions.changePerPage(parseInt(event.target.value, 10)));
-        dispatch(newsActions.changePage(1));
+        dispatch(questionActions.changePerPage(parseInt(event.target.value, 10)));
+        dispatch(questionActions.changePage(1));
     };
     const handleClickOpen = () => {
-     
         setOpenDialog(true);
     };
 
-    const handleClose = (refresh: boolean) => {
-        setActiveNews(null);
+    const handleClose = () => {
+        setActiveQuestion(null);
         setOpenDialog(false);
     };
     return (
         <>
-            <NewsEditor activeNews={activeNews} page={page} perPage={perPage} open={openDialog} handleClose={handleClose} />
+            <QuestionEditor activeQuestion={activeQuestion} page={page} perPage={perPage} open={openDialog} handleClose={handleClose} />
             <Button style={{ marginBottom: 20 }} color="primary" variant="contained" onClick={handleClickOpen}>Create new</Button>
             <Paper>
                 <TableContainer >
@@ -73,7 +73,7 @@ const NewsController: FC<RouteComponentProps> = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {newsList.map((row) => {
+                            {questionsList.map((row) => {
                                 return (
                                     <TableRow hover onClick={() => handleEdit(row)} role="checkbox" tabIndex={-1} key={row.id}>
                                         {columns.map((column) => {
@@ -108,4 +108,4 @@ const NewsController: FC<RouteComponentProps> = () => {
         </>
     )
 }
-export default NewsController;
+export default QuestionController;

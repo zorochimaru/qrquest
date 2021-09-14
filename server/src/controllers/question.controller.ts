@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
-import { News } from '../models/news.model';
+import { Question } from '../models/question.model';
 import { File } from '../models/file.model';
-class NewsController {
-    addNews = async (req: Request, res: Response) => {
+// import NewsTags from '../models/news_tags.model';
+class QuestionController {
+    addQuestion = async (req: Request, res: Response) => {
         try {
             const body = req.body;
             const file = req.file;
@@ -10,18 +11,20 @@ class NewsController {
             if (file) {
                 await File.create(file);
             }
-            const createdNews = await News.create({
+            // NewsTags.create();
+
+            await Question.create({
                 ...body,
                 imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : null,
                 authorId
             });
-            res.send({ message: `${createdNews.title} created` });
+            res.send({ message: `Question created` });
 
         } catch (error) {
             res.status(400).send(error);
         }
     }
-    editNews = async (req: Request, res: Response) => {
+    editQuestion = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
             const body = req.body;
@@ -30,13 +33,13 @@ class NewsController {
             if (file) {
                 await File.create(file);
             }
-            const findNews = await News.findByPk(id);
-            const updatedNews = await News.update({
+            const findQuestion = await Question.findByPk(id);
+            const updatedQuestion = await Question.update({
                 ...body,
-                imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : findNews?.imgUrl,
+                imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : findQuestion?.imgUrl,
                 authorId
             }, { where: { id } })
-            if (updatedNews) {
+            if (updatedQuestion) {
                 return res.sendStatus(200);
             }
             throw Error();
@@ -44,36 +47,36 @@ class NewsController {
             res.status(400).send(error);
         }
     }
-    getNews = async (req: Request, res: Response) => {
+    getQuestion = async (req: Request, res: Response) => {
         try {
             const params = req.query;
             const offset = (+params.page! - 1) * +params.perPage!;
             const limit = +params.perPage!;
-            const newsResponce = await News.findAndCountAll({
+            const questionResponce = await Question.findAndCountAll({
                 limit, offset, order: [['createdAt', 'DESC']],
             });
-            const totalPages = Math.ceil(newsResponce.count / limit);
-            const newsArray = newsResponce.rows;
-            res.send({ list: newsArray, totalPages, totalItems: newsResponce.count });
+            const totalPages = Math.ceil(questionResponce.count / limit);
+            const questionArray = questionResponce.rows;
+            res.send({ list: questionArray, totalPages, totalItems: questionResponce.count });
         } catch (error) {
             res.status(400).send(error);
         }
     }
-    getSingleNews = async (req: Request, res: Response) => {
+    getSingleQuestion = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const signleNews = await News.findByPk(id);
-            if (signleNews) {
-                return res.send(signleNews);
+            const signleQuestion = await Question.findByPk(id);
+            if (signleQuestion) {
+                return res.send(signleQuestion);
             }
         } catch (error) {
             res.status(400).send(error);
         }
     }
-    deleteNews = async (req: Request, res: Response) => {
+    deleteQuestion = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            await News.destroy({ where: { id } })
+            await Question.destroy({ where: { id } })
             res.send({ message: `Item deleted` });
         } catch (error) {
             res.status(400).send(error);
@@ -81,4 +84,4 @@ class NewsController {
     }
 }
 
-export default new NewsController();
+export default new QuestionController();

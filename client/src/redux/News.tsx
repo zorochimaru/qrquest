@@ -6,6 +6,7 @@ export interface News {
     id?: string,
     title: string,
     text: string,
+    tagIds: number[],
     authorId?: string,
     link?: string,
     imgUrl?: string,
@@ -13,6 +14,7 @@ export interface News {
 }
 export interface NewsState {
     list: News[],
+    singleNews: News | null,
     totalPages?: number
     totalItems: number,
     page: number,
@@ -21,6 +23,7 @@ export interface NewsState {
 
 const initialState: NewsState = {
     list: [],
+    singleNews: null,
     totalItems: 0,
     page: 1,
     perPage: 5,
@@ -30,6 +33,9 @@ const newsSlice = createSlice({
     name: 'news',
     initialState,
     reducers: {
+        setSingleNews(state, action: PayloadAction<News>) {
+            state.singleNews = action.payload;
+        },
         fillNews(state, action: PayloadAction<NewsState>) {
             state.list = action.payload.list;
             state.totalPages = action.payload.totalPages;
@@ -44,6 +50,15 @@ const newsSlice = createSlice({
     },
 });
 
+export const getSignleNews = (id: number) => {
+    return async (dispatch: any) => {
+        const response = await axios.get<News>(`/news/${id}`);
+        if (response?.status === 200) {
+            dispatch(newsActions.setSingleNews(response.data));
+        }
+    }
+}
+
 export const createNews = (data: { fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
         const response = await axios.post<Notification>(`/news/create`, data.fData);
@@ -54,12 +69,12 @@ export const createNews = (data: { fData: FormData, page: number, perPage: numbe
     }
 }
 
-export const editNews = (data: { item: News, page: number, perPage: number }) => {
+export const editNews = (data: { id: string, fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.put<Notification>(`/news/${data.item.id}`, data.item);
+        const response = await axios.put<Notification>(`/news/${data.id}`, data.fData);
         if (response?.status === 200) {
             dispatch(getNews({ page: data.page, perPage: data.perPage }));
-            dispatch(uiActions.addNotification({ message: `${data.item.title} edited` }));
+            dispatch(uiActions.addNotification({ message: `${data.fData.get('title')} edited` }));
         }
     }
 }
@@ -84,6 +99,8 @@ export const getNews = (params: {
         }
     }
 }
+
+
 
 export const newsActions = newsSlice.actions;
 

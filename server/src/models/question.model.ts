@@ -1,23 +1,18 @@
-import { Table, Model, Column, DataType, ForeignKey, BelongsTo, BelongsToMany } from 'sequelize-typescript'
+import { Table, Model, Column, DataType, ForeignKey } from 'sequelize-typescript'
 
 import { Optional } from 'sequelize/types';
-import { Tag } from './tag.model';
 import { User } from './user.model';
-import  NewsTags from './news_tag.model';
-interface NewsAttributes {
+
+interface QuestionAttributes {
     id: string,
-    title: string,
-    text: string,
+    question: string,
     authorId: string,
     imgUrl?: string,
 }
-interface NewsCreationAttributes extends Optional<NewsAttributes, 'id'> { }
+interface QuestionCreationAttributes extends Optional<QuestionAttributes, 'id'> { }
 
 @Table
-export class News extends Model<NewsAttributes, NewsCreationAttributes>{
-    @BelongsToMany(() => Tag, () => NewsTags)
-    tags!: Tag[]
-
+export class Question extends Model<QuestionAttributes, QuestionCreationAttributes>{
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
@@ -31,13 +26,7 @@ export class News extends Model<NewsAttributes, NewsCreationAttributes>{
         type: DataType.STRING(50),
         allowNull: true
     })
-    title!: string
-
-    @Column({
-        type: DataType.TEXT,
-        allowNull: true
-    })
-    text!: string
+    question!: string
 
     @Column({
         type: DataType.TEXT,

@@ -23,7 +23,7 @@ interface UserAttributes {
 interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
 
 @Table
-class User extends Model<UserAttributes, UserCreationAttributes> {
+export class User extends Model<UserAttributes, UserCreationAttributes> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -71,4 +71,3 @@ class User extends Model<UserAttributes, UserCreationAttributes> {
   })
   email!: string;
 }
-export default User;

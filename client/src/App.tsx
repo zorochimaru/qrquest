@@ -27,7 +27,8 @@ const ConfirmationPage = React.lazy(() => import('./pages/Authentication/Confirm
 const NewPasswordPage = React.lazy(() => import('./pages/Authentication/NewPassword/NewPassword'));
 const ControlPage = React.lazy(() => import('./pages/Control/ControlPage'));
 const NewsController = React.lazy(() => import('./pages/Control/NewsController/NewsController'));
-
+const SingleNews = React.lazy(() => import('./pages/Home/pages/SingleNews/SingleNews'));
+const QuestionController = React.lazy(() => import('./pages/Control/QuestionController/QuestionController'));
 
 const drawerWidth = 240;
 const useStyles = makeStyles((theme: Theme) =>
@@ -243,6 +244,7 @@ function App() {
           <Router>
             <Page404 default />
             <HomePage path="/" />
+            <SingleNews path="news/:id" />
             <LoginPage path="login" />
             <RegisterPage path="register" />
             <ResetPage path="reset" />
@@ -251,6 +253,8 @@ function App() {
             <PrivateRoute path="control-panel" >
               <ControlPage path="/" />
               <NewsController path="news-control" />
+              <QuestionController path={"question-control"} />
+              <QuestionController path={"question-control/:id"} />
             </PrivateRoute>
           </Router>
         </Suspense>

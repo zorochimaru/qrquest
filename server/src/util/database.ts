@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 import mysql2 from 'mysql2';
+import { truncate } from 'fs';
 
 
 const sequelize = new Sequelize({

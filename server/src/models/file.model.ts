@@ -17,7 +17,7 @@ interface FileAttributes {
 interface FileCreationAttributes extends Optional<FileAttributes, 'id'> { }
 
 @Table
-class File extends Model<FileAttributes, FileCreationAttributes>{
+export class File extends Model<FileAttributes, FileCreationAttributes>{
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
@@ -68,4 +68,4 @@ class File extends Model<FileAttributes, FileCreationAttributes>{
     })
     size!: number
 }
-export default File;
+ 

@@ -18,6 +18,11 @@ const MENU_ITEMS: MenuItem[] = [
         link: '/news-control',
         roles: [ROLES.ADMIN, ROLES.MODERATOR]
     },
+    {
+        text: 'Question controller',
+        link: '/question-control',
+        roles: [ROLES.ADMIN, ROLES.MODERATOR]
+    },
 ]
 
 const useStyles = makeStyles((theme: Theme) =>

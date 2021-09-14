@@ -2,17 +2,23 @@ import { combineReducers, configureStore, getDefaultMiddleware } from '@reduxjs/
 import authReducer, { AuthState } from './Auth';
 import UiReducer, { UIState } from './Ui';
 import NewsReducer, { NewsState } from './News';
+import LibraryReducer, { LibraryState } from './Library';
+import QuestionReducer, { QuestionState } from './Questions';
 
 export interface RootState {
-    auth: AuthState,
-    ui: UIState,
+    auth: AuthState
+    ui: UIState
     news: NewsState
+    library: LibraryState
+    question: QuestionState
 }
 
 const rootReducer = combineReducers({
     auth: authReducer,
     ui: UiReducer,
-    news: NewsReducer
+    news: NewsReducer,
+    library: LibraryReducer,
+    question: QuestionReducer
 });
 
 const store = configureStore({

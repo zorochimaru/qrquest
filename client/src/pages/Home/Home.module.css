@@ -15,5 +15,6 @@
 }
 .media {
   height: 140px;
+  object-fit: 'contain'!important;
 }
  

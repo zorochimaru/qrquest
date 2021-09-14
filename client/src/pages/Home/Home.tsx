@@ -26,6 +26,7 @@ const HomePage: FC<RouteComponentProps> = () => {
         document.title = 'Quest news';
     }, []);
 
+     
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
@@ -33,7 +34,7 @@ const HomePage: FC<RouteComponentProps> = () => {
 
 
     const handleDetailsClick = (id: string) => {
-        navigate(`/news-controller/${id}`);
+        navigate(`/news/${id}`);
     }
 
     return (
@@ -44,6 +45,7 @@ const HomePage: FC<RouteComponentProps> = () => {
                 (
                     <Card key={item.id} className={classes.news_item}>
                         <CardMedia
+
                             className={classes.media}
                             image={item.imgUrl}
                         />

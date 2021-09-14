@@ -16,18 +16,19 @@ const FileInput = (props: any) => {
     };
     const handleClearFile = () => {
         setFile(null);
+        props.onDeleteFile();
     };
     return (
         <div>
             <input hidden ref={inputRef} type="file" onChange={e => {
                 setFile(e.target.files && e.target.files[0]);
             }} />
-            <IconButton color={file ? 'secondary' : 'primary'} onClick={handleOpenFileInput} aria-label="upload">
+            <IconButton color={file || props.hasFileUrl ? 'secondary' : 'primary'} onClick={handleOpenFileInput} aria-label="upload">
                 <CloudUploadIcon />
             </IconButton>
-            {file ? (
+            {file || props.hasFileUrl ? (
                 <>
-                    <span style={{ maxWidth: 300 }}>{file.name.substr(0, 10)}{file.name.length > 10 ? '...' : null}</span>
+                    {file ? <span style={{ maxWidth: 300 }}>{file.name.substr(0, 10)}{file!.name.length > 10 ? '...' : null}</span> : null}
                     < IconButton onClick={handleClearFile} aria-label="upload">
                         <DeleteIcon />
                     </IconButton>

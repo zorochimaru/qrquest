@@ -32,11 +32,15 @@ const Sidebar = (props: any) => {
 
         setMenu(menuItems);
         if (user && (user?.role === ROLES.ADMIN || user?.role === ROLES.MODERATOR)) {
-            setMenu(prev => [{
-                text: 'Control panel',
-                icon: <AssignmentIcon />,
-                action: () => { navigate('/control-panel') },
-            }, ...prev])
+            setMenu(prev => [
+                {
+                    text: 'Control panel',
+                    icon: <AssignmentIcon />,
+                    action: () => {
+                        navigate('/control-panel')
+                    },
+                },
+                 ...prev])
 
         }
     }, [user])

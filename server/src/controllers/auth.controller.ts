@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
-import { NextFunction, Request, Response } from 'express';
-import User, { ROLE, STATUS } from '../models/user.model';
+import { Request, Response } from 'express';
+import { User, ROLE, STATUS } from '../models/user.model';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
@@ -86,7 +86,7 @@ class AuthController {
                 const id = (userId as any).userId;
                 const updatedUser = await User.update({ status: STATUS.ACTIVE }, { where: { id, status: STATUS.NON_ACTIVE } });
                 if (updatedUser[0]) {
-                    res.send({message: `User confirmed`});
+                    res.send({ message: `User confirmed` });
                 } else {
                     res.status(400).send({ message: 'User already confirmed' });
                 }
@@ -188,7 +188,7 @@ class AuthController {
             if (findUser && findUser.status === STATUS.BAN) {
                 return res.status(400).send({ message: 'Your account is baned' });
             }
-        } catch (e) {
+        } catch (e: any) {
             res.status(500).send({ message: e.toString() });
         }
     }

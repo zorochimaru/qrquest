@@ -59,6 +59,7 @@ export const getSignleNews = (id: number) => {
     }
 }
 
+
 export const createNews = (data: { fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
         const response = await axios.post<Notification>(`/news/create`, data.fData);

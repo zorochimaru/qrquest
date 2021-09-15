@@ -60,7 +60,7 @@ const QuestionEditor = (props: any) => {
     const [imgUrl, setImgUrl] = useState<string | undefined>('');
     const [title, setTitle] = useState('');
     const [text, setText] = useState('');
-    const [tagIds, setTagIds] = useState<number[]>([]);
+    const [tagIds, setTagIds] = useState<string[]>([]);
     const tags = useSelector((state: RootState) => state.library.tags);
     const [file, setFile] = useState<File | null>(null);
     const dispatch = useDispatch();

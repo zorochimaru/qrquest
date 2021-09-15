@@ -1,15 +1,15 @@
-import { Table, Model, Column, DataType, ForeignKey, BelongsTo, BelongsToMany } from 'sequelize-typescript'
+import { Table, Model, Column, DataType, ForeignKey, BelongsTo, BelongsToMany, HasMany } from 'sequelize-typescript'
 
 import { Optional } from 'sequelize/types';
 import { Tag } from './tag.model';
 import { User } from './user.model';
-import  NewsTags from './news_tag.model';
+import NewsTags from './news_tag.model';
 interface NewsAttributes {
     id: string,
     title: string,
     text: string,
     authorId: string,
-    imgUrl?: string,
+    imgUrl: string | null,
 }
 interface NewsCreationAttributes extends Optional<NewsAttributes, 'id'> { }
 
@@ -41,6 +41,7 @@ export class News extends Model<NewsAttributes, NewsCreationAttributes>{
 
     @Column({
         type: DataType.TEXT,
+        allowNull: true
     })
     imgUrl!: string
 

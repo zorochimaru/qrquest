@@ -7,6 +7,7 @@ import { RootState } from '../../../../redux/store';
 
 const TagDialogController = (props: any) => {
     const tags = useSelector((state: RootState) => state.library.tags);
+    // const loading = useSelector((state: RootState) => state.library.loading);
     const [oldTag, setOldTag] = useState<Tag | null>(null);
     const [newTag, setNewTag] = useState('');
     const [editMode, setEditMode] = useState(false);
@@ -54,7 +55,7 @@ const TagDialogController = (props: any) => {
                         handleSelectTag(value);
                         setOldTag(value);
                     }}
-                    style={{ width: 300 }}
+                    style={{ width: 400 }}
                     renderInput={(params) => <TextField {...params} label="Tags" variant="outlined" />}
                 />
                 <TextField

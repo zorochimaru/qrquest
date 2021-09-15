@@ -4,7 +4,7 @@ import { Notification, uiActions } from "./Ui";
 
 
 export interface Tag {
-    id: number,
+    id: string,
     value: string
 }
 
@@ -26,10 +26,11 @@ const librarySlice = createSlice({
     },
 });
 
-export const deleteTag = (id: number) => {
+export const deleteTag = (id: string) => {
     return async (dispatch: any) => {
         const response = await axios.delete<Notification>('library/tag/' + id);
         if (response?.status === 200) {
+            dispatch(fetchTags());
             dispatch(uiActions.addNotification(response.data));
         }
     }
@@ -39,6 +40,7 @@ export const editTag = (tag: Tag) => {
     return async (dispatch: any) => {
         const response = await axios.put<Notification>('library/tag', tag);
         if (response?.status === 200) {
+            dispatch(fetchTags());
             dispatch(uiActions.addNotification(response.data));
         }
     }
@@ -48,6 +50,7 @@ export const createTag = (text: string) => {
     return async (dispatch: any) => {
         const response = await axios.post<Notification>('library/tag', { text });
         if (response?.status === 200) {
+            dispatch(fetchTags());
             dispatch(uiActions.addNotification(response.data));
         }
     }

@@ -1,20 +1,26 @@
 import { Request, Response } from 'express';
 import { News } from '../models/news.model';
 import { File } from '../models/file.model';
+import { Tag } from '../models/tag.model';
 class NewsController {
     addNews = async (req: Request, res: Response) => {
         try {
             const body = req.body;
+            const title = body.title;
+            const text = body.text;
+            const tagIds = JSON.parse(body.tagIds);
             const file = req.file;
             const authorId = req.session.logedUser?.user.id;
             if (file) {
                 await File.create(file);
             }
             const createdNews = await News.create({
-                ...body,
+                title,
+                text,
                 imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : null,
                 authorId
             });
+            await createdNews.$set('tags', tagIds);
             res.send({ message: `${createdNews.title} created` });
 
         } catch (error) {
@@ -50,11 +56,29 @@ class NewsController {
             const offset = (+params.page! - 1) * +params.perPage!;
             const limit = +params.perPage!;
             const newsResponce = await News.findAndCountAll({
+                include: [{
+                    model: Tag,
+                    through: {
+                        attributes: []
+                    },
+                    isAliased: true,
+                    attributes: ['id'],
+                }],
                 limit, offset, order: [['createdAt', 'DESC']],
             });
             const totalPages = Math.ceil(newsResponce.count / limit);
             const newsArray = newsResponce.rows;
-            res.send({ list: newsArray, totalPages, totalItems: newsResponce.count });
+            const list = newsArray.map(x => {
+                return {
+                    id: x.id,
+                    title: x.title,
+                    authorId: x.authorId,
+                    text: x.text,
+                    imgUrl: x.imgUrl,
+                    tagIds: x.tags.map(y => y.id)
+                }
+            });
+            res.send({ list, totalPages, totalItems: newsResponce.count });
         } catch (error) {
             res.status(400).send(error);
         }

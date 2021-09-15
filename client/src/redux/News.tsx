@@ -6,7 +6,7 @@ export interface News {
     id?: string,
     title: string,
     text: string,
-    tagIds: number[],
+    tagIds: string[],
     authorId?: string,
     link?: string,
     imgUrl?: string,

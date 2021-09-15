@@ -1,11 +1,11 @@
-import { Table, Model, Column, DataType, BelongsToMany } from 'sequelize-typescript'
+import { Table, Model, Column, DataType, BelongsToMany, ForeignKey } from 'sequelize-typescript'
 
 import { Optional } from 'sequelize/types';
 import { News } from './news.model';
-import  NewsTags  from './news_tag.model';
+import NewsTags from './news_tag.model';
 
 interface TagAttributes {
-    id: number,
+    id: string,
     value: string,
 }
 interface TagCreationAttributes extends Optional<TagAttributes, 'id'> { }
@@ -13,15 +13,15 @@ interface TagCreationAttributes extends Optional<TagAttributes, 'id'> { }
 @Table
 export class Tag extends Model<TagAttributes, TagCreationAttributes>{
     @BelongsToMany(() => News, () => NewsTags)
-    news!: News[]
+    news!: News[] & { news_tag: NewsTags }
     @Column({
-        type: DataType.DOUBLE,
+        type: DataType.UUID,
+        defaultValue: DataType.UUIDV4,
         allowNull: false,
         primaryKey: true,
         unique: true,
-        autoIncrement: true
     })
-    id!: number
+    id!: string
 
     @Column({
         type: DataType.STRING(100),

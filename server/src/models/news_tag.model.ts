@@ -10,7 +10,6 @@ interface NewsTagAttributes {
 interface NewsTagCreationAttributes extends Optional<NewsTagAttributes, 'id'> { }
 @Table({modelName:'news_tag'})
 export default class NewsTags extends Model<NewsTagAttributes, NewsTagCreationAttributes>{
-  @ForeignKey(() => News)
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -19,10 +18,12 @@ export default class NewsTags extends Model<NewsTagAttributes, NewsTagCreationAt
     unique: true,
   })
   id!: string
+
+  @ForeignKey(() => News)
   @Column
-  newsId!: number
+  newsId!: string
 
   @ForeignKey(() => Tag)
   @Column
-  tagId!: number
+  tagId!: string
 }

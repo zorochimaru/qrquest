@@ -63,7 +63,7 @@ const NewsEditor = (props: any) => {
     const [imgUrl, setImgUrl] = useState<string | undefined>('');
     const [title, setTitle] = useState('');
     const [text, setText] = useState('');
-    const [tagIds, setTagIds] = useState<number[]>([]);
+    const [tagIds, setTagIds] = useState<string[]>([]);
     const tags = useSelector((state: RootState) => state.library.tags);
     const [file, setFile] = useState<File | null>(null);
     const [openTagController, setOpenTagController] = useState(false);
@@ -115,7 +115,7 @@ const NewsEditor = (props: any) => {
         setOpenTagController(true);
     }
     const handleCloseTagController = () => {
-        dispatch(fetchTags());
+        // dispatch(fetchTags());
         setOpenTagController(false);
     }
     return (
@@ -154,7 +154,7 @@ const NewsEditor = (props: any) => {
                                 options={tags}
                                 value={tags.filter(tag => tagIds.includes(tag.id))}
                                 getOptionLabel={option => option.value}
-                                style={{ width: 300 }}
+                                style={{ width: 400 }}
                                 renderInput={params =>
                                 (<TextField
                                     label="Tags"

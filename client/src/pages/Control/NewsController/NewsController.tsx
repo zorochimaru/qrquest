@@ -45,7 +45,7 @@ const NewsController: FC<RouteComponentProps> = () => {
         dispatch(newsActions.changePage(1));
     };
     const handleClickOpen = () => {
-     
+
         setOpenDialog(true);
     };
 

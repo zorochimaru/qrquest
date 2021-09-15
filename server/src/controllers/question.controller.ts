@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { Question } from '../models/question.model';
 import { File } from '../models/file.model';
-// import NewsTags from '../models/news_tags.model';
 class QuestionController {
     addQuestion = async (req: Request, res: Response) => {
         try {
@@ -11,8 +10,6 @@ class QuestionController {
             if (file) {
                 await File.create(file);
             }
-            // NewsTags.create();
-
             await Question.create({
                 ...body,
                 imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : null,

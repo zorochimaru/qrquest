@@ -26,7 +26,7 @@ const HomePage: FC<RouteComponentProps> = () => {
         document.title = 'Quest news';
     }, []);
 
-     
+
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
@@ -54,7 +54,7 @@ const HomePage: FC<RouteComponentProps> = () => {
                                 {item.title}
                             </Typography>
                             <Typography className={classes.pos} color="textSecondary">
-                                tags
+                                {item.tags.map(x=>x.value).join(' / ')}
                             </Typography>
                             <Typography variant="body2" component="p">
                                 {item.text.substring(0, 80)}...

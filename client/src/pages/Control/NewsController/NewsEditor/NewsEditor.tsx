@@ -75,7 +75,7 @@ const NewsEditor = (props: any) => {
 
         setTitle(activeNews?.title || '');
         setText(activeNews?.text || '');
-        setTagIds(activeNews?.tagIds || []);
+        setTagIds(activeNews?.tags.map(x => x.id) || []);
         setImgUrl(activeNews?.imgUrl || '');
 
     }, [activeNews])
@@ -115,7 +115,6 @@ const NewsEditor = (props: any) => {
         setOpenTagController(true);
     }
     const handleCloseTagController = () => {
-        // dispatch(fetchTags());
         setOpenTagController(false);
     }
     return (
@@ -176,7 +175,7 @@ const NewsEditor = (props: any) => {
                                                 </>
                                             ),
                                     }}
-                                   />
+                                />
                                 )}
                                 onChange={(event, newValue) => {
                                     setTagIds(newValue.map(x => x.id));

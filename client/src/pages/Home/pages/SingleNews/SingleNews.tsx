@@ -1,3 +1,4 @@
+import { Chip } from "@material-ui/core";
 import { RouteComponentProps } from "@reach/router"
 import { FC, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux";
@@ -15,8 +16,11 @@ const SingleNews: FC<RouteComponentProps> = (props: any) => {
     return (
         <div className="wrapper">
             <h3>{singleNews?.title}</h3>
+            {singleNews?.tags.map(tag => <Chip style={{
+                marginRight: 10
+            }} label={tag?.value} />)}
             <p>{singleNews?.text}</p>
-            <img src={singleNews?.imgUrl} alt={singleNews?.title} />
+            {singleNews?.imgUrl ? <img src={singleNews?.imgUrl} alt={singleNews?.title} /> : null}
         </div>
     )
 }

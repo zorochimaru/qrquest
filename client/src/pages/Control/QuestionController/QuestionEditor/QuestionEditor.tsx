@@ -68,12 +68,12 @@ const QuestionEditor = (props: any) => {
         dispatch(fetchTags())
     }, [dispatch]);
     useEffect(() => {
-        
-            setTitle(activeNews?.title || '');
-            setText(activeNews?.text || '');
-            setTagIds(activeNews?.tagIds || []);
-            setImgUrl(activeNews?.imgUrl || '');
-        
+
+        setTitle(activeNews?.title || '');
+        setText(activeNews?.text || '');
+        setTagIds(activeNews?.tags?.map(x => x.id) || []);
+        setImgUrl(activeNews?.imgUrl || '');
+
     }, [activeNews])
     const handleFileSelect = (file: File) => {
         setImgUrl('');
@@ -151,7 +151,7 @@ const QuestionEditor = (props: any) => {
                                 setTagIds(newValue.map(x => x.id));
                             }}
                         />
-                         <FileInput onDeleteFile={() => setImgUrl(undefined)} hasFileUrl={imgUrl} onFileSelect={handleFileSelect} />
+                        <FileInput onDeleteFile={() => setImgUrl(undefined)} hasFileUrl={imgUrl} onFileSelect={handleFileSelect} />
                         {imgUrl ? <img style={{ width: 300, objectFit: 'contain' }} src={imgUrl} alt={activeNews?.title} /> : null}
                         <TextField
                             value={text}
@@ -163,7 +163,7 @@ const QuestionEditor = (props: any) => {
                             variant="outlined"
                             className={classes.note}
                         />
-                       
+
                     </form>
 
                 </Box>

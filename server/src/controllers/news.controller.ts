@@ -62,23 +62,13 @@ class NewsController {
                         attributes: []
                     },
                     isAliased: true,
-                    attributes: ['id'],
+                    attributes: ['id','value'],
                 }],
                 limit, offset, order: [['createdAt', 'DESC']],
             });
             const totalPages = Math.ceil(newsResponce.count / limit);
             const newsArray = newsResponce.rows;
-            const list = newsArray.map(x => {
-                return {
-                    id: x.id,
-                    title: x.title,
-                    authorId: x.authorId,
-                    text: x.text,
-                    imgUrl: x.imgUrl,
-                    tagIds: x.tags.map(y => y.id)
-                }
-            });
-            res.send({ list, totalPages, totalItems: newsResponce.count });
+            res.send({ list: newsArray, totalPages, totalItems: newsResponce.count });
         } catch (error) {
             res.status(400).send(error);
         }
@@ -86,7 +76,16 @@ class NewsController {
     getSingleNews = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const signleNews = await News.findByPk(id);
+            const signleNews = await News.findByPk(id, {
+                include: [{
+                    model: Tag,
+                    through: {
+                        attributes: []
+                    },
+                    isAliased: true,
+                    attributes: ['id','value'],
+                }],
+            });
             if (signleNews) {
                 return res.send(signleNews);
             }

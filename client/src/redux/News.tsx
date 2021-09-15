@@ -1,12 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { Tag } from "./Library";
 import { Notification, uiActions } from "./Ui";
 
 export interface News {
     id?: string,
     title: string,
     text: string,
-    tagIds: string[],
+    tags: Tag[],
     authorId?: string,
     link?: string,
     imgUrl?: string,

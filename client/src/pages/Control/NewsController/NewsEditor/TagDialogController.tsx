@@ -7,7 +7,6 @@ import { RootState } from '../../../../redux/store';
 
 const TagDialogController = (props: any) => {
     const tags = useSelector((state: RootState) => state.library.tags);
-    // const loading = useSelector((state: RootState) => state.library.loading);
     const [oldTag, setOldTag] = useState<Tag | null>(null);
     const [newTag, setNewTag] = useState('');
     const [editMode, setEditMode] = useState(false);

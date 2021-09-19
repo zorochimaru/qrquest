@@ -1,4 +1,4 @@
-import { Paper, Button, TextField, Grid } from "@material-ui/core";
+import { Paper, Button, TextField, Grid } from "@mui/material";
 import { RouteComponentProps } from "@reach/router";
 import { FC, useRef } from "react";
 import { useDispatch } from "react-redux"
@@ -26,7 +26,7 @@ export const NewPasswordPage: FC<RouteComponentProps> = (props: confIdProps) => 
         <Grid
             container
             className={classes.wrapper}
-            justify="center"
+            justifyContent="center"
             alignItems="center"
         >
             <Paper className={classes.card} elevation={3} >
@@ -34,7 +34,7 @@ export const NewPasswordPage: FC<RouteComponentProps> = (props: confIdProps) => 
                     className={classes.wrapper}
                     spacing={3}
                     container
-                    justify="center"
+                    justifyContent="center"
                     alignItems="center"
                 >
                     <img src="/logo.png" alt="" />
@@ -42,7 +42,7 @@ export const NewPasswordPage: FC<RouteComponentProps> = (props: confIdProps) => 
                     <TextField inputRef={password} id="pass" placeholder="password" required type="password" variant="outlined" />
                     <TextField inputRef={rePassword} id="rePass" placeholder="repeat password" required type="password" variant="outlined" />
                     <Grid container
-                        justify="space-around" alignItems="center" >
+                        justifyContent="space-around" alignItems="center" >
                         <Button onClick={handleResetPassword} variant="contained" color="primary">
                             Send
                         </Button>
@@ -51,8 +51,6 @@ export const NewPasswordPage: FC<RouteComponentProps> = (props: confIdProps) => 
                 </Grid>
             </Paper>
         </Grid>
-
-
-    )
+    );
 }
 export default NewPasswordPage;

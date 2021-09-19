@@ -1,16 +1,11 @@
-import {
-  Backdrop,
-  CircularProgress,
-  createStyles,
-  CssBaseline,
-  makeStyles, Theme, useTheme
-} from "@material-ui/core";
+import { Backdrop, CircularProgress, CssBaseline, Theme, useTheme } from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { Router } from "@reach/router";
 import axios, { AxiosResponse } from "axios";
 import React, { Suspense, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/Header";
-import Notifier from "./components/Notifier";
 import { authActions, getUser } from "./redux/Auth";
 import { RootState } from "./redux/store";
 import { uiActions } from "./redux/Ui";
@@ -18,6 +13,7 @@ import clsx from 'clsx';
 import Sidebar from "./components/Sidebar";
 import Page404 from "./pages/Page404/Page404";
 import { PrivateRoute } from "./components/PrivateRoute";
+import { toast } from "react-toastify";
 
 const HomePage = React.lazy(() => import('./pages/Home/Home'));
 const LoginPage = React.lazy(() => import('./pages/Authentication/Login/Login'));
@@ -29,7 +25,6 @@ const ControlPage = React.lazy(() => import('./pages/Control/ControlPage'));
 const NewsController = React.lazy(() => import('./pages/Control/NewsController/NewsController'));
 const SingleNews = React.lazy(() => import('./pages/Home/pages/SingleNews/SingleNews'));
 const QuestionController = React.lazy(() => import('./pages/Control/QuestionController/QuestionController'));
-
 const drawerWidth = 240;
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -154,40 +149,18 @@ function App() {
     if (error.response) {
       if (error.response?.data?.errors) {
         for (const err of error.response?.data?.errors) {
-          dispatch(
-            uiActions.addNotification({
-              message: err.message,
-              options: { variant: 'error' }
-            })
-          )
+          toast.error(err.message);
         }
       }
       if (error.response?.data?.message) {
-        dispatch(
-          uiActions.addNotification({
-            message: error.response?.data.message,
-            options: { variant: 'error' }
-          })
-        )
+        toast.error(error.response?.data.message);
       }
       if (error.response?.data?.name && error.response?.data?.name === 'SequelizeDatabaseError') {
-        dispatch(
-          uiActions.addNotification({
-            message: error.response?.data.original?.sqlMessage,
-            options: { variant: 'error' }
-          })
-        )
+        toast.error(error.response?.data.original?.sqlMessage);
       }
     }
     if (!error.response) {
-      dispatch(
-        uiActions.addNotification({
-          message: error?.message || 'Server error',
-          options: {
-            variant: 'error',
-          }
-        })
-      )
+      toast.error(error?.message || 'Server error')
     }
   }
 
@@ -217,7 +190,6 @@ function App() {
 
     <div className={classes.root}>
       <CssBaseline />
-      <Notifier />
       <Backdrop style={{
         zIndex: 1000,
         color: '#fff',

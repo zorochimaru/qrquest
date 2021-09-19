@@ -7,15 +7,15 @@ import {
     Toolbar,
     IconButton,
     Slide,
-    createStyles,
-    makeStyles,
     Theme,
     TextField,
     Container,
     Box,
-} from "@material-ui/core"
-import { TransitionProps } from "@material-ui/core/transitions";
-import CloseIcon from '@material-ui/icons/Close';
+} from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { TransitionProps } from "@mui/material/transitions";
+import CloseIcon from '@mui/icons-material/Close';
 import { createNews, deleteNews, editNews, News } from "../../../../redux/News";
 import { useDispatch, useSelector } from "react-redux";
 import FileInput from "../../../../components/FileInput";
@@ -23,7 +23,8 @@ import FileInput from "../../../../components/FileInput";
 
 import { fetchTags } from "../../../../redux/Library";
 import { RootState } from "../../../../redux/store";
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
+import { Formik } from "formik";
 
 
 const Transition = React.forwardRef(function Transition(
@@ -44,6 +45,9 @@ const useStyles = makeStyles((theme: Theme) =>
         tags: {
             width: 200
         },
+        question: {
+        },
+        answer: {},
         formWrapper: {
             display: 'flex',
             flexWrap: 'wrap',
@@ -109,11 +113,15 @@ const QuestionEditor = (props: any) => {
     }
 
     return (
-
         <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
             <AppBar className={classes.appBar}>
                 <Toolbar>
-                    <IconButton edge="start" color="inherit" onClick={() => props.handleClose()} aria-label="close">
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={() => props.handleClose()}
+                        aria-label="close"
+                        size="large">
                         <CloseIcon />
                     </IconButton>
                     <Typography variant="h6" className={classes.title}>
@@ -129,28 +137,17 @@ const QuestionEditor = (props: any) => {
             </AppBar>
             <Container>
                 <Box component="span" m={1}>
+                    <Formik initialValues={{
+                        question:'',
+                        answers: []
+                    }} 
+                    onSubmit={(data,{setSubmitting})=>{
+                        
+                    }}
+                    >
+
+                    </Formik>
                     <form noValidate className={classes.formWrapper} autoComplete="off">
-                        <TextField
-                            className={classes.tags}
-                            value={title}
-                            onChange={(event) => setTitle(event.target.value)}
-                            id="outlined-basic"
-                            label="Title"
-                            variant="outlined" />
-                        <Autocomplete
-                            multiple
-                            id="combo-box-demo"
-                            options={tags}
-                            value={tags.filter(tag => tagIds.includes(tag.id))}
-                            getOptionLabel={option => option.value}
-                            style={{ width: 300 }}
-                            renderInput={params => (
-                                <TextField {...params} label="Tags" variant="outlined" />
-                            )}
-                            onChange={(event, newValue) => {
-                                setTagIds(newValue.map(x => x.id));
-                            }}
-                        />
                         <FileInput onDeleteFile={() => setImgUrl(undefined)} hasFileUrl={imgUrl} onFileSelect={handleFileSelect} />
                         {imgUrl ? <img style={{ width: 300, objectFit: 'contain' }} src={imgUrl} alt={activeNews?.title} /> : null}
                         <TextField
@@ -161,7 +158,17 @@ const QuestionEditor = (props: any) => {
                             multiline
                             rows={4}
                             variant="outlined"
-                            className={classes.note}
+                            className={classes.question}
+                        />
+                        <TextField
+                            value={text}
+                            onChange={(event) => setText(event.target.value)}
+                            id="outlined-multiline-static"
+                            label="Text"
+                            multiline
+                            rows={4}
+                            variant="outlined"
+                            className={classes.answer}
                         />
 
                     </form>
@@ -171,8 +178,7 @@ const QuestionEditor = (props: any) => {
 
             </Container>
         </Dialog>
-
-    )
+    );
 }
 
 export default QuestionEditor

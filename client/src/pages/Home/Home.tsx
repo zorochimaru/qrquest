@@ -1,5 +1,5 @@
-import { Button, Card, CardActions, CardMedia } from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
+import { Button, Card, CardActions, CardMedia } from '@mui/material';
+import { Pagination } from '@mui/material';
 import { navigate, RouteComponentProps } from '@reach/router'
 import { useState } from 'react';
 import { FC, useEffect } from 'react';
@@ -7,8 +7,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getNews } from '../../redux/News'
 import { RootState } from '../../redux/store'
 import classes from './Home.module.css';
-import Typography from '@material-ui/core/Typography';
-import CardContent from '@material-ui/core/CardContent';
+import Typography from '@mui/material/Typography';
+import CardContent from '@mui/material/CardContent';
 
 
 const HomePage: FC<RouteComponentProps> = () => {

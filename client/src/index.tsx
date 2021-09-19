@@ -6,27 +6,49 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 // !Change to createMuiTheme on production and replace StrictMode to Fragment
-import { unstable_createMuiStrictModeTheme as createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
-import { azAZ } from '@material-ui/core/locale';
-import { SnackbarProvider } from 'notistack';
+import {
+  // unstable_createMuiStrictModeTheme as createMuiTheme,
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider,
+} from '@mui/material/styles';
+import { createTheme } from '@mui/material';
+import { azAZ } from '@mui/material/locale';
+// import { SnackbarProvider } from 'notistack';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
-const theme = createMuiTheme({
-  palette: {
-    primary: { main: '#1976d2' },
+declare module '@mui/styles/defaultTheme' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme { }
+}
+
+// const theme = createMuiTheme();
+const theme = createTheme(
+  {
+    palette: {
+      primary: { main: '#1976d2' },
+    },
   },
-}, azAZ);
+  azAZ,
+);
+
 
 
 ReactDOM.render(
   <React.StrictMode>
 
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider maxSnack={3}>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={theme}>
+          <ToastContainer />
           <App />
-        </SnackbarProvider >
-      </ThemeProvider>
+
+          {/* <SnackbarProvider maxSnack={3}> */}
+          {/* </SnackbarProvider > */}
+        </ThemeProvider>
+      </StyledEngineProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')

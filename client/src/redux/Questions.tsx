@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Notification, uiActions } from "./Ui";
+import { toast } from 'react-toastify';
 export interface Answer {
     id: string,
     value: string
@@ -61,30 +61,30 @@ export const getSignleQuestion = (id: number) => {
 
 export const createQuestion = (data: { fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.post<Notification>(`/questions/create`, data.fData);
+        const response = await axios.post(`/questions/create`, data.fData);
         if (response?.status === 200) {
             dispatch(getQuestion({ page: data.page, perPage: data.perPage }));
-            dispatch(uiActions.addNotification(response.data));
+            toast.success(response.data)
         }
     }
 }
 
 export const editQuestion = (data: { id: string, fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.put<Notification>(`/questions/${data.id}`, data.fData);
+        const response = await axios.put(`/questions/${data.id}`, data.fData);
         if (response?.status === 200) {
             dispatch(getQuestion({ page: data.page, perPage: data.perPage }));
-            dispatch(uiActions.addNotification({ message: `${data.fData.get('title')} edited` }));
+            toast.success(`${data.fData.get('title')} edited`)   
         }
     }
 }
 
 export const deleteQuestion = (data: { id: string, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.delete<Notification>(`/questions/${data.id}`);
+        const response = await axios.delete(`/questions/${data.id}`);
         if (response?.status === 200) {
             dispatch(getQuestion({ page: data.page, perPage: data.perPage }));
-            dispatch(uiActions.addNotification(response.data));
+            toast.success(response.data);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Paper, Button, TextField, Grid } from "@material-ui/core";
+import { Paper, Button, TextField, Grid } from "@mui/material";
 import { Link, RouteComponentProps } from "@reach/router";
 import { FC, useRef } from "react";
 import { useDispatch } from "react-redux"
@@ -25,7 +25,7 @@ const RegisterPage: FC<RouteComponentProps> = () => {
         <Grid
             container
             className={classes.wrapper}
-            justify="center"
+            justifyContent="center"
             alignItems="center"
         >
             <Paper className={classes.card} elevation={3} >
@@ -33,7 +33,7 @@ const RegisterPage: FC<RouteComponentProps> = () => {
                     className={classes.wrapper}
                     spacing={3}
                     container
-                    justify="center"
+                    justifyContent="center"
                     alignItems="center"
                 >
                     <img src="/logo.png" alt="" />
@@ -42,24 +42,22 @@ const RegisterPage: FC<RouteComponentProps> = () => {
                     <TextField inputRef={password} id="pass" placeholder="password" type="password" variant="outlined" />
                     <TextField inputRef={rePassword} id="rePass" placeholder="repeat password" type="password" variant="outlined" />
                     <Grid container
-                        justify="space-around" alignItems="center" >
+                        justifyContent="space-around" alignItems="center" >
                         <Button onClick={handleRegister} variant="contained" color="primary" style={{ marginTop: 15 }}>
                             Register
                         </Button>
                     </Grid>
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 15 }}>
                         <Link to={'/reset'} style={{ textDecoration: 'none' }}>
-                            <Button variant="contained" color="default">Reset password</Button>
+                            <Button variant="contained">Reset password</Button>
                         </Link>
                         <Link to={'/login'} style={{ textDecoration: 'none' }}>
-                            <Button variant="contained" color="default">Login</Button>
+                            <Button variant="contained">Login</Button>
                         </Link>
                     </div>
                 </Grid>
             </Paper>
         </Grid>
-
-
-    )
+    );
 }
 export default RegisterPage;

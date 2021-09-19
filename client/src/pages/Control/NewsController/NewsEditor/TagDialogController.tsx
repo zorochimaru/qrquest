@@ -1,5 +1,5 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@material-ui/core'
-import { Autocomplete } from '@material-ui/lab';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material'
+import { Autocomplete } from '@mui/material';
 import { ChangeEvent, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { createTag, deleteTag, editTag, Tag } from '../../../../redux/Library';

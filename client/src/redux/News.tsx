@@ -1,8 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { Tag } from "./Library";
-import { Notification, uiActions } from "./Ui";
-
+import { toast } from "react-toastify";
 export interface News {
     id?: string,
     title: string,
@@ -63,30 +62,30 @@ export const getSignleNews = (id: number) => {
 
 export const createNews = (data: { fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.post<Notification>(`/news/create`, data.fData);
+        const response = await axios.post(`/news/create`, data.fData);
         if (response?.status === 200) {
             dispatch(getNews({ page: data.page, perPage: data.perPage }));
-            dispatch(uiActions.addNotification(response.data));
+            toast.success(response.data);
         }
     }
 }
 
 export const editNews = (data: { id: string, fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.put<Notification>(`/news/${data.id}`, data.fData);
+        const response = await axios.put(`/news/${data.id}`, data.fData);
         if (response?.status === 200) {
             dispatch(getNews({ page: data.page, perPage: data.perPage }));
-            dispatch(uiActions.addNotification({ message: `${data.fData.get('title')} edited` }));
+            toast.success(`${data.fData.get('title')} edited`);
         }
     }
 }
 
 export const deleteNews = (data: { id: string, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.delete<Notification>(`/news/delete/${data.id}`);
+        const response = await axios.delete(`/news/delete/${data.id}`);
         if (response?.status === 200) {
             dispatch(getNews({ page: data.page, perPage: data.perPage }));
-            dispatch(uiActions.addNotification(response.data));
+            toast.success(response.data);
         }
     }
 }

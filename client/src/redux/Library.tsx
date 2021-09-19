@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { Notification, uiActions } from "./Ui";
-
+import { toast } from "react-toastify";
 
 export interface Tag {
     id: string,
@@ -28,30 +27,30 @@ const librarySlice = createSlice({
 
 export const deleteTag = (id: string) => {
     return async (dispatch: any) => {
-        const response = await axios.delete<Notification>('library/tag/' + id);
+        const response = await axios.delete('library/tag/' + id);
         if (response?.status === 200) {
             dispatch(fetchTags());
-            dispatch(uiActions.addNotification(response.data));
+            toast.success(response.data);
         }
     }
 }
 
 export const editTag = (tag: Tag) => {
     return async (dispatch: any) => {
-        const response = await axios.put<Notification>('library/tag', tag);
+        const response = await axios.put('library/tag', tag);
         if (response?.status === 200) {
             dispatch(fetchTags());
-            dispatch(uiActions.addNotification(response.data));
+            toast.success(response.data);
         }
     }
 }
 
 export const createTag = (text: string) => {
     return async (dispatch: any) => {
-        const response = await axios.post<Notification>('library/tag', { text });
+        const response = await axios.post('library/tag', { text });
         if (response?.status === 200) {
             dispatch(fetchTags());
-            dispatch(uiActions.addNotification(response.data));
+            toast.success(response.data);
         }
     }
 }

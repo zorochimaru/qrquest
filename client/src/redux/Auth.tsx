@@ -2,8 +2,7 @@ import { navigate } from '@reach/router';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import ROLES from '../models/roles.model';
-import { Notification, uiActions } from './Ui';
-
+import { toast } from 'react-toastify';
 
 export interface User {
     id: string,
@@ -45,12 +44,7 @@ export const register = (data: {
     return async (dispatch: any) => {
         const response = await axios.post(`/auth/signup`, data);
         if (response) {
-            dispatch(
-                uiActions.addNotification({
-                    message: response.data.message,
-                    options: { variant: 'success' }
-                })
-            );
+            toast.success(response.data.message)
         }
     }
 }
@@ -59,10 +53,7 @@ export const login = (data: { email: string, password: string }) => {
     return async (dispatch: any) => {
         const response = await axios.post(`/auth/signin`, data);
         if (response?.status === 200) {
-            uiActions.addNotification({
-                message: 'Loged!',
-                options: { variant: 'success' }
-            })
+            toast.success('Loged!');
             dispatch(getUser());
             navigate(`/`);
         }
@@ -72,16 +63,9 @@ export const login = (data: { email: string, password: string }) => {
 export const confirmEmail = (token: string) => {
     return async (dispatch: any) => {
 
-        const responce = await axios.get<Notification>(`/auth/confirmation/${token}`);
+        const responce = await axios.get(`/auth/confirmation/${token}`);
         if (responce?.status === 200) {
-            dispatch(
-                uiActions.addNotification({
-                    message: responce.data.message,
-                    options: {
-                        variant: 'success'
-                    }
-                })
-            )    
+            toast.success(responce.data.message);
         }
         navigate('/');
     }
@@ -93,10 +77,7 @@ export const sendResetPasswordEmail = (email: string) => {
         try {
             const response = await axios.post(`/auth/reset-password`, { email });
             if (response.status === 200) {
-                dispatch(uiActions.addNotification({
-                    options: { variant: 'success' },
-                    message: response.data.message
-                }))
+                toast.success(response.data.message);
                 navigate('/');
             }
         } catch (error) {
@@ -111,10 +92,7 @@ export const resetPassword = (token: string, password: string, confirmPassword: 
         try {
             const response = await axios.post(`/auth/confirm-password`, { token, password, confirmPassword });
             if (response.status === 200) {
-                dispatch(uiActions.addNotification({
-                    options: { variant: 'success' },
-                    message: response.data.message
-                }))
+                toast.success(response.data.message);
             }
         } catch (error) {
             console.log(error)

@@ -7,24 +7,24 @@ import {
     Toolbar,
     IconButton,
     Slide,
-    createStyles,
-    makeStyles,
     Theme,
     TextField,
     Container,
     Box,
     InputAdornment,
-} from "@material-ui/core"
-import { TransitionProps } from "@material-ui/core/transitions";
-import CloseIcon from '@material-ui/icons/Close';
+} from "@mui/material";
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
+import { TransitionProps } from "@mui/material/transitions";
+import CloseIcon from '@mui/icons-material/Close';
 import { createNews, deleteNews, editNews, News } from "../../../../redux/News";
 import { useDispatch, useSelector } from "react-redux";
 import FileInput from "../../../../components/FileInput";
 
 import { fetchTags } from "../../../../redux/Library";
 import { RootState } from "../../../../redux/store";
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import { LocalOffer } from "@material-ui/icons";
+import Autocomplete from '@mui/material/Autocomplete';
+import { LocalOffer } from "@mui/icons-material";
 import TagDialogController from "./TagDialogController";
 
 
@@ -117,94 +117,96 @@ const NewsEditor = (props: any) => {
     const handleCloseTagController = () => {
         setOpenTagController(false);
     }
-    return (
-        <>
+    return <>
 
-            <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
-                <AppBar className={classes.appBar}>
-                    <Toolbar>
-                        <IconButton edge="start" color="inherit" onClick={() => props.handleClose()} aria-label="close">
-                            <CloseIcon />
-                        </IconButton>
-                        <Typography variant="h6" className={classes.title}>
-                            {activeNews?.title}
-                        </Typography>
-                        {activeNews ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
-                            Delete
-                        </Button> : null}
-                        <Button autoFocus color="inherit" onClick={handleSave}>
-                            save
-                        </Button>
-                    </Toolbar>
-                </AppBar>
-                <Container>
-                    <Box component="span" m={1}>
-                        <form noValidate className={classes.formWrapper} autoComplete="off">
-                            <TextField
-                                className={classes.tags}
-                                value={title}
-                                onChange={(event) => setTitle(event.target.value)}
-                                id="outlined-basic"
-                                label="Title"
-                                variant="outlined" />
-                            <Autocomplete
-                                multiple
-                                id="combo-box-demo"
-                                options={tags}
-                                value={tags.filter(tag => tagIds.includes(tag.id))}
-                                getOptionLabel={option => option.value}
-                                style={{ width: 400 }}
-                                renderInput={params =>
-                                (<TextField
-                                    label="Tags"
-                                    variant="outlined"
-                                    {...params}
-                                    InputProps={{
-                                        className: params.InputProps.className,
-                                        ref: params.InputProps.ref,
-                                        endAdornment: params.InputProps.endAdornment,
-                                        startAdornment:
-                                            (
-                                                <>
-                                                    <InputAdornment position="start">
-                                                        <IconButton onClick={handleOpenTagController}>
-                                                            <LocalOffer />
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                    {params.InputProps.startAdornment}
-                                                </>
-                                            ),
-                                    }}
-                                />
-                                )}
-                                onChange={(event, newValue) => {
-                                    setTagIds(newValue.map(x => x.id));
+        <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
+            <AppBar className={classes.appBar}>
+                <Toolbar>
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={() => props.handleClose()}
+                        aria-label="close"
+                        size="large">
+                        <CloseIcon />
+                    </IconButton>
+                    <Typography variant="h6" className={classes.title}>
+                        {activeNews?.title}
+                    </Typography>
+                    {activeNews ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
+                        Delete
+                    </Button> : null}
+                    <Button autoFocus color="inherit" onClick={handleSave}>
+                        save
+                    </Button>
+                </Toolbar>
+            </AppBar>
+            <Container>
+                <Box component="span" m={1}>
+                    <form noValidate className={classes.formWrapper} autoComplete="off">
+                        <TextField
+                            className={classes.tags}
+                            value={title}
+                            onChange={(event) => setTitle(event.target.value)}
+                            id="outlined-basic"
+                            label="Title"
+                            variant="outlined" />
+                        <Autocomplete
+                            multiple
+                            id="combo-box-demo"
+                            options={tags}
+                            value={tags.filter(tag => tagIds.includes(tag.id))}
+                            getOptionLabel={option => option.value}
+                            style={{ width: 400 }}
+                            renderInput={params =>
+                            (<TextField
+                                label="Tags"
+                                variant="outlined"
+                                {...params}
+                                InputProps={{
+                                    className: params.InputProps.className,
+                                    ref: params.InputProps.ref,
+                                    endAdornment: params.InputProps.endAdornment,
+                                    startAdornment:
+                                        (
+                                            <>
+                                                <InputAdornment position="start">
+                                                    <IconButton onClick={handleOpenTagController} size="large">
+                                                        <LocalOffer />
+                                                    </IconButton>
+                                                </InputAdornment>
+                                                {params.InputProps.startAdornment}
+                                            </>
+                                        ),
                                 }}
                             />
-                            <FileInput onDeleteFile={() => setImgUrl(undefined)} hasFileUrl={imgUrl} onFileSelect={handleFileSelect} />
-                            {imgUrl ? <img style={{ width: 300, objectFit: 'contain' }} src={imgUrl} alt={activeNews?.title} /> : null}
-                            <TextField
-                                value={text}
-                                onChange={(event) => setText(event.target.value)}
-                                id="outlined-multiline-static"
-                                label="Text"
-                                multiline
-                                rows={4}
-                                variant="outlined"
-                                className={classes.note}
-                            />
+                            )}
+                            onChange={(event, newValue) => {
+                                setTagIds(newValue.map(x => x.id));
+                            }}
+                        />
+                        <FileInput onDeleteFile={() => setImgUrl(undefined)} hasFileUrl={imgUrl} onFileSelect={handleFileSelect} />
+                        {imgUrl ? <img style={{ width: 300, objectFit: 'contain' }} src={imgUrl} alt={activeNews?.title} /> : null}
+                        <TextField
+                            value={text}
+                            onChange={(event) => setText(event.target.value)}
+                            id="outlined-multiline-static"
+                            label="Text"
+                            multiline
+                            rows={4}
+                            variant="outlined"
+                            className={classes.note}
+                        />
 
-                        </form>
+                    </form>
 
-                    </Box>
+                </Box>
 
 
-                </Container>
-            </Dialog>
-            <TagDialogController onClose={handleCloseTagController} open={openTagController} />
-        </>
-
-    )
+            </Container>
+        </Dialog>
+        <TagDialogController onClose={handleCloseTagController} open={openTagController} />
+    </>;
 }
 
 export default NewsEditor

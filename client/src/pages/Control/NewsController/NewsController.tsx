@@ -1,11 +1,11 @@
-import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, TableFooter, Button } from "@material-ui/core";
+import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, TableFooter, Button } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getNews, News, newsActions } from "../../../redux/News";
 import { RootState } from "../../../redux/store";
 
 import { RouteComponentProps } from "@reach/router";
-import TablePagination from '@material-ui/core/TablePagination';
+import TablePagination from '@mui/material/TablePagination';
 import NewsEditor from "./NewsEditor/NewsEditor";
 interface Column {
     id: 'title';
@@ -53,59 +53,57 @@ const NewsController: FC<RouteComponentProps> = () => {
         setActiveNews(null);
         setOpenDialog(false);
     };
-    return (
-        <>
-            <NewsEditor activeNews={activeNews} page={page} perPage={perPage} open={openDialog} handleClose={handleClose} />
-            <Button style={{ marginBottom: 20 }} color="primary" variant="contained" onClick={handleClickOpen}>Create new</Button>
-            <Paper>
-                <TableContainer >
-                    <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                            <TableRow>
-                                {columns.map((column) => (
-                                    <TableCell
-                                        key={column.id}
-                                        style={{ minWidth: column.minWidth }}
-                                    >
-                                        {column.label}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {newsList.map((row) => {
-                                return (
-                                    <TableRow hover onClick={() => handleEdit(row)} role="checkbox" tabIndex={-1} key={row.id}>
-                                        {columns.map((column) => {
-                                            const value = row[column.id];
-                                            return (
-                                                <TableCell key={column.id} >
-                                                    {value}
-                                                </TableCell>
-                                            );
-                                        })}
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                        <TableFooter>
-                            <TableRow>
-                                <TablePagination
-                                    rowsPerPageOptions={[5, 10, 25]}
-                                    colSpan={3}
-                                    count={totalItems}
-                                    rowsPerPage={perPage}
-                                    page={page - 1}
-                                    onChangePage={(e, page) => handleChangePage(e!, page)}
-                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+    return <>
+        <NewsEditor activeNews={activeNews} page={page} perPage={perPage} open={openDialog} handleClose={handleClose} />
+        <Button style={{ marginBottom: 20 }} color="primary" variant="contained" onClick={handleClickOpen}>Create new</Button>
+        <Paper>
+            <TableContainer >
+                <Table stickyHeader aria-label="sticky table">
+                    <TableHead>
+                        <TableRow>
+                            {columns.map((column) => (
+                                <TableCell
+                                    key={column.id}
+                                    style={{ minWidth: column.minWidth }}
+                                >
+                                    {column.label}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {newsList.map((row) => {
+                            return (
+                                <TableRow hover onClick={() => handleEdit(row)} role="checkbox" tabIndex={-1} key={row.id}>
+                                    {columns.map((column) => {
+                                        const value = row[column.id];
+                                        return (
+                                            <TableCell key={column.id} >
+                                                {value}
+                                            </TableCell>
+                                        );
+                                    })}
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 25]}
+                                colSpan={3}
+                                count={totalItems}
+                                rowsPerPage={perPage}
+                                page={page - 1}
+                                onPageChange={(e, page) => handleChangePage(e!, page)}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
 
-                                />
-                            </TableRow>
-                        </TableFooter>
-                    </Table>
-                </TableContainer>
-            </Paper>
-        </>
-    )
+                            />
+                        </TableRow>
+                    </TableFooter>
+                </Table>
+            </TableContainer>
+        </Paper>
+    </>;
 }
 export default NewsController;

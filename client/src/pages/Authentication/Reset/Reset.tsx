@@ -1,4 +1,4 @@
-import { Paper, Button, TextField, Grid } from "@material-ui/core";
+import { Paper, Button, TextField, Grid } from "@mui/material";
 import { Link, RouteComponentProps } from "@reach/router";
 import { FC, useRef } from "react";
 import { useDispatch } from "react-redux"
@@ -19,7 +19,7 @@ const ResetPage: FC<RouteComponentProps> = () => {
         <Grid
             container
             className={classes.wrapper}
-            justify="center"
+            justifyContent="center"
             alignItems="center"
         >
             <Paper className={classes.card} elevation={3} >
@@ -27,13 +27,13 @@ const ResetPage: FC<RouteComponentProps> = () => {
                     className={classes.wrapper}
                     spacing={3}
                     container
-                    justify="center"
+                    justifyContent="center"
                     alignItems="center"
                 >
                     <img src="/logo.png" alt="" />
                     <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
                     <Grid container
-                        justify="space-around" alignItems="center" >
+                        justifyContent="space-around" alignItems="center" >
                         <Button onClick={handleReset} variant="contained" color="primary">
                             Change password
                         </Button>
@@ -41,18 +41,16 @@ const ResetPage: FC<RouteComponentProps> = () => {
                     </Grid>
                         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 15 }}>
                             <Link to={'/register'} style={{ textDecoration: 'none' }}>
-                                <Button variant="contained" color="default">Register</Button>
+                                <Button variant="contained">Register</Button>
                             </Link>
                             <Link to={'/login'} style={{ textDecoration: 'none' }}>
-                                <Button variant="contained" color="default">Login</Button>
+                                <Button variant="contained">Login</Button>
                             </Link>
                         </div>
 
                 </Grid>
             </Paper>
         </Grid>
-
-
-    )
+    );
 }
 export default ResetPage;

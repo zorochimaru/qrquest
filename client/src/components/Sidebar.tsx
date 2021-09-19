@@ -1,7 +1,7 @@
-import { Divider, Drawer, IconButton, ListItem, ListItemIcon, ListItemText } from '@material-ui/core';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import AssignmentIcon from '@material-ui/icons/Assignment';
+import { Divider, Drawer, IconButton, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 import { navigate } from '@reach/router';
 import { useSelector } from 'react-redux';
@@ -56,7 +56,7 @@ const Sidebar = (props: any) => {
         >
             <div className={props.classes.drawerHeader}>
                 <img style={{ width: '50%', margin: '0 auto' }} src="/logo.png" alt="" />
-                <IconButton onClick={props.handleDrawerClose}>
+                <IconButton onClick={props.handleDrawerClose} size="large">
                     {props.theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
                 </IconButton>
             </div>
@@ -74,7 +74,7 @@ const Sidebar = (props: any) => {
             ))
             }
         </Drawer >
-    )
+    );
 }
 
 export default Sidebar

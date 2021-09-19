@@ -1,4 +1,4 @@
-import { Chip } from "@material-ui/core";
+import { Chip } from "@mui/material";
 import { RouteComponentProps } from "@reach/router"
 import { FC, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux";

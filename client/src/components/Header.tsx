@@ -1,14 +1,16 @@
-import { Toolbar, IconButton, Menu, MenuItem, AppBar, Typography } from "@material-ui/core"
-import { AccountCircle } from "@material-ui/icons"
-import MenuIcon from '@material-ui/icons/Menu';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { Toolbar, IconButton, Menu, MenuItem, AppBar, Typography } from "@mui/material"
+import { AccountCircle } from "@mui/icons-material"
+import MenuIcon from '@mui/icons-material/Menu';
+import { Theme } from '@mui/material/styles';
+import createStyles from '@mui/styles/createStyles';
+import makeStyles from '@mui/styles/makeStyles';
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../redux/store";
 import { useState } from "react";
 import { logOut } from "../redux/Auth";
 import clsx from 'clsx';
 import { navigate } from "@reach/router";
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -48,7 +50,6 @@ const Header = (props: any) => {
         navigate('/login');
     };
     return (
-
         <AppBar
             position="fixed"
             className={clsx(props.classes.appBar, {
@@ -62,7 +63,7 @@ const Header = (props: any) => {
                     edge="start"
                     onClick={props.handleDrawerOpen}
                     className={clsx(props.classes.menuButton, props.openSidebar && props.classes.hide)}
-                >
+                    size="large">
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap className={classes.title}>
@@ -76,9 +77,9 @@ const Header = (props: any) => {
                         aria-haspopup="true"
                         onClick={handleMenu}
                         color="inherit"
-                    >
+                        size="large">
                         <AccountCircle />
-                    </IconButton> : <IconButton  color="inherit" onClick={handleLogin}>  <ExitToAppIcon /> </IconButton>}
+                    </IconButton> : <IconButton color="inherit" onClick={handleLogin} size="large">  <ExitToAppIcon /> </IconButton>}
 
                     <Menu
                         id="menu-appbar"
@@ -102,8 +103,7 @@ const Header = (props: any) => {
                 </div>
             </Toolbar>
         </AppBar >
-
-     )
+    );
 }
 
 export default Header

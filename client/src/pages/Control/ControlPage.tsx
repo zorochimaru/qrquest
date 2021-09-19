@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import ROLES from "../../models/roles.model";
 import { RootState } from "../../redux/store"
-import { Card, CardActionArea, CardContent, makeStyles, Typography, createStyles, Theme } from "@material-ui/core";
+import { Card, CardActionArea, CardContent, Typography, Theme } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
+import createStyles from '@mui/styles/createStyles';
 import { navigate, RouteComponentProps, useLocation } from "@reach/router";
 
 

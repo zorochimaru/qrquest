@@ -7,7 +7,7 @@ interface QuestionAttributes {
     id: string,
     question: string,
     authorId: string,
-    imgUrl?: string,
+    imgUrl: string | null,
 }
 interface QuestionCreationAttributes extends Optional<QuestionAttributes, 'id'> { }
 
@@ -30,6 +30,7 @@ export class Question extends Model<QuestionAttributes, QuestionCreationAttribut
 
     @Column({
         type: DataType.TEXT,
+        allowNull: true
     })
     imgUrl!: string
 

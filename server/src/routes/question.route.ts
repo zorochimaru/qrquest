@@ -12,8 +12,8 @@ router.get('/:id', questionController.getSingleQuestion)
 
 router.post('/create', isAuth,
     multer({
-        dest: 'uploads/images/news',
-    }).single('mainPic'), questionController.addQuestion);
+        dest: 'uploads/images/questions',
+    }).single('file'), questionController.addQuestion);
 
 router.put('/:id', isAuth, multer({
     dest: 'uploads/images/questions',

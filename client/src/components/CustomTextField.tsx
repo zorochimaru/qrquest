@@ -1,4 +1,4 @@
-import { FieldAttributes, useField } from 'formik'
+import { FieldAttributes, useField } from 'formik';
 
 import React, { FC } from 'react'
 

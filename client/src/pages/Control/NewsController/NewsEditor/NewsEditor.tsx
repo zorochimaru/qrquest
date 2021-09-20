@@ -185,7 +185,7 @@ const NewsEditor = (props: any) => {
                                 setTagIds(newValue.map(x => x.id));
                             }}
                         />
-                        <FileInput onDeleteFile={() => setImgUrl(undefined)} hasFileUrl={imgUrl} onFileSelect={handleFileSelect} />
+                        <FileInput hasFileUrl={imgUrl} onChange={handleFileSelect} />
                         {imgUrl ? <img style={{ width: 300, objectFit: 'contain' }} src={imgUrl} alt={activeNews?.title} /> : null}
                         <TextField
                             value={text}

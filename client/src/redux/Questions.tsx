@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from 'react-toastify';
 export interface Answer {
-    id: string,
+    id?: string,
     value: string
 }
 export interface Question {
@@ -13,6 +13,7 @@ export interface Question {
     file?: File | null
 }
 export interface QuestionState {
+    loading: boolean,
     list: Question[],
     singleQuestion: Question | null,
     totalPages?: number
@@ -22,6 +23,7 @@ export interface QuestionState {
 }
 
 const initialState: QuestionState = {
+    loading: false,
     list: [],
     singleQuestion: null,
     totalItems: 0,
@@ -59,12 +61,11 @@ export const getSignleQuestion = (id: number) => {
     }
 }
 
-export const createQuestion = (data: { fData: FormData, page: number, perPage: number }) => {
+export const createQuestion = (fData: FormData) => {
     return async (dispatch: any) => {
-        const response = await axios.post(`/questions/create`, data.fData);
+        const response = await axios.post(`/questions/create`, fData);
         if (response?.status === 200) {
-            dispatch(getQuestion({ page: data.page, perPage: data.perPage }));
-            toast.success(response.data)
+            toast.success(response.data.message);
         }
     }
 }
@@ -74,7 +75,7 @@ export const editQuestion = (data: { id: string, fData: FormData, page: number, 
         const response = await axios.put(`/questions/${data.id}`, data.fData);
         if (response?.status === 200) {
             dispatch(getQuestion({ page: data.page, perPage: data.perPage }));
-            toast.success(`${data.fData.get('title')} edited`)   
+            toast.success(`${data.fData.get('title')} edited`)
         }
     }
 }

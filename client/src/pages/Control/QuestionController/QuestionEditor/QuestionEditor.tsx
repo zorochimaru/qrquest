@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
     Typography,
     Button,
@@ -11,21 +11,19 @@ import {
     TextField,
     Container,
     Box,
+    InputAdornment,
+    Stack,
 } from "@mui/material";
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { TransitionProps } from "@mui/material/transitions";
 import CloseIcon from '@mui/icons-material/Close';
-import { createNews, deleteNews, editNews, News } from "../../../../redux/News";
-import { useDispatch, useSelector } from "react-redux";
-import FileInput from "../../../../components/FileInput";
-
-
-import { fetchTags } from "../../../../redux/Library";
-import { RootState } from "../../../../redux/store";
-import Autocomplete from '@mui/material/Autocomplete';
-import { Formik } from "formik";
-
+import { deleteNews } from "../../../../redux/News";
+import { useDispatch } from "react-redux";
+import { Field, FieldArray, Form, Formik } from "formik";
+import { createQuestion, Question } from "../../../../redux/Questions";
+import ClearIcon from '@mui/icons-material/Clear';
+import CustomFileField from "../../../../components/CustomFileField";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement },
@@ -60,124 +58,118 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 const QuestionEditor = (props: any) => {
     const classes = useStyles();
-    const activeNews: News = props?.activeNews;
-    const [imgUrl, setImgUrl] = useState<string | undefined>('');
-    const [title, setTitle] = useState('');
-    const [text, setText] = useState('');
-    const [tagIds, setTagIds] = useState<string[]>([]);
-    const tags = useSelector((state: RootState) => state.library.tags);
-    const [file, setFile] = useState<File | null>(null);
+    const activeNews = props?.activeNews;
     const dispatch = useDispatch();
-    useEffect(() => {
-        dispatch(fetchTags())
-    }, [dispatch]);
-    useEffect(() => {
-
-        setTitle(activeNews?.title || '');
-        setText(activeNews?.text || '');
-        setTagIds(activeNews?.tags?.map(x => x.id) || []);
-        setImgUrl(activeNews?.imgUrl || '');
-
-    }, [activeNews])
-    const handleFileSelect = (file: File) => {
-        setImgUrl('');
-        setFile(file);
-    }
-    const handleSave = async () => {
-        if (activeNews) {
-            const fdata = new FormData();
-            fdata.append('title', title);
-            fdata.append('text', text);
-            fdata.append('tagIds', JSON.stringify(tagIds));
-            if (file) {
-                fdata.append('mainPic', file);
-            }
-            dispatch(editNews({ id: activeNews.id!, fData: fdata, page: props.page, perPage: props.perPage }));
-        } else {
-            const fdata = new FormData();
-            fdata.append('title', title);
-            fdata.append('text', text);
-            fdata.append('tagIds', JSON.stringify(tagIds));
-            if (file) {
-                fdata.append('mainPic', file);
-            }
-            dispatch(createNews({ fData: fdata, page: props.page, perPage: props.perPage }));
-        }
-        props.handleClose();
-    }
     const handleDelete = async () => {
         if (activeNews && activeNews.id) {
             dispatch(deleteNews({ id: activeNews.id, page: props.page, perPage: props.perPage }));
             props.handleClose();
         }
     }
+    const initialValues: Question = {
+        question: '',
+        answers: [],
+        file: null,
+        imgUrl: ''
+    }
+
 
     return (
-        <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
-            <AppBar className={classes.appBar}>
-                <Toolbar>
-                    <IconButton
-                        edge="start"
-                        color="inherit"
-                        onClick={() => props.handleClose()}
-                        aria-label="close"
-                        size="large">
-                        <CloseIcon />
-                    </IconButton>
-                    <Typography variant="h6" className={classes.title}>
-                        {activeNews?.title}
-                    </Typography>
-                    {activeNews ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
-                        Delete
-                    </Button> : null}
-                    <Button autoFocus color="inherit" onClick={handleSave}>
-                        save
-                    </Button>
-                </Toolbar>
-            </AppBar>
-            <Container>
-                <Box component="span" m={1}>
-                    <Formik initialValues={{
-                        question:'',
-                        answers: []
-                    }} 
-                    onSubmit={(data,{setSubmitting})=>{
-                        
-                    }}
-                    >
+        <Formik initialValues={initialValues}
+            onSubmit={async (data, { setSubmitting }) => {
+                const fData = new FormData();
+                if (data.file) {
+                    fData.append('file', data.file)
+                }
+                fData.append('question', data.question);
+                fData.append('answers', JSON.stringify(data.answers));
+                await dispatch(createQuestion(fData));
+                setSubmitting(false);
+            }}
+        >{({ values, errors, isSubmitting, setFieldValue, handleReset }) => (
+            <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
+                <Form>
+                    <AppBar className={classes.appBar}>
+                        <Toolbar>
+                            <IconButton
+                                edge="start"
+                                color="inherit"
+                                onClick={() => props.handleClose()}
+                                aria-label="close"
+                                size="large">
+                                <CloseIcon />
+                            </IconButton>
+                            <Typography variant="h6" className={classes.title}>
+                                {activeNews?.title}
+                            </Typography>
+                            {activeNews ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
+                                Delete
+                            </Button> : null}
+                            <Button type="submit" disabled={isSubmitting} autoFocus color="inherit">
+                                save
+                            </Button>
+                        </Toolbar>
+                    </AppBar>
+                    <Container>
+                        <Container maxWidth="sm">
+                            <Box sx={{ mt: 3 }}>
+                                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
+                                    <Field name="file" onChange={(event: any) => setFieldValue("file", event.currentTarget.files[0])} as={CustomFileField} />
+                                    <IconButton onClick={handleReset}>
+                                        <ClearIcon />
+                                    </IconButton>
+                                </Stack>
 
-                    </Formik>
-                    <form noValidate className={classes.formWrapper} autoComplete="off">
-                        <FileInput onDeleteFile={() => setImgUrl(undefined)} hasFileUrl={imgUrl} onFileSelect={handleFileSelect} />
-                        {imgUrl ? <img style={{ width: 300, objectFit: 'contain' }} src={imgUrl} alt={activeNews?.title} /> : null}
-                        <TextField
-                            value={text}
-                            onChange={(event) => setText(event.target.value)}
-                            id="outlined-multiline-static"
-                            label="Text"
-                            multiline
-                            rows={4}
-                            variant="outlined"
-                            className={classes.question}
-                        />
-                        <TextField
-                            value={text}
-                            onChange={(event) => setText(event.target.value)}
-                            id="outlined-multiline-static"
-                            label="Text"
-                            multiline
-                            rows={4}
-                            variant="outlined"
-                            className={classes.answer}
-                        />
+                                <Field fullWidth placeholder="Question" name="question" as={TextField} />
+                                <FieldArray name="answers">
+                                    {arrayHelpers => (
+                                        <div>
+                                            <Box sx={{ my: 3 }}>
+                                                <Button disabled={values.answers.length > 3} onClick={() => arrayHelpers.push({
+                                                    value: ''
+                                                })}>Add answer</Button>
+                                            </Box>
+                                            {values.answers.map((answer, index) => {
+                                                return (
+                                                    <Box sx={{ my: 3 }} key={answer.id}>
+                                                        <Field
+                                                            fullWidth
+                                                            placeholder={`Answer-${index + 1}`}
+                                                            name={`answers.${index}.value`}
+                                                            type="input"
+                                                            InputProps={{
+                                                                endAdornment: <InputAdornment position="end">
+                                                                    <IconButton onClick={() => arrayHelpers.remove(index)}>
+                                                                        <ClearIcon />
+                                                                    </IconButton>
+                                                                </InputAdornment>,
+                                                            }}
+                                                            as={TextField}
+                                                        />
+                                                    </Box>
+                                                )
+                                            })}
+                                        </div>
 
-                    </form>
+                                    )}
+                                </FieldArray>
 
-                </Box>
+
+                            </Box>
+
+                        </Container>
+
+                    </Container>
+                </Form>
+            </Dialog >
 
 
-            </Container>
-        </Dialog>
+        )}
+
+
+        </Formik >
+
+
     );
 }
 

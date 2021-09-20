@@ -11,7 +11,7 @@ class QuestionController {
                 await File.create(file);
             }
             await Question.create({
-                ...body,
+                question: body.question,
                 imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : null,
                 authorId
             });

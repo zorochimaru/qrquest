@@ -27,8 +27,10 @@ const QuestionController: FC<RouteComponentProps> = () => {
     const totalItems = useSelector((state: RootState) => state.question.totalItems);
     const [openDialog, setOpenDialog] = useState(false);
     useEffect(() => {
-        dispatch(getQuestion({ page, perPage }));
-    }, [dispatch, page, perPage]);
+        if (!openDialog) {
+            dispatch(getQuestion({ page, perPage }));
+        }
+    }, [dispatch, page, perPage, openDialog]);
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
         dispatch(questionActions.changePage(value + 1))
@@ -54,7 +56,7 @@ const QuestionController: FC<RouteComponentProps> = () => {
         setOpenDialog(false);
     };
     return <>
-        <QuestionEditor activeQuestion={activeQuestion} page={page} perPage={perPage} open={openDialog} handleClose={handleClose} />
+        <QuestionEditor activeQuestion={activeQuestion} open={openDialog} handleClose={handleClose} />
         <Button style={{ marginBottom: 20 }} color="primary" variant="contained" onClick={handleClickOpen}>Create new</Button>
         <Paper>
             <TableContainer >

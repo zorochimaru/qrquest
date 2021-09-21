@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from 'react-toastify';
 export interface Answer {
@@ -61,14 +61,7 @@ export const getSignleQuestion = (id: number) => {
     }
 }
 
-export const createQuestion = (fData: FormData) => {
-    return async (dispatch: any) => {
-        const response = await axios.post(`/questions/create`, fData);
-        if (response?.status === 200) {
-            toast.success(response.data.message);
-        }
-    }
-}
+ 
 
 export const editQuestion = (data: { id: string, fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
@@ -79,16 +72,7 @@ export const editQuestion = (data: { id: string, fData: FormData, page: number, 
         }
     }
 }
-
-export const deleteQuestion = (data: { id: string, page: number, perPage: number }) => {
-    return async (dispatch: any) => {
-        const response = await axios.delete(`/questions/${data.id}`);
-        if (response?.status === 200) {
-            dispatch(getQuestion({ page: data.page, perPage: data.perPage }));
-            toast.success(response.data);
-        }
-    }
-}
+ 
 
 export const getQuestion = (params: {
     page: number, perPage: number

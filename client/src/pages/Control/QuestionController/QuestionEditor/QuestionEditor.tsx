@@ -18,12 +18,12 @@ import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { TransitionProps } from "@mui/material/transitions";
 import CloseIcon from '@mui/icons-material/Close';
-import { deleteNews } from "../../../../redux/News";
-import { useDispatch } from "react-redux";
 import { Field, FieldArray, Form, Formik } from "formik";
-import { createQuestion, Question } from "../../../../redux/Questions";
+import { Question } from "../../../../redux/Questions";
 import ClearIcon from '@mui/icons-material/Clear';
 import CustomFileField from "../../../../components/CustomFileField";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement },
@@ -58,33 +58,43 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 const QuestionEditor = (props: any) => {
     const classes = useStyles();
-    const activeNews = props?.activeNews;
-    const dispatch = useDispatch();
+    const activeQuestion = props?.activeQuestion;
+    const initialValues: Question = {
+        question: activeQuestion?.question || '',
+        answers: activeQuestion?.answers || [],
+        file: activeQuestion?.file || null,
+        imgUrl: activeQuestion?.imUrl || ''
+    }
+
     const handleDelete = async () => {
-        if (activeNews && activeNews.id) {
-            dispatch(deleteNews({ id: activeNews.id, page: props.page, perPage: props.perPage }));
-            props.handleClose();
+        if (activeQuestion && activeQuestion.id) {
+            const response = await axios.delete(`/questions/${activeQuestion.id}`);
+            if (response?.status === 200) {
+                toast.success(response.data);
+                props.handleClose();
+            }
+
         }
     }
-    const initialValues: Question = {
-        question: '',
-        answers: [],
-        file: null,
-        imgUrl: ''
-    }
+
 
 
     return (
-        <Formik initialValues={initialValues}
-            onSubmit={async (data, { setSubmitting }) => {
+        <Formik enableReinitialize={true} initialValues={initialValues}
+            onSubmit={async (data, { setSubmitting, resetForm }) => {
                 const fData = new FormData();
                 if (data.file) {
                     fData.append('file', data.file)
                 }
                 fData.append('question', data.question);
                 fData.append('answers', JSON.stringify(data.answers));
-                await dispatch(createQuestion(fData));
+                const response = await axios.post(`/questions/create`, fData);
+                if (response?.status === 200) {
+                    toast.success(response.data.message);
+                }
                 setSubmitting(false);
+                resetForm();
+                props.handleClose();
             }}
         >{({ values, errors, isSubmitting, setFieldValue, handleReset }) => (
             <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
@@ -100,9 +110,9 @@ const QuestionEditor = (props: any) => {
                                 <CloseIcon />
                             </IconButton>
                             <Typography variant="h6" className={classes.title}>
-                                {activeNews?.title}
+                                {activeQuestion?.title}
                             </Typography>
-                            {activeNews ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
+                            {activeQuestion ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
                                 Delete
                             </Button> : null}
                             <Button type="submit" disabled={isSubmitting} autoFocus color="inherit">

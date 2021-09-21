@@ -1,6 +1,7 @@
-import { Table, Model, Column, DataType, ForeignKey } from 'sequelize-typescript'
+import { Table, Model, Column, DataType, ForeignKey, HasMany } from 'sequelize-typescript'
 
 import { Optional } from 'sequelize/types';
+import { Answer } from './answer.model';
 import { User } from './user.model';
 
 interface QuestionAttributes {
@@ -27,6 +28,9 @@ export class Question extends Model<QuestionAttributes, QuestionCreationAttribut
         allowNull: true
     })
     question!: string
+
+    @HasMany(() => Answer, 'questionId')
+    answers!: Answer[]
 
     @Column({
         type: DataType.TEXT,

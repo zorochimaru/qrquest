@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Question } from '../models/question.model';
+import { Answer } from '../models/answer.model';
 import { File } from '../models/file.model';
 class QuestionController {
     addQuestion = async (req: Request, res: Response) => {
@@ -10,11 +11,17 @@ class QuestionController {
             if (file) {
                 await File.create(file);
             }
-            await Question.create({
+            const question = await Question.create({
                 question: body.question,
                 imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : null,
                 authorId
             });
+            for (const answer of JSON.parse(body.answers)) {
+                await Answer.create({
+                    questionId: question.id,
+                    value: answer.value
+                });
+            }
             res.send({ message: `Question created` });
 
         } catch (error) {
@@ -50,6 +57,10 @@ class QuestionController {
             const offset = (+params.page! - 1) * +params.perPage!;
             const limit = +params.perPage!;
             const questionResponce = await Question.findAndCountAll({
+                include:{
+                    model: Answer,
+                    attributes: ['id','value'],
+                },
                 limit, offset, order: [['createdAt', 'DESC']],
             });
             const totalPages = Math.ceil(questionResponce.count / limit);

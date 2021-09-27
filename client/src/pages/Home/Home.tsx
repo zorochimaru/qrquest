@@ -10,7 +10,6 @@ import classes from './Home.module.css';
 import Typography from '@mui/material/Typography';
 import CardContent from '@mui/material/CardContent';
 
-
 const HomePage: FC<RouteComponentProps> = () => {
     const dispatch = useDispatch();
     const [page, setPage] = useState(1);
@@ -45,9 +44,8 @@ const HomePage: FC<RouteComponentProps> = () => {
                 (
                     <Card key={item.id} className={classes.news_item}>
                         <CardMedia
-
                             className={classes.media}
-                            image={item.imgUrl}
+                            image={item.imgUrl || '/logo.png'}
                         />
                         <CardContent>
                             <Typography variant="h5" component="h2">

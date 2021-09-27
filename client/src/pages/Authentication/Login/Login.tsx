@@ -27,12 +27,9 @@ const LoginPage: FC<RouteComponentProps> = () => {
             alignItems="center"
         >
             <Paper className={classes.card} elevation={3} >
-                <Grid
+                <div
                     className={classes.wrapper}
-                    spacing={3}
-                    container
-                    justifyContent="center"
-                    alignItems="center"
+                    
                 >
                     <img src="/logo.png" alt="" />
                     <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
@@ -51,7 +48,7 @@ const LoginPage: FC<RouteComponentProps> = () => {
                             <Button variant="contained">Register</Button>
                         </Link>
                     </div>
-                </Grid>
+                </div>
             </Paper>
         </Grid>
     );

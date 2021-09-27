@@ -1,8 +1,13 @@
 .wrapper {
-    height: 100vh;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
 }
 .card {
-    height: 75vh;
+    margin-top: 30px;
     width: 300px;
     padding: 30px;
     display: flex;

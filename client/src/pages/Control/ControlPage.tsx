@@ -69,7 +69,7 @@ const ControlPage: FC<RouteComponentProps> = (props) => {
             {menuList.map(item => (
                 user && item.roles.includes(user.role) ?
 
-                    <Card onClick={() => handleClick(item.link)} className={classes.root} key={item.text}>
+                    <Card style={{marginBottom: 20}} onClick={() => handleClick(item.link)} className={classes.root} key={item.text}>
                         <CardActionArea>
                             <CardContent>
                                 <Typography variant="h5" component="h2">

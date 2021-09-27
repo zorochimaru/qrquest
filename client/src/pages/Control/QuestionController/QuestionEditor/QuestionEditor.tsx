@@ -22,7 +22,7 @@ import { Field, FieldArray, Form, Formik } from "formik";
 import { Question } from "../../../../redux/Questions";
 import ClearIcon from '@mui/icons-material/Clear';
 import CustomFileField from "../../../../components/CustomFileField";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 
 const Transition = React.forwardRef(function Transition(
@@ -63,7 +63,7 @@ const QuestionEditor = (props: any) => {
         question: activeQuestion?.question || '',
         answers: activeQuestion?.answers || [],
         file: activeQuestion?.file || null,
-        imgUrl: activeQuestion?.imUrl || ''
+        imgUrl: activeQuestion?.imgUrl || ''
     }
 
     const handleDelete = async () => {
@@ -77,8 +77,6 @@ const QuestionEditor = (props: any) => {
         }
     }
 
-
-
     return (
         <Formik enableReinitialize={true} initialValues={initialValues}
             onSubmit={async (data, { setSubmitting, resetForm }) => {
@@ -88,7 +86,12 @@ const QuestionEditor = (props: any) => {
                 }
                 fData.append('question', data.question);
                 fData.append('answers', JSON.stringify(data.answers));
-                const response = await axios.post(`/questions/create`, fData);
+                let response: AxiosResponse<any>;
+                if (activeQuestion) {
+                    response = await axios.put(`/questions/${activeQuestion.id}`, fData);
+                } else {
+                    response = await axios.post(`/questions/create`, fData);
+                }
                 if (response?.status === 200) {
                     toast.success(response.data.message);
                 }
@@ -116,7 +119,7 @@ const QuestionEditor = (props: any) => {
                                 Delete
                             </Button> : null}
                             <Button type="submit" disabled={isSubmitting} autoFocus color="inherit">
-                                save
+                                Save
                             </Button>
                         </Toolbar>
                     </AppBar>
@@ -124,7 +127,19 @@ const QuestionEditor = (props: any) => {
                         <Container maxWidth="sm">
                             <Box sx={{ mt: 3 }}>
                                 <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
-                                    <Field name="file" onChange={(event: any) => setFieldValue("file", event.currentTarget.files[0])} as={CustomFileField} />
+
+                                    <Field
+                                        name="file"
+                                        imgUrl={values.imgUrl}
+                                        onChange={(event: any) => {
+                                            if (event) {
+                                                setFieldValue("file", event.currentTarget.files[0])
+                                            } else {
+                                                setFieldValue("file", null);
+                                                setFieldValue("imgUrl", null);
+                                            }
+                                        }}
+                                        as={CustomFileField} />
                                     <IconButton onClick={handleReset}>
                                         <ClearIcon />
                                     </IconButton>
@@ -133,7 +148,7 @@ const QuestionEditor = (props: any) => {
                                 <Field fullWidth placeholder="Question" name="question" as={TextField} />
                                 <FieldArray name="answers">
                                     {arrayHelpers => (
-                                        <div>
+                                        <div  >
                                             <Box sx={{ my: 3 }}>
                                                 <Button disabled={values.answers.length > 3} onClick={() => arrayHelpers.push({
                                                     value: ''
@@ -141,7 +156,7 @@ const QuestionEditor = (props: any) => {
                                             </Box>
                                             {values.answers.map((answer, index) => {
                                                 return (
-                                                    <Box sx={{ my: 3 }} key={answer.id}>
+                                                    <Box sx={{ my: 3 }} key={index}>
                                                         <Field
                                                             fullWidth
                                                             placeholder={`Answer-${index + 1}`}
@@ -172,14 +187,10 @@ const QuestionEditor = (props: any) => {
                     </Container>
                 </Form>
             </Dialog >
-
-
         )}
 
 
         </Formik >
-
-
     );
 }
 

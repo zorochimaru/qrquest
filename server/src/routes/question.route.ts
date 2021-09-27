@@ -6,9 +6,9 @@ import isAuth from "../middlewares/auth.middleware";
 
 const router = Router();
 
-router.get('/', questionController.getQuestion);
+router.get('/', questionController.getQuestions);
 
-router.get('/:id', questionController.getSingleQuestion)
+router.get('/:id', questionController.getQuestion)
 
 router.post('/create', isAuth,
     multer({
@@ -17,7 +17,7 @@ router.post('/create', isAuth,
 
 router.put('/:id', isAuth, multer({
     dest: 'uploads/images/questions',
-}).single('mainPic'), questionController.editQuestion);
+}).single('file'), questionController.editQuestion);
 
 router.delete('/:id', questionController.deleteQuestion);
 

@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from 'react-toastify';
 export interface Answer {
@@ -61,7 +61,7 @@ export const getSignleQuestion = (id: number) => {
     }
 }
 
- 
+
 
 export const editQuestion = (data: { id: string, fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
@@ -72,7 +72,7 @@ export const editQuestion = (data: { id: string, fData: FormData, page: number, 
         }
     }
 }
- 
+
 
 export const getQuestion = (params: {
     page: number, perPage: number

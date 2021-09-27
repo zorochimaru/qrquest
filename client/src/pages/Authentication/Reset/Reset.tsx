@@ -23,13 +23,9 @@ const ResetPage: FC<RouteComponentProps> = () => {
             alignItems="center"
         >
             <Paper className={classes.card} elevation={3} >
-                <Grid
+                <div
                     className={classes.wrapper}
-                    spacing={3}
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                >
+                    >
                     <img src="/logo.png" alt="" />
                     <TextField inputRef={email} id="email" placeholder="email" variant="outlined" />
                     <Grid container
@@ -48,7 +44,7 @@ const ResetPage: FC<RouteComponentProps> = () => {
                             </Link>
                         </div>
 
-                </Grid>
+                </div>
             </Paper>
         </Grid>
     );

@@ -1,3 +1,8 @@
 {
-  "dependencies": {}
+  "dependencies": {
+    "react-native-dotenv": "^3.2.0"
+  },
+  "devDependencies": {
+    "@types/react-native-dotenv": "^0.2.0"
+  }
 }

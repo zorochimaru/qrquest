@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import ROLES from '../models/roles.model';
+import Toast from 'react-native-toast-message';
 
 export interface User {
     id: string;
@@ -15,11 +16,15 @@ export interface AuthState {
     accessToken?: string;
     firstLoging: boolean;
     loginModalShow: boolean;
+    registerModalShow: boolean;
+    forgotPassModalShow: boolean;
 }
 
 const initialState: AuthState = {
     firstLoging: true,
     loginModalShow: false,
+    registerModalShow: false,
+    forgotPassModalShow: false,
 };
 const authSlice = createSlice({
     name: 'authentication',
@@ -36,6 +41,12 @@ const authSlice = createSlice({
         toggleLoginModal(state: AuthState) {
             state.loginModalShow = !state.loginModalShow;
         },
+        toggleRegisterModal(state: AuthState) {
+            state.registerModalShow = !state.registerModalShow;
+        },
+        toggleForgotPassModal(state: AuthState) {
+            state.forgotPassModalShow = !state.forgotPassModalShow;
+        },
     },
 });
 
@@ -45,10 +56,13 @@ export const register = (data: {
     confirmPassword: string;
     name: string;
 }) => {
-    return async (dispatch: any) => {
+    return async () => {
         const response = await axios.post('/auth/signup', data);
         if (response) {
-            //! toast.success(response.data.message)
+            Toast.show({
+                type: 'success',
+                text1: response.data.message,
+            });
         }
     };
 };
@@ -57,7 +71,10 @@ export const login = (data: { email: string; password: string }) => {
     return async (dispatch: any) => {
         const response = await axios.post('/auth/signin', data);
         if (response?.status === 200) {
-            //! toast.success('Loged!');
+            Toast.show({
+                type: 'success',
+                text1: 'Loged',
+            });
             dispatch(getUser());
             dispatch(authActions.toggleLoginModal());
         }
@@ -65,21 +82,27 @@ export const login = (data: { email: string; password: string }) => {
 };
 
 export const confirmEmail = (token: string) => {
-    return async (dispatch: any) => {
+    return async () => {
         const responce = await axios.get(`/auth/confirmation/${token}`);
         if (responce?.status === 200) {
-            //! toast.success(responce.data.message);
+            Toast.show({
+                type: 'success',
+                text1: responce.data.message,
+            });
         }
         //! navigate('/');
     };
 };
 
 export const sendResetPasswordEmail = (email: string) => {
-    return async (dispatch: any) => {
+    return async () => {
         try {
             const response = await axios.post('/auth/reset-password', { email });
             if (response.status === 200) {
-                //! toast.success(response.data.message);
+                Toast.show({
+                    type: 'success',
+                    text1: response.data.message,
+                  });
                 //! navigate('/');
             }
         } catch (error) {
@@ -93,7 +116,7 @@ export const resetPassword = (
     password: string,
     confirmPassword: string,
 ) => {
-    return async (dispatch: any) => {
+    return async () => {
         try {
             const response = await axios.post('/auth/confirm-password', {
                 token,
@@ -101,7 +124,10 @@ export const resetPassword = (
                 confirmPassword,
             });
             if (response.status === 200) {
-                //! toast.success(response.data.message);
+                Toast.show({
+                    type: 'success',
+                    text1: response.data.message,
+                  });
             }
         } catch (error) {
             console.log(error);

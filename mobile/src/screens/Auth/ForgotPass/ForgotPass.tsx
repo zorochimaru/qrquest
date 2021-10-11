@@ -3,38 +3,23 @@ import { useTranslation } from 'react-i18next';
 import { Button, Modal, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import '../../../i18n/config';
-import { authActions, login } from '../../../redux/Auth';
+import { authActions, sendResetPasswordEmail } from '../../../redux/Auth';
 import { RootState } from '../../../redux/store';
 
-const Login = () => {
+const ForgotPass = () => {
     const { t } = useTranslation(['auth', 'common']);
-    const visible = useSelector((state: RootState) => state.auth.loginModalShow);
+    const visible = useSelector((state: RootState) => state.auth.forgotPassModalShow);
     const dispatch = useDispatch();
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const handleClose = () => {
-        dispatch(authActions.toggleLoginModal());
-        setEmail('');
-        setPassword('');
+        dispatch(authActions.toggleForgotPassModal());
+
     };
     const handleSubmit = () => {
-        const formObj = {
-            email,
-            password,
-        };
-        dispatch(login(formObj));
+        dispatch(sendResetPasswordEmail(email));
     };
-    const goToRegister = () => {
-        handleClose();
-        dispatch(authActions.toggleRegisterModal());
-    };
-    const goToForgotPass = () => {
-        handleClose();
-        dispatch(authActions.toggleForgotPassModal());
-    };
+
     return (
-
-
         <Modal
             animationType="fade"
             transparent={true}
@@ -42,7 +27,7 @@ const Login = () => {
         >
             <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-                    <Text style={styles.modalText}>{t('auth:login.title')}</Text>
+                    <Text style={styles.modalText}>{t('auth:forgot_pass.title')}</Text>
                     <TextInput
                         keyboardType={'email-address'}
                         style={styles.input}
@@ -51,23 +36,10 @@ const Login = () => {
                         textContentType="emailAddress"
                         placeholder={t('common:placeholders.email')}
                     />
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setPassword}
-                        value={password}
-                        placeholder={t('common:placeholders.password')}
-                        textContentType="password"
-                        secureTextEntry={true}
-                    />
-                    <View style={styles.linkRow}>
-                        <Text style={styles.link} onPress={goToRegister}>{t('auth:buttons.go_to_register')}</Text>
-                        <Text style={styles.link} onPress={goToForgotPass}>{t('auth:buttons.go_to_forgot_pass')}</Text>
-                    </View>
                     <View style={styles.actionRow}>
                         <Button onPress={handleClose} title={t('common:buttons.cancel_btn')} />
                         <Button onPress={handleSubmit} title={t('common:buttons.submit_btn')} />
                     </View>
-
                 </View>
             </View>
 
@@ -76,26 +48,11 @@ const Login = () => {
     );
 };
 const styles = StyleSheet.create({
-    input: {
-        borderWidth: 1,
-        borderColor: '#cecece',
-        borderRadius: 8,
-        width: '100%',
-        paddingLeft: 20,
-        marginBottom: 20,
-    },
     link: {
         fontSize: 16,
         fontWeight: '500',
         marginLeft: 20,
         marginRight: 20,
-        marginBottom: 10,
-    },
-    actionRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        marginTop: 10,
         marginBottom: 10,
     },
     linkRow: {
@@ -104,6 +61,19 @@ const styles = StyleSheet.create({
         width: '100%',
         marginTop: 10,
         marginBottom: 10,
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: '#cecece',
+        borderRadius: 8,
+        width: '100%',
+        paddingLeft: 20,
+        marginBottom: 20,
+    },
+    actionRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
     },
     centeredView: {
         flex: 1,
@@ -148,9 +118,7 @@ const styles = StyleSheet.create({
     modalText: {
         marginBottom: 15,
         textAlign: 'center',
-        fontSize:18,
-        fontWeight: '500',
     },
 });
 
-export default Login;
+export default ForgotPass;

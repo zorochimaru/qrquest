@@ -1,0 +1,17 @@
+{
+    "buttons": {
+        "submit_btn": "Submit",
+        "cancel_btn": "Cancel",
+        "ok_btn": "Ok",
+        "learn_more_btn": "Learn more"
+    },
+    "placeholders": {
+        "email": "email",
+        "password": "password",
+        "name": "name",
+        "confirm_pass": "confirm password"
+    },
+    "screen_titles":{
+        "news": "News"
+    }
+}

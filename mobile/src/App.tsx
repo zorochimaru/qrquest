@@ -1,30 +1,39 @@
 import { NavigationContainer } from '@react-navigation/native';
 import axios, { AxiosResponse } from 'axios';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { authActions } from './redux/Auth';
+import { authActions, getUser } from './redux/Auth';
 import { RootState } from './redux/store';
 import News from './screens/News/News';
 import { REACT_APP_API_URL } from '@env';
-
+import Toast from 'react-native-toast-message';
 import 'react-native-gesture-handler';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import LoginLogoutBtn from './components/LoginLogoutBtn/LoginLogoutBtn';
 import Login from './screens/Auth/Login/Login';
 
 import { uiActions } from './redux/Ui';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
+import { useTranslation } from 'react-i18next';
+import Register from './screens/Auth/Register/Register';
+import ForgotPass from './screens/Auth/ForgotPass/ForgotPass';
+
+
 
 const App = () => {
+  const { t } = useTranslation('common');
   const dispatch = useDispatch();
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   axios.defaults.baseURL = REACT_APP_API_URL;
+
+
   axios.defaults.withCredentials = true;
+
   const isLoading = useSelector((state: RootState) => state.ui.isLoading);
-  // useEffect(() => {
-  //   dispatch(getUser());
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(getUser());
+  }, [dispatch]);
 
   function errorResponseHandler(error: any) {
     if (error.response?.status === 403) {
@@ -45,22 +54,39 @@ const App = () => {
     if (error.response) {
       if (error.response?.data?.errors) {
         for (const err of error.response?.data?.errors) {
-          //! toast.error(err.message);
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: err.message,
+          });
           console.error(err);
         }
       }
       if (error.response?.data?.message) {
-        //! toast.error(error.response?.data.message);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: error.response?.data.message,
+        });
       }
       if (
         error.response?.data?.name &&
         error.response?.data?.name === 'SequelizeDatabaseError'
       ) {
-        //! toast.error(error.response?.data.original?.sqlMessage);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: error.response?.data.original?.sqlMessage,
+        });
       }
     }
     if (!error.response) {
-      //! toast.error(error?.message || 'Server error');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error?.message || 'Server error',
+      });
+
     }
   }
 
@@ -115,6 +141,8 @@ const App = () => {
         textStyle={styles.spinnerTextStyle}
       />
       <Login />
+      <Register />
+      <ForgotPass />
       <NavigationContainer>
         <Drawer.Navigator
           screenOptions={{
@@ -124,9 +152,10 @@ const App = () => {
           }}
           initialRouteName="News"
         >
-          <Drawer.Screen name="News" component={News} />
+          <Drawer.Screen name={t('screen_titles.news')} component={News} />
         </Drawer.Navigator>
       </NavigationContainer>
+      <Toast ref={(ref) => Toast.setRef(ref)} />
     </>
   );
 

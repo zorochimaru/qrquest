@@ -1,0 +1,118 @@
+{
+    "data": [
+        {
+            "id": "123112",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "12317",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "12316",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "12351",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "12431",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "13231",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "11231",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "231",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "131",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        },
+        {
+            "id": "12",
+            "time": 10,
+            "number": "2313123",
+            "type": "Daxili - Emr/Umumi",
+            "sender": "MEASD ADASDAS",
+            "note": "kooasdsodkaoskdoada asd asdasd",
+            "date": "20.10.2021 14:51:10",
+            "status": "Imzalanib",
+            "curStatus": "Aciq" 
+        }
+    ],
+    "count": 100,
+    "page": 0,
+    "perPage": 10,
+    "pageCount": 10
+}

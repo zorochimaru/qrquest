@@ -1,33 +1,41 @@
+// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { authActions, getUser } from './redux/Auth';
-import { RootState } from './redux/store';
-import News from './screens/News/News';
-import { REACT_APP_API_URL } from '@env';
-import Toast from 'react-native-toast-message';
-import 'react-native-gesture-handler';
-import { createDrawerNavigator } from '@react-navigation/drawer';
-import LoginLogoutBtn from './components/LoginLogoutBtn/LoginLogoutBtn';
-import Login from './screens/Auth/Login/Login';
-
-import { uiActions } from './redux/Ui';
+import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { useTranslation } from 'react-i18next';
-import Register from './screens/Auth/Register/Register';
-import ForgotPass from './screens/Auth/ForgotPass/ForgotPass';
+import Toast from 'react-native-toast-message';
+import { REACT_APP_API_URL } from '@env';
+// import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useDispatch, useSelector } from 'react-redux';
+import LoginLogoutBtn from './components/LoginLogoutBtn/LoginLogoutBtn';
+import { getUser, authActions } from './redux/Auth';
+import { RootState } from './redux/store';
+import { uiActions } from './redux/Ui';
+import ForgotPass from './screens/Public/Auth/ForgotPass/ForgotPass';
+import Login from './screens/Public/Auth/Login/Login';
+import Register from './screens/Public/Auth/Register/Register';
+import News from './screens/Public/News/News';
+import { AuthStackScreens } from './screens/Public/Auth/AuthStack';
+
+const styles = StyleSheet.create({
+  spinnerTextStyle: {
+    color: '#FFF',
+  },
+});
 
 
 
-const App = () => {
+// const Tab = createBottomTabNavigator();
+const Drawer = createDrawerNavigator();
+
+export default function App() {
   const { t } = useTranslation('common');
   const dispatch = useDispatch();
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   axios.defaults.baseURL = REACT_APP_API_URL;
-
-
   axios.defaults.withCredentials = true;
 
   const isLoading = useSelector((state: RootState) => state.ui.isLoading);
@@ -95,31 +103,31 @@ const App = () => {
     return response;
   }
   axios.interceptors.request.use(
-    (successfulReq) => {
+    successfulReq => {
       // Set loader
       dispatch(uiActions.setLoading(true));
       // Set Auth header if has jwt token
 
-      if (accessToken) {
+      if (accessToken && successfulReq) {
         successfulReq.headers.common.Authorization = 'Bearer ' + accessToken;
       }
       return successfulReq;
     },
-    (error) => {
+    error => {
       return Promise.reject(error);
-    }
+    },
   );
 
   axios.interceptors.response.use(
     responseNotificationHandler,
-    errorResponseHandler
+    errorResponseHandler,
   );
 
   async function refreshToken(originalRequest: any) {
     originalRequest._retry = true;
     try {
       const response = await axios.get<{ accessToken: string }>(
-        '/auth/refresh-token'
+        '/auth/refresh-token',
       );
       if (response) {
         originalRequest.headers.Authorization =
@@ -130,39 +138,52 @@ const App = () => {
       console.log(error);
     }
   }
-
-  const Drawer = createDrawerNavigator();
-
   return (
-
+    // <NavigationContainer>
+    //   <Tab.Navigator>
+    //     <Tab.Screen
+    //       name="News"
+    //       options={{
+    //         tabBarIcon: ({ color, size }) => (
+    //           <MaterialCommunityIcons
+    //             name="newspaper"
+    //             size={size}
+    //             color={color}
+    //           />
+    //         ),
+    //       }}
+    //       component={HomeScreen}
+    //     />
+    //     <Tab.Screen
+    //       name="Question"
+    //       component={QuestionPage}
+    //       options={{
+    //         tabBarIcon: ({ color, size }) => (
+    //           <MaterialCommunityIcons
+    //             name="map-marker-question-outline"
+    //             size={size}
+    //             color={color}
+    //           />
+    //         ),
+    //       }}
+    //     />
+    //   </Tab.Navigator>
+    // </NavigationContainer>
     <>
-      <Spinner
-        visible={isLoading}
-        textStyle={styles.spinnerTextStyle}
-      />
+      <Spinner visible={isLoading} textStyle={styles.spinnerTextStyle} />
       <Login />
       <Register />
       <ForgotPass />
       <NavigationContainer>
-        <Drawer.Navigator
-          screenOptions={{
-            headerRight: () => (
-              <LoginLogoutBtn />
-            ),
-          }}
-          initialRouteName="News"
-        >
+        <Drawer.Navigator initialRouteName="News">
           <Drawer.Screen name={t('screen_titles.news')} component={News} />
+          <Drawer.Screen
+            name={t('screen_titles.login')}
+            component={AuthStackScreens}
+          />
         </Drawer.Navigator>
       </NavigationContainer>
-      <Toast ref={(ref) => Toast.setRef(ref)} />
+      <Toast ref={ref => Toast.setRef(ref)} />
     </>
   );
-
-};
-const styles = StyleSheet.create({
-  spinnerTextStyle: {
-    color: '#FFF',
-  },
-});
-export default App;
+}

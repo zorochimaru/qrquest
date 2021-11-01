@@ -23,12 +23,14 @@ const rootReducer = combineReducers({
 
 const store = configureStore({
     reducer: rootReducer,
-    middleware: getDefaultMiddleware({
-        serializableCheck: {
-            ignoredActionPaths: ['payload.options.action'],
-            ignoredPaths: ['ui.notifications']
-        },
-    }),
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: {
+                ignoredActionPaths: ['payload.options.action'],
+                ignoredPaths: ['ui.notifications']
+            },
+        }),
+
 });
 
 

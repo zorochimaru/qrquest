@@ -12,6 +12,7 @@
         "confirm_pass": "confirm password"
     },
     "screen_titles":{
-        "news": "News"
+        "news": "News",
+        "login": "Login"
     }
 }

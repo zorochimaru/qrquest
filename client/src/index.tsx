@@ -24,7 +24,7 @@ declare module '@mui/styles/defaultTheme' {
   interface DefaultTheme extends Theme { }
 }
 
-// const theme = createMuiTheme();
+ 
 const theme = createTheme(
   {
     palette: {
@@ -44,9 +44,6 @@ ReactDOM.render(
         <ThemeProvider theme={theme}>
           <ToastContainer />
           <App />
-
-          {/* <SnackbarProvider maxSnack={3}> */}
-          {/* </SnackbarProvider > */}
         </ThemeProvider>
       </StyledEngineProvider>
     </Provider>

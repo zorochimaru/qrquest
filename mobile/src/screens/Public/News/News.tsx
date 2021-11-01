@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { FlatList, SafeAreaView, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { getNews, newsActions, refreshNews } from '../../redux/News';
-import { RootState } from '../../redux/store';
+import { getNews, newsActions, refreshNews } from '../../../redux/News';
+import { RootState } from '../../../redux/store';
 import NewsCard from './components/NewsCard/NewsCard';
 
 const News = () => {

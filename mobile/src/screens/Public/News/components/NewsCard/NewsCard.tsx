@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { Button, Image, StyleSheet, Text, View } from 'react-native';
-import Chip from '../../../../components/Chip/Chip';
-import { News } from '../../../../models/news.model';
+import Chip from '../../../../../components/Chip/Chip';
+import { News } from '../../../../../models/news.model';
 import { REACT_APP_API_URL } from '@env';
 
 const NewsCard: FC<{ item: News }> = ({ item }) => {

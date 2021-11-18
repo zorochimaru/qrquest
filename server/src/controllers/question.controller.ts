@@ -84,7 +84,12 @@ class QuestionController {
     getQuestion = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            const signleQuestion = await Question.findByPk(id);
+            const signleQuestion = await Question.findByPk(id, {
+                include: {
+                    model: Answer,
+                    attributes: ['id', 'value'],
+                },
+            });
             if (signleQuestion) {
                 return res.send(signleQuestion);
             }

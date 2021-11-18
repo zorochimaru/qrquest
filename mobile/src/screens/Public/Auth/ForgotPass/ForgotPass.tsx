@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
+import { Button } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
 import '../../../../i18n/config';
 import { sendResetPasswordEmail } from '../../../../redux/Auth';
 
 const ForgotPass = () => {
-  const { t } = useTranslation(['auth', 'common']);
+  const { t } = useTranslation(['auth', 'common'], { useSuspense: false });
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const handleSubmit = () => {
@@ -14,23 +15,30 @@ const ForgotPass = () => {
   };
 
   return (
-    <View style={styles.centeredView}>
-      <Text style={styles.modalText}>{t('auth:forgot_pass.title')}</Text>
-      <TextInput
-        keyboardType={'email-address'}
-        style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-        textContentType="emailAddress"
-        placeholder={t('common:placeholders.email')}
-      />
-      <View style={styles.actionRow}>
-        <Button onPress={handleSubmit} title={t('common:buttons.submit_btn')} />
+    <Suspense fallback="loading">
+      <View style={styles.centeredView}>
+        <TextInput
+          keyboardType={'email-address'}
+          style={styles.input}
+          onChangeText={setEmail}
+          value={email}
+          textContentType="emailAddress"
+          placeholder={t('common:placeholders.email')}
+        />
+        <Button mode="contained" onPress={handleSubmit}>
+          {t('common:buttons.submit_btn')}
+        </Button>
       </View>
-    </View>
+    </Suspense>
   );
 };
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    paddingHorizontal: 20,
+  },
   link: {
     fontSize: 16,
     fontWeight: '500',
@@ -62,8 +70,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 2,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 20,
   },
   modalView: {
     width: '90%',

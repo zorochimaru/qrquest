@@ -11,8 +11,9 @@
         "name": "name",
         "confirm_pass": "confirm password"
     },
-    "screen_titles":{
+    "screen_titles": {
         "news": "News",
-        "login": "Login"
+        "account": "Account",
+        "auth": "Authorization"
     }
 }

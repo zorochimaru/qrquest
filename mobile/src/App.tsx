@@ -1,24 +1,28 @@
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+} from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import axios, { AxiosResponse } from 'axios';
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet } from 'react-native';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Toast from 'react-native-toast-message';
 import { REACT_APP_API_URL } from '@env';
-// import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
-import LoginLogoutBtn from './components/LoginLogoutBtn/LoginLogoutBtn';
-import { getUser, authActions } from './redux/Auth';
+import { getUser, authActions, logOut } from './redux/Auth';
 import { RootState } from './redux/store';
 import { uiActions } from './redux/Ui';
-import ForgotPass from './screens/Public/Auth/ForgotPass/ForgotPass';
-import Login from './screens/Public/Auth/Login/Login';
-import Register from './screens/Public/Auth/Register/Register';
+import './i18n/config';
 import News from './screens/Public/News/News';
 import { AuthStackScreens } from './screens/Public/Auth/AuthStack';
+import { navigationRef } from './utils/navigatorRef';
+import Account from './screens/Private/Account/Account';
+import { RootDrawerParamList } from './types/navigation';
+import { QrQuestStack } from './screens/Private/QrQuest/QrQuestStack';
 
 const styles = StyleSheet.create({
   spinnerTextStyle: {
@@ -26,18 +30,16 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
 // const Tab = createBottomTabNavigator();
-const Drawer = createDrawerNavigator();
+const RootDrawer = createDrawerNavigator<RootDrawerParamList>();
 
 export default function App() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('common', { useSuspense: false });
   const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.auth.user);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   axios.defaults.baseURL = REACT_APP_API_URL;
   axios.defaults.withCredentials = true;
-
   const isLoading = useSelector((state: RootState) => state.ui.isLoading);
   useEffect(() => {
     dispatch(getUser());
@@ -94,7 +96,6 @@ export default function App() {
         text1: 'Error',
         text2: error?.message || 'Server error',
       });
-
     }
   }
 
@@ -139,51 +140,59 @@ export default function App() {
     }
   }
   return (
-    // <NavigationContainer>
-    //   <Tab.Navigator>
-    //     <Tab.Screen
-    //       name="News"
-    //       options={{
-    //         tabBarIcon: ({ color, size }) => (
-    //           <MaterialCommunityIcons
-    //             name="newspaper"
-    //             size={size}
-    //             color={color}
-    //           />
-    //         ),
-    //       }}
-    //       component={HomeScreen}
-    //     />
-    //     <Tab.Screen
-    //       name="Question"
-    //       component={QuestionPage}
-    //       options={{
-    //         tabBarIcon: ({ color, size }) => (
-    //           <MaterialCommunityIcons
-    //             name="map-marker-question-outline"
-    //             size={size}
-    //             color={color}
-    //           />
-    //         ),
-    //       }}
-    //     />
-    //   </Tab.Navigator>
-    // </NavigationContainer>
-    <>
+    <Suspense fallback="loading">
       <Spinner visible={isLoading} textStyle={styles.spinnerTextStyle} />
-      <Login />
-      <Register />
-      <ForgotPass />
-      <NavigationContainer>
-        <Drawer.Navigator initialRouteName="News">
-          <Drawer.Screen name={t('screen_titles.news')} component={News} />
-          <Drawer.Screen
-            name={t('screen_titles.login')}
-            component={AuthStackScreens}
-          />
-        </Drawer.Navigator>
+      <NavigationContainer ref={navigationRef}>
+        <RootDrawer.Navigator
+          initialRouteName="news"
+          drawerContent={props => {
+            return (
+              <DrawerContentScrollView {...props}>
+                <DrawerItemList {...props} />
+                {user ? (
+                  <DrawerItem
+                    label="Logout"
+                    onPress={() => dispatch(logOut())}
+                  />
+                ) : null}
+              </DrawerContentScrollView>
+            );
+          }}>
+          {user ? (
+            <>
+              <RootDrawer.Screen
+                options={{ title: t('screen_titles.news') }}
+                name={'news'}
+                component={News}
+              />
+              <RootDrawer.Screen
+                options={{ title: t('screen_titles.account') }}
+                name={'account'}
+                component={Account}
+              />
+              <RootDrawer.Screen
+                options={{ headerShown: false, title: 'QrQuest' }}
+                name={'qrQuest'}
+                component={QrQuestStack}
+              />
+            </>
+          ) : (
+            <>
+              <RootDrawer.Screen
+                options={{ title: t('screen_titles.news') }}
+                name={'news'}
+                component={News}
+              />
+              <RootDrawer.Screen
+                options={{ headerShown: false, title: t('screen_titles.auth') }}
+                name={'auth'}
+                component={AuthStackScreens}
+              />
+            </>
+          )}
+        </RootDrawer.Navigator>
       </NavigationContainer>
       <Toast ref={ref => Toast.setRef(ref)} />
-    </>
+    </Suspense>
   );
 }

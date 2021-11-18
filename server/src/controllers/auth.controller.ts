@@ -166,7 +166,12 @@ class AuthController {
             if (!findUser) {
                 return res.status(400).send({ message: 'No user with this email' });
             }
-
+            if (findUser && findUser.status === STATUS.NON_ACTIVE) {
+                return res.status(400).send({ message: 'Not verified user' });
+            }
+            if (findUser && findUser.status === STATUS.BAN) {
+                return res.status(400).send({ message: 'Your account is baned' });
+            }
             if (findUser && findUser.status === STATUS.ACTIVE) {
                 const doMatchPasswords = await bcrypt.compare(password, findUser.password);
                 if (doMatchPasswords) {
@@ -175,19 +180,13 @@ class AuthController {
                         user: findUser,
                         refreshToken
                     };
-
                     res.sendStatus(200);
 
                 } else {
                     res.status(400).send({ message: 'Wrong password!' });
                 }
             }
-            if (findUser && findUser.status === STATUS.NON_ACTIVE) {
-                return res.status(400).send({ message: 'Acivate user' });
-            }
-            if (findUser && findUser.status === STATUS.BAN) {
-                return res.status(400).send({ message: 'Your account is baned' });
-            }
+          
         } catch (e: any) {
             res.status(500).send({ message: e.toString() });
         }

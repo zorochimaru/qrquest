@@ -97,7 +97,6 @@ export const getNews = (params: {
         const response = await axios.get<NewsState>(`/news`, { params });
         if (response?.status === 200) {
             dispatch(newsActions.fillNews(response.data));
-            console.log(response.data);
         }
     }
 }

@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button } from 'react-native-paper';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { useDispatch } from 'react-redux';
 import '../../../../i18n/config';
 import { login } from '../../../../redux/Auth';
 
-const Login = ({navigation}) => {
-  const { t } = useTranslation(['auth', 'common']);
+const Login = () => {
+  const { t } = useTranslation(['auth', 'common'], { useSuspense: false });
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,42 +18,31 @@ const Login = ({navigation}) => {
     };
     dispatch(login(formObj));
   };
-  const goToRegister = () => {
-    // dispatch(authActions.toggleRegisterModal());
-  };
-  const goToForgotPass = () => {
-    // dispatch(authActions.toggleForgotPassModal());
-  };
+
   return (
-    <View style={styles.centeredView}>
-      <TextInput
-        keyboardType={'email-address'}
-        style={styles.input}
-        onChangeText={setEmail}
-        value={email}
-        textContentType="emailAddress"
-        placeholder={t('common:placeholders.email')}
-      />
-      <TextInput
-        style={styles.input}
-        onChangeText={setPassword}
-        value={password}
-        placeholder={t('common:placeholders.password')}
-        textContentType="password"
-        secureTextEntry={true}
-      />
-      <View style={styles.linkRow}>
-        <Text style={styles.link} onPress={goToRegister}>
-          {t('auth:buttons.go_to_register')}
-        </Text>
-        <Text style={styles.link} onPress={goToForgotPass}>
-          {t('auth:buttons.go_to_forgot_pass')}
-        </Text>
+    <Suspense fallback="loading">
+      <View style={styles.centeredView}>
+        <TextInput
+          keyboardType={'email-address'}
+          style={styles.input}
+          onChangeText={setEmail}
+          value={email}
+          textContentType="emailAddress"
+          placeholder={t('common:placeholders.email')}
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={setPassword}
+          value={password}
+          placeholder={t('common:placeholders.password')}
+          textContentType="password"
+          secureTextEntry={true}
+        />
+        <Button mode="contained" onPress={handleSubmit}>
+          {t('common:buttons.submit_btn')}
+        </Button>
       </View>
-      <View style={styles.actionRow}>
-        <Button onPress={handleSubmit} title={t('common:buttons.submit_btn')} />
-      </View>
-    </View>
+    </Suspense>
   );
 };
 const styles = StyleSheet.create({
@@ -73,7 +63,7 @@ const styles = StyleSheet.create({
   },
   actionRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     width: '100%',
     marginTop: 10,
     marginBottom: 10,
@@ -87,27 +77,10 @@ const styles = StyleSheet.create({
   },
   centeredView: {
     flex: 1,
+    display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 2,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
-  modalView: {
-    width: '90%',
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    zIndex: 4,
+    padding: 20,
   },
   button: {
     borderRadius: 20,

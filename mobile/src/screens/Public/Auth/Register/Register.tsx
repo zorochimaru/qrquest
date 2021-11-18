@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Button,
-  ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
+import { Button } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import '../../../../i18n/config';
 import { register } from '../../../../redux/Auth';
 
 const Register = () => {
-  const { t } = useTranslation(['auth', 'common']);
+  const { t } = useTranslation(['auth', 'common'], { useSuspense: false });
   const dispatch = useDispatch();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -39,9 +37,6 @@ const Register = () => {
     dispatch(register(formObj));
   };
 
-  const goToLogin = () => {
-    // dispatch(authActions.toggleLoginModal());
-  };
   const handlePassValid = (text: string) => {
     setConfirmPassword(text);
     if (text !== password) {
@@ -52,9 +47,9 @@ const Register = () => {
   };
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <Suspense fallback="loading">
+
       <View style={styles.centeredView}>
-        <Text style={styles.modalText}>{t('auth:register.title')}</Text>
         <TextInput
           keyboardType={'email-address'}
           style={styles.input}
@@ -87,29 +82,19 @@ const Register = () => {
           textContentType="password"
           secureTextEntry={true}
         />
-        <View style={styles.linkRow}>
-          <Text style={styles.link} onPress={goToLogin}>
-            {t('auth:buttons.go_to_login')}
-          </Text>
-        </View>
-        <View style={styles.actionRow}>
-          <Button
-            disabled={invalid}
-            onPress={handleSubmit}
-            title={t('common:buttons.submit_btn')}
-          />
-        </View>
+        <Button disabled={invalid} mode="contained" onPress={handleSubmit}>
+          {t('common:buttons.submit_btn')}
+        </Button>
       </View>
-    </ScrollView>
+    </Suspense>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // paddingTop: StatusBar.currentHeight,
   },
   scrollView: {
-    // marginHorizontal: 20,
+    paddingHorizontal: 20,
   },
   input: {
     borderWidth: 1,
@@ -142,26 +127,9 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 2,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    padding: 20,
   },
-  modalView: {
-    width: '90%',
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    zIndex: 4,
-  },
+
   button: {
     borderRadius: 20,
     padding: 10,

@@ -21,8 +21,8 @@ const MENU_ITEMS: MenuItem[] = [
         roles: [ROLES.ADMIN, ROLES.MODERATOR]
     },
     {
-        text: 'Question controller',
-        link: '/question-control',
+        text: 'Quest controller',
+        link: '/quest-control',
         roles: [ROLES.ADMIN, ROLES.MODERATOR]
     },
 ]

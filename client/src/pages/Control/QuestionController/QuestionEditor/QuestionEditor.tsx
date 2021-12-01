@@ -19,11 +19,13 @@ import makeStyles from '@mui/styles/makeStyles';
 import { TransitionProps } from "@mui/material/transitions";
 import CloseIcon from '@mui/icons-material/Close';
 import { Field, FieldArray, Form, Formik } from "formik";
-import { Question } from "../../../../redux/Questions";
+import { Question } from "../../../../redux/Quest";
 import ClearIcon from '@mui/icons-material/Clear';
 import CustomFileField from "../../../../components/CustomFileField";
 import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement },
@@ -60,7 +62,7 @@ const QuestionEditor = (props: any) => {
     const classes = useStyles();
     const activeQuestion = props?.activeQuestion;
     const initialValues: Question = {
-        question: activeQuestion?.question || '',
+        text: activeQuestion?.question || '',
         answers: activeQuestion?.answers || [],
         file: activeQuestion?.file || null,
         imgUrl: activeQuestion?.imgUrl || ''
@@ -84,7 +86,7 @@ const QuestionEditor = (props: any) => {
                 if (data.file) {
                     fData.append('file', data.file)
                 }
-                fData.append('question', data.question);
+                fData.append('question', data.text);
                 fData.append('answers', JSON.stringify(data.answers));
                 let response: AxiosResponse<any>;
                 if (activeQuestion) {
@@ -151,12 +153,24 @@ const QuestionEditor = (props: any) => {
                                         <div  >
                                             <Box sx={{ my: 3 }}>
                                                 <Button disabled={values.answers.length > 3} onClick={() => arrayHelpers.push({
-                                                    value: ''
+                                                    value: '',
+                                                    isRight: false
                                                 })}>Add answer</Button>
                                             </Box>
+
                                             {values.answers.map((answer, index) => {
                                                 return (
-                                                    <Box sx={{ my: 3 }} key={index}>
+                                                    <Stack direction="row" sx={{ my: 3 }} key={index} alignItems="center">
+                                                        <IconButton onClick={() => {
+                                                            values.answers.forEach((answer, i) => {
+                                                                if(answer.isRight){
+                                                                    setFieldValue(`answers.${i}.isRight`, false);
+                                                                }
+                                                            });
+                                                            setFieldValue(`answers.${index}.isRight`, true);
+                                                        }}>
+                                                            {values.answers[index].isRight ? <CheckBoxOutlinedIcon color="success" /> : <CheckBoxOutlineBlankIcon  />}
+                                                        </IconButton>
                                                         <Field
                                                             fullWidth
                                                             placeholder={`Answer-${index + 1}`}
@@ -171,7 +185,7 @@ const QuestionEditor = (props: any) => {
                                                             }}
                                                             as={TextField}
                                                         />
-                                                    </Box>
+                                                    </Stack>
                                                 )
                                             })}
                                         </div>

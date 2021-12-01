@@ -28,6 +28,7 @@ export const fetchQuestion = (id: string) => {
         const question: Question = {
           id: response.data.id,
           text: response.data.question,
+          imgUrl: response.data.imgUrl,
           answers: (response.data.answers as Array<any>).map(a => {
             return { id: a.id, text: a.value };
           }),

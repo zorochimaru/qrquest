@@ -3,14 +3,14 @@ import authReducer, { AuthState } from './Auth';
 import UiReducer, { UIState } from './Ui';
 import NewsReducer, { NewsState } from './News';
 import LibraryReducer, { LibraryState } from './Library';
-import QuestionReducer, { QuestionState } from './Questions';
+import QuestReducer, { QuestState } from './Quest';
 
 export interface RootState {
     auth: AuthState
     ui: UIState
     news: NewsState
     library: LibraryState
-    question: QuestionState
+    quest: QuestState
 }
 
 const rootReducer = combineReducers({
@@ -18,7 +18,7 @@ const rootReducer = combineReducers({
     ui: UiReducer,
     news: NewsReducer,
     library: LibraryReducer,
-    question: QuestionReducer
+    quest: QuestReducer,
 });
 
 const store = configureStore({

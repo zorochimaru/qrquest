@@ -2,12 +2,14 @@ import { Table, Model, Column, DataType, ForeignKey, HasMany } from 'sequelize-t
 
 import { Optional } from 'sequelize/types';
 import { Answer } from './answer.model';
+import { Quest } from './quest.model';
 import { User } from './user.model';
 
 interface QuestionAttributes {
     id: string,
-    question: string,
+    text: string,
     authorId: string,
+    questId: string,
     imgUrl: string | null,
 }
 interface QuestionCreationAttributes extends Optional<QuestionAttributes, 'id'> { }
@@ -21,27 +23,31 @@ export class Question extends Model<QuestionAttributes, QuestionCreationAttribut
         primaryKey: true,
         unique: true,
     })
-    id!: string
+    id: string
 
     @Column({
         type: DataType.STRING(50),
-        allowNull: true
+        allowNull: false
     })
-    question!: string
-
-    @HasMany(() => Answer, 'questionId')
-    answers!: Answer[]
+    text: string
 
     @Column({
         type: DataType.TEXT,
         allowNull: true
     })
-    imgUrl!: string
+    imgUrl: string
+
+    @HasMany(() => Answer, {
+        onDelete: 'CASCADE',
+    })
+    answers: Answer[]
 
     @ForeignKey(() => User)
-    @Column({
-        allowNull: false
-    })
-    authorId!: string
+    @Column({ type: DataType.UUID, allowNull: false })
+    authorId: string
 
+    @ForeignKey(() => Quest)
+    @Column({ type: DataType.UUID, allowNull: false })
+    questId!: string
+   
 }

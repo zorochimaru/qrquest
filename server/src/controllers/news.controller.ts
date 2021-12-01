@@ -17,7 +17,7 @@ class NewsController {
             const createdNews = await News.create({
                 title,
                 text,
-                imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : null,
+                imgUrl: file ? `${process.env.API_LINK}/${file?.path}` : null,
                 authorId
             });
             await createdNews.$set('tags', tagIds);
@@ -39,7 +39,7 @@ class NewsController {
             const findNews = await News.findByPk(id);
             const updatedNews = await News.update({
                 ...body,
-                imgUrl: file ? `${process.env.API_LINK}/${file?.destination}/${file?.filename}` : findNews?.imgUrl,
+                imgUrl: file ? `${process.env.API_LINK}/${file?.path}` : findNews?.imgUrl,
                 authorId
             }, { where: { id } })
             if (updatedNews) {

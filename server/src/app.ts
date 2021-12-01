@@ -4,17 +4,15 @@ import AuthRouter from './routes/auth.route';
 import NewsRouter from './routes/news.route';
 import QuestionRouter from './routes/question.route';
 import LibraryRouter from './routes/library.route';
+import QuestsRouter from './routes/quest.route';
 import session from 'express-session';
 import sequelizeStore from 'connect-session-sequelize'
 import cors from "cors";
 
-
 const SequelizeStore = sequelizeStore(session.Store);
 
 const app = express();
-// app.use(express.static('uploads'));  
 app.use('/uploads', express.static('uploads'));
-
 const store = new SequelizeStore({
     db: sequelize,
 });
@@ -46,7 +44,10 @@ app.use('/library', LibraryRouter);
 
 app.use('/news', NewsRouter);
 
-app.use('/questions', QuestionRouter)
+app.use('/questions', QuestionRouter);
+
+app.use('/quests', QuestsRouter);
+
 // 404 PAGE
 app.use((_req, res) => {
     res.status(404).send({ message: '404 Not found' })

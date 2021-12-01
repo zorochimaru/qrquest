@@ -1,6 +1,6 @@
 import React, { FC, useEffect } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Button } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
+import { Button, Card, Paragraph, Title } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchQuestion } from '../../../../redux/QrQuest';
 import { RootState } from '../../../../redux/store';
@@ -20,12 +20,20 @@ export const QuestionScreen: FC<QuestionProps> = props => {
   };
   return (
     <View style={styles.centeredView}>
-      <Text>{question?.text}</Text>
-      {question?.answers.map(answer => (
-        <Button key={answer.id} onPress={() => handleClick(answer.id)}>
-          {answer.text}
-        </Button>
-      ))}
+      <Card>
+        <Card.Cover source={{ uri: question?.imgUrl }} />
+        <Card.Content>
+          <Title>{question?.text}</Title>
+          <Paragraph>{question?.text}</Paragraph>
+        </Card.Content>
+        <Card.Actions>
+          {question?.answers.map(answer => (
+            <Button key={answer.id} onPress={() => handleClick(answer.id)}>
+              {answer.text}
+            </Button>
+          ))}
+        </Card.Actions>
+      </Card>
     </View>
   );
 };
@@ -33,9 +41,6 @@ export const QuestionScreen: FC<QuestionProps> = props => {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
   },
 });

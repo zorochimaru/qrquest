@@ -14,6 +14,7 @@ import Sidebar from "./components/Sidebar";
 import Page404 from "./pages/Page404/Page404";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { toast } from "react-toastify";
+import QuestController from './pages/Control/QuestController/QuestController';
 
 const HomePage = React.lazy(() => import('./pages/Home/Home'));
 const LoginPage = React.lazy(() => import('./pages/Authentication/Login/Login'));
@@ -225,6 +226,7 @@ function App() {
             <PrivateRoute path="control-panel" >
               <ControlPage path="/" />
               <NewsController path="news-control" />
+              <QuestController path={"quest-control"} />
               <QuestionController path={"question-control"} />
               <QuestionController path={"question-control/:id"} />
             </PrivateRoute>

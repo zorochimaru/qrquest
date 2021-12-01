@@ -1,39 +1,43 @@
-import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, Button } from "@mui/material";
+import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, TableFooter, Button } from "@mui/material";
 import { FC, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 
 import { RouteComponentProps } from "@reach/router";
-import QuestionEditor from "./QuestionEditor/QuestionEditor";
-import { getQuestionsByQuestId, Question, questActions } from "../../../redux/Quest";
+import TablePagination from '@mui/material/TablePagination';
+import QuestEditor from "./QuestEditor/QuestEditor";
+import { getQuestList, Quest, questActions } from '../../../redux/Quest';
 
 interface Column {
-    id: 'text';
+    id: 'name';
     label: string;
     minWidth?: number;
 }
 
 const columns: Column[] = [
-    { id: 'text', label: 'Question', minWidth: 170 },
+    { id: 'name', label: 'Quest Name', minWidth: 170 },
 ];
 
-const QuestionController: FC<RouteComponentProps> = () => {
+const QuestController: FC<RouteComponentProps> = () => {
     const dispatch = useDispatch();
-    const [activeQuestion, setActiveQuestion] = useState<Question | null>(null);
-    const questionsList = useSelector((state: RootState) => state.quest.questionList);
+    const [activeQuest, setActiveQuest] = useState<Quest | null>(null);
+    const perPage = useSelector((state: RootState) => state.quest.perQuestPage);
+    const page = useSelector((state: RootState) => state.quest.questPage);
+    const questionsList = useSelector((state: RootState) => state.quest.questList);
+    const totalItems = useSelector((state: RootState) => state.quest.totalQuests);
     const [openDialog, setOpenDialog] = useState(false);
     useEffect(() => {
         if (!openDialog) {
-            // dispatch(getQuestionsByQuestId());
+            dispatch(getQuestList({ page, perPage }));
         }
-    }, [dispatch, openDialog]);
+    }, [dispatch, page, perPage, openDialog]);
 
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
         dispatch(questActions.changePage(value + 1))
     }
 
-    const handleEdit = (item: Question) => {
-        setActiveQuestion(item);
+    const handleEdit = (item: Quest) => {
+        setActiveQuest(item);
         handleClickOpen();
     }
 
@@ -48,11 +52,11 @@ const QuestionController: FC<RouteComponentProps> = () => {
     };
 
     const handleClose = () => {
-        setActiveQuestion(null);
+        setActiveQuest(null);
         setOpenDialog(false);
     };
     return <>
-        <QuestionEditor activeQuestion={activeQuestion} open={openDialog} handleClose={handleClose} />
+        <QuestEditor activeQuestion={activeQuest} open={openDialog} handleClose={handleClose} />
         <Button style={{ marginBottom: 20 }} color="primary" variant="contained" onClick={handleClickOpen}>Create new</Button>
         <Paper>
             <TableContainer >
@@ -85,9 +89,23 @@ const QuestionController: FC<RouteComponentProps> = () => {
                             );
                         })}
                     </TableBody>
+                    <TableFooter>
+                        <TableRow>
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 25]}
+                                colSpan={3}
+                                count={totalItems}
+                                rowsPerPage={perPage}
+                                page={page - 1}
+                                onPageChange={(e, page) => handleChangePage(e!, page)}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+
+                            />
+                        </TableRow>
+                    </TableFooter>
                 </Table>
             </TableContainer>
         </Paper>
     </>;
 }
-export default QuestionController;
+export default QuestController;

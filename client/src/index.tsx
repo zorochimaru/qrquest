@@ -17,14 +17,16 @@ import { azAZ } from '@mui/material/locale';
 // import { SnackbarProvider } from 'notistack';
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import azLocale from 'date-fns/locale/az';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   interface DefaultTheme extends Theme { }
 }
 
- 
+
 const theme = createTheme(
   {
     palette: {
@@ -43,7 +45,9 @@ ReactDOM.render(
       <StyledEngineProvider injectFirst>
         <ThemeProvider theme={theme}>
           <ToastContainer />
-          <App />
+          <LocalizationProvider dateAdapter={AdapterDateFns} locale={azLocale}>
+            <App />
+          </LocalizationProvider>
         </ThemeProvider>
       </StyledEngineProvider>
     </Provider>

@@ -8,10 +8,13 @@ export interface Answer {
 }
 export interface Question {
     id?: string,
+    questId: string,
     text: string,
+    locationLink: string,
     answers: Answer[],
     imgUrl?: string,
-    file?: File | null
+    file?: File | null,
+    quest?: { name: string, date: Date | '' }
 }
 export interface Quest {
     id?: string;
@@ -29,6 +32,7 @@ export interface QuestTable {
 }
 export interface QuestState extends QuestTable {
     loading: boolean;
+    currentQuestId: string,
     questionList: Question[];
     singleQuestion: Question | null;
 }
@@ -36,6 +40,7 @@ export interface QuestState extends QuestTable {
 const initialState: QuestState = {
     loading: false,
     questList: [],
+    currentQuestId: '',
     totalQuests: 0,
     questPage: 1,
     perQuestPage: 5,
@@ -65,6 +70,12 @@ const questSlice = createSlice({
         changePerPage(state, action: PayloadAction<number>) {
             state.perQuestPage = action.payload;
         },
+        selectCurrentQuestId(state, action: PayloadAction<string>) {
+            state.currentQuestId = action.payload;
+        },
+        clearQuestId(state) {
+            state.currentQuestId = '';
+        },
     },
 });
 
@@ -90,9 +101,10 @@ export const editQuestion = (data: { id: string, fData: FormData, page: number, 
 }
 
 
-export const getQuestionsByQuestId = (questId: number) => {
+export const getQuestionsByQuestId = (questId: string) => {
     return async (dispatch: any) => {
-        const response = await axios.get<Question[]>(`/questions`, { params: { questId } });
+        dispatch(questActions.selectCurrentQuestId(questId));
+        const response = await axios.get<Question[]>(`/questions/questId/${questId}`);
         if (response?.status === 200) {
             dispatch(questActions.fillQuestion(response.data));
         }

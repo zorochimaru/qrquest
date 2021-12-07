@@ -25,6 +25,11 @@ const MENU_ITEMS: MenuItem[] = [
         link: '/quest-control',
         roles: [ROLES.ADMIN, ROLES.MODERATOR]
     },
+    {
+        text: 'Questions controller',
+        link: '/questions-control',
+        roles: [ROLES.ADMIN, ROLES.MODERATOR]
+    },
 ]
 
 const useStyles = makeStyles((theme: Theme) =>

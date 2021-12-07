@@ -2,6 +2,10 @@ import { Request, Response } from 'express';
 import { Question } from '../models/question.model';
 import { Answer } from '../models/answer.model';
 import { File } from '../models/file.model';
+import { Quest } from '../models/quest.model';
+import UserAnswer from '../models/user_answer.model';
+import { Op } from "sequelize";
+
 class QuestionController {
     addQuestion = async (req: Request, res: Response) => {
         try {
@@ -16,6 +20,7 @@ class QuestionController {
                 questId: body.questId,
                 imgUrl: file ? `${process.env.API_LINK}/${file?.path}` : null,
                 authorId: authorId,
+                locationLink: body.locationLink
             });
             if (question) {
                 for (const answer of JSON.parse(body.answers)) {
@@ -68,22 +73,21 @@ class QuestionController {
 
     getQuestionsByQuestId = async (req: Request, res: Response) => {
         try {
-            const questId = req.params.id;
-            console.log('RasimaismiamiamsiamsRIMASIRMIARM', questId);
-            const params = req.query;
-            const offset = (+params.page! - 1) * +params.perPage!;
-            const limit = +params.perPage!;
+            const questId = req.params.questId;
             const questionResponce = await Question.findAndCountAll({
                 where: { questId },
-                include: {
+                include: [{
                     model: Answer,
                     attributes: ['id', 'value', 'isRight'],
                 },
-                limit, offset, order: [['createdAt', 'DESC']],
+                {
+                    model: Quest,
+                    attributes: ['name', 'date']
+                }
+                ],
+                order: [['createdAt', 'DESC']],
             });
-            const totalPages = Math.ceil(questionResponce.count / limit);
-            const questionArray = questionResponce.rows;
-            res.send({ list: questionArray, totalPages, totalItems: questionResponce.count });
+            res.send(questionResponce.rows);
         } catch (error) {
             res.status(400).send(error);
         }
@@ -118,7 +122,9 @@ class QuestionController {
                 },
             });
             if (signleQuestion) {
-                return res.send(signleQuestion);
+                res.send(signleQuestion);
+            } else {
+                res.send('no such of question');
             }
         } catch (error) {
             res.status(400).send(error);
@@ -135,13 +141,52 @@ class QuestionController {
     }
     answerOnQuestion = async (req: Request, res: Response) => {
         try {
-            const answerId = req.params.answerId;
-            const usersAnswer = Answer.findByPk(answerId);
-            // TODO Create 'users_answers' table
-            // TODO Add google map link to question model
-            res.sendStatus(200);
+            const params = req.query;
+            const questId = params.questId?.toString();
+            const questionId = params.questionId?.toString();
+            const answerId = params.answerId?.toString();
+            const usersAnswer = await Answer.findByPk(answerId);
+            const userId = req.session.logedUser?.user.id;
+            if (usersAnswer?.isRight && questId && questionId && answerId) {
+                // await UserAnswer.create({ userId, answerId, questId, questionId })
+                // const quest = await Quest.findByPk(questId);
+                // const usersAnswers = await UserAnswer.findAll({ where: { questId } });
+                // const test = await Question.findOne({
+                //     include: [{
+                //         model: UserAnswer,
+                //         // where: {
+                //             //     userId,
+                //             //     questId
+                //         // },
+                //         attributes: ['questionId']
+                //     }],
+                //     // where: {
+                //     //     questionId: { [Op.not]: `${questionId}` },
+                //     // },
+
+                // })
+                const t = await UserAnswer.findAll();
+
+                const test = await Question.findAll({
+                    where: {
+                        id: {
+                            [Op.notIn]: [...t.map(t => t.questionId)]
+                        }
+                    }
+                });
+                console.log('\x1b[36m%s\x1b[0m', test[0].text);
+
+                // const userLeftQuestions = quest?.questions.filter(question => usersAnswers.some(x => x.questionId !== question.id));
+                res.send('userLeftQuestions');
+                // if (userLeftQuestions?.length) {
+                //     res.send(userLeftQuestions[0].locationLink);
+                // } else {
+                //     res.send('FIN');
+                // }
+            }
+            res.status(400).send('OOOpse');
         } catch (error) {
-            res.status(400).send(error);
+            res.status(400).send('error');
         }
     }
 }

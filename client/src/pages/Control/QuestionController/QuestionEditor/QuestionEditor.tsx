@@ -26,6 +26,7 @@ import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
+import { Refresh } from '@mui/icons-material';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement },
@@ -61,11 +62,14 @@ const useStyles = makeStyles((theme: Theme) =>
 const QuestionEditor = (props: any) => {
     const classes = useStyles();
     const activeQuestion = props?.activeQuestion;
+    const currentQuestId = props?.currentQuestId;
     const initialValues: Question = {
-        text: activeQuestion?.question || '',
+        text: activeQuestion?.text || '',
+        locationLink: activeQuestion?.locationLink || '',
         answers: activeQuestion?.answers || [],
         file: activeQuestion?.file || null,
-        imgUrl: activeQuestion?.imgUrl || ''
+        imgUrl: activeQuestion?.imgUrl || '',
+        questId: currentQuestId
     }
 
     const handleDelete = async () => {
@@ -86,13 +90,15 @@ const QuestionEditor = (props: any) => {
                 if (data.file) {
                     fData.append('file', data.file)
                 }
-                fData.append('question', data.text);
+                fData.append('questId', data.questId);
+                fData.append('text', data.text);
+                fData.append('locationLink', data.locationLink);
                 fData.append('answers', JSON.stringify(data.answers));
                 let response: AxiosResponse<any>;
                 if (activeQuestion) {
                     response = await axios.put(`/questions/${activeQuestion.id}`, fData);
                 } else {
-                    response = await axios.post(`/questions/create`, fData);
+                    response = await axios.post(`/questions`, fData);
                 }
                 if (response?.status === 200) {
                     toast.success(response.data.message);
@@ -127,7 +133,7 @@ const QuestionEditor = (props: any) => {
                     </AppBar>
                     <Container>
                         <Container maxWidth="sm">
-                            <Box sx={{ mt: 3 }}>
+                            <Stack spacing={2} sx={{ mt: 3 }}>
                                 <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
 
                                     <Field
@@ -143,15 +149,16 @@ const QuestionEditor = (props: any) => {
                                         }}
                                         as={CustomFileField} />
                                     <IconButton onClick={handleReset}>
-                                        <ClearIcon />
+                                        <Refresh />
                                     </IconButton>
                                 </Stack>
 
-                                <Field fullWidth placeholder="Question" name="question" as={TextField} />
+                                <Field fullWidth placeholder="Question" name="text" as={TextField} />
+                                <Field fullWidth placeholder="Location link" name="locationLink" as={TextField} />
                                 <FieldArray name="answers">
                                     {arrayHelpers => (
-                                        <div  >
-                                            <Box sx={{ my: 3 }}>
+                                        <div>
+                                            <Box>
                                                 <Button disabled={values.answers.length > 3} onClick={() => arrayHelpers.push({
                                                     value: '',
                                                     isRight: false
@@ -163,13 +170,13 @@ const QuestionEditor = (props: any) => {
                                                     <Stack direction="row" sx={{ my: 3 }} key={index} alignItems="center">
                                                         <IconButton onClick={() => {
                                                             values.answers.forEach((answer, i) => {
-                                                                if(answer.isRight){
+                                                                if (answer.isRight) {
                                                                     setFieldValue(`answers.${i}.isRight`, false);
                                                                 }
                                                             });
                                                             setFieldValue(`answers.${index}.isRight`, true);
                                                         }}>
-                                                            {values.answers[index].isRight ? <CheckBoxOutlinedIcon color="success" /> : <CheckBoxOutlineBlankIcon  />}
+                                                            {values.answers[index].isRight ? <CheckBoxOutlinedIcon color="success" /> : <CheckBoxOutlineBlankIcon />}
                                                         </IconButton>
                                                         <Field
                                                             fullWidth
@@ -194,7 +201,7 @@ const QuestionEditor = (props: any) => {
                                 </FieldArray>
 
 
-                            </Box>
+                            </Stack>
 
                         </Container>
 

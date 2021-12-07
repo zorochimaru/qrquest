@@ -227,8 +227,8 @@ function App() {
               <ControlPage path="/" />
               <NewsController path="news-control" />
               <QuestController path={"quest-control"} />
-              <QuestionController path={"question-control"} />
-              <QuestionController path={"question-control/:id"} />
+              <QuestionController path={"questions-control"} />
+              <QuestionController path={"questions-control/:id"} />
             </PrivateRoute>
           </Router>
         </Suspense>

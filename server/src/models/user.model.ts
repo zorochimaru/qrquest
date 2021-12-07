@@ -1,7 +1,10 @@
 
-import { Table, Model, Column } from 'sequelize-typescript'
+import { Table, Model, Column, BelongsToMany } from 'sequelize-typescript'
 import { DataType } from 'sequelize-typescript';
 import { Optional } from 'sequelize/types';
+import { Answer } from './answer.model';
+import UserAnswer from './user_answer.model';
+
 export enum STATUS {
   'ACTIVE' = 'ACTIVE',
   'NON_ACTIVE' = 'NON_ACTIVE',
@@ -24,6 +27,8 @@ interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
 
 @Table
 export class User extends Model<UserAttributes, UserCreationAttributes> {
+  @BelongsToMany(() => Answer, () => UserAnswer)
+  answers: Answer[]
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,

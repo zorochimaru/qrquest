@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Op } from "sequelize";
 import { File } from '../models/file.model';
 import { Quest } from '../models/quest.model';
 class QuestController {
@@ -44,6 +45,16 @@ class QuestController {
   getQuests = async (req: Request, res: Response) => {
     try {
       const params = req.query;
+      if (params.name) {
+        const questResponce = await Quest.findAndCountAll({
+          limit: 100,
+          order: [['createdAt', 'DESC']],
+          where: {
+            name: { [Op.like]: `%${params.name}%` },
+          }
+        });
+        res.send(questResponce.rows);
+      }
       const offset = (+params.page! - 1) * +params.perPage!;
       const limit = +params.perPage!;
       const questResponce = await Quest.findAndCountAll({
@@ -56,6 +67,7 @@ class QuestController {
       res.status(400).send(error);
     }
   }
+
   getQuest = async (req: Request, res: Response) => {
     try {
       const id = req.params.id;
@@ -76,7 +88,7 @@ class QuestController {
       res.status(400).send(error);
     }
   }
- 
+
 }
 
 export default new QuestController();

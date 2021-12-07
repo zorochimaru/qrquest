@@ -15,13 +15,16 @@ const router = Router();
 const upload = multer({ storage: fileStorage });
 router.get('/', questionController.getAllQuestions);
 
-router.get('/', questionController.getAllQuestions);
+router.get('/answer', isAuth, questionController.answerOnQuestion);
 
-router.get('/questId/:id', questionController.getQuestionsByQuestId);
+router.get('/questId/:questId', questionController.getQuestionsByQuestId);
 
 router.post('/', upload.single('file'), questionController.addQuestion);
 
+router.get('/:id', questionController.getQuestion);
+
 router.put('/:id', isAuth, upload.single('file'), questionController.editQuestion);
+
 
 router.delete('/:id', isAuth, questionController.deleteQuestion);
 

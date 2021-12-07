@@ -164,9 +164,7 @@ const NewsEditor = (props: any) => {
                                 variant="outlined"
                                 {...params}
                                 InputProps={{
-                                    className: params.InputProps.className,
-                                    ref: params.InputProps.ref,
-                                    endAdornment: params.InputProps.endAdornment,
+                                    ...params.InputProps,
                                     startAdornment:
                                         (
                                             <>

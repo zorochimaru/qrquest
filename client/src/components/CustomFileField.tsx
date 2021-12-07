@@ -55,9 +55,10 @@ const CustomFileField: FC<string & FieldAttributes<any>> = (props) => {
                     <DeleteIcon />
                 </IconButton> : null}
             </div>
-            {imgPreview ? <Paper elevation={3} sx={{ my: 2 }} style={{ display: "flex", alignSelf: 'center', overflow: 'hidden' }}>
-                <img style={{ width: '100%', maxHeight: 500, objectFit: 'cover' }} src={imgPreview} alt="preview" />
-            </Paper> : null}
+            {imgPreview &&
+                <Paper elevation={3} sx={{ my: 2 }} style={{ display: "flex", alignSelf: 'center', overflow: 'hidden' }}>
+                    <img style={{ width: '100%', maxHeight: 500, objectFit: 'cover' }} src={imgPreview} alt="preview" />
+                </Paper>}
         </Stack>)
 }
 

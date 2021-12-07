@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { Linking } from 'react-native';
 import { Question } from '../models/question.model';
 
 export interface QrQuestState {
@@ -27,6 +28,7 @@ export const fetchQuestion = (id: string) => {
       if (response?.status === 200) {
         const question: Question = {
           id: response.data.id,
+          questId: response.data.questId,
           text: response.data.question,
           imgUrl: response.data.imgUrl,
           answers: (response.data.answers as Array<any>).map(a => {
@@ -35,6 +37,29 @@ export const fetchQuestion = (id: string) => {
         };
         dispatch(qrQuestActions.setQuestion(question));
       }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+export const answerToQuestion = (
+  questId: string,
+  questionId: string,
+  answerId: string,
+) => {
+  return async () => {
+    try {
+      const response = await axios.get<any>('questions/answer', {
+        params: {
+          questId: questId,
+          questionId: questionId,
+          answerId: answerId,
+        },
+      });
+      // if (response?.status === 200) {
+      //   Linking.openURL(response.data);
+      // }
+      console.log(response.data);
     } catch (error) {
       console.log(error);
     }

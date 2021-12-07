@@ -2,7 +2,7 @@ import React, { FC, useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, Card, Paragraph, Title } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchQuestion } from '../../../../redux/QrQuest';
+import { answerToQuestion, fetchQuestion } from '../../../../redux/QrQuest';
 import { RootState } from '../../../../redux/store';
 import { QuestionProps } from '../QrQuestStack';
 
@@ -14,9 +14,8 @@ export const QuestionScreen: FC<QuestionProps> = props => {
     dispatch(fetchQuestion(questionId));
   }, [dispatch, questionId]);
 
-  const handleClick = (answerId: string) => {
-    // TODO answer to the question to API
-    console.log(answerId);
+  const handleClick = async (answerId: string) => {
+    dispatch(answerToQuestion(question!.questId, questionId, answerId));
   };
   return (
     <View style={styles.centeredView}>

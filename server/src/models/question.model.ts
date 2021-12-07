@@ -1,4 +1,4 @@
-import { Table, Model, Column, DataType, ForeignKey, HasMany } from 'sequelize-typescript'
+import { Table, Model, Column, DataType, ForeignKey, HasMany, BelongsTo } from 'sequelize-typescript'
 
 import { Optional } from 'sequelize/types';
 import { Answer } from './answer.model';
@@ -9,6 +9,7 @@ interface QuestionAttributes {
     id: string,
     text: string,
     authorId: string,
+    locationLink: string
     questId: string,
     imgUrl: string | null,
 }
@@ -32,6 +33,11 @@ export class Question extends Model<QuestionAttributes, QuestionCreationAttribut
     text: string
 
     @Column({
+        allowNull: false
+    })
+    locationLink: string
+
+    @Column({
         type: DataType.TEXT,
         allowNull: true
     })
@@ -49,5 +55,8 @@ export class Question extends Model<QuestionAttributes, QuestionCreationAttribut
     @ForeignKey(() => Quest)
     @Column({ type: DataType.UUID, allowNull: false })
     questId!: string
+    
+    @BelongsTo(() => Quest)
+    quest: Quest
    
 }

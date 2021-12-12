@@ -4,12 +4,14 @@ import { Optional } from 'sequelize/types';
 import { Answer } from './answer.model';
 import { Quest } from './quest.model';
 import { User } from './user.model';
+import UserAnswer from './user_answer.model';
 
 interface QuestionAttributes {
     id: string,
     text: string,
     authorId: string,
-    locationLink: string
+    order: number,
+    locationLink: string,
     questId: string,
     imgUrl: string | null,
 }
@@ -31,6 +33,13 @@ export class Question extends Model<QuestionAttributes, QuestionCreationAttribut
         allowNull: false
     })
     text: string
+  
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+        defaultValue: 0      
+    })
+    order: number
 
     @Column({
         allowNull: false
@@ -47,6 +56,11 @@ export class Question extends Model<QuestionAttributes, QuestionCreationAttribut
         onDelete: 'CASCADE',
     })
     answers: Answer[]
+ 
+    @HasMany(() => UserAnswer, {
+        onDelete: 'CASCADE',
+    })
+    userAnsweredQuestions: UserAnswer[]
 
     @ForeignKey(() => User)
     @Column({ type: DataType.UUID, allowNull: false })
@@ -55,8 +69,8 @@ export class Question extends Model<QuestionAttributes, QuestionCreationAttribut
     @ForeignKey(() => Quest)
     @Column({ type: DataType.UUID, allowNull: false })
     questId!: string
-    
+
     @BelongsTo(() => Quest)
     quest: Quest
-   
+
 }

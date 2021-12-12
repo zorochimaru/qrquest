@@ -24,18 +24,18 @@ export default class UserAnswer extends Model<UserAnswerAttributes, UserAnswerCr
   id: string
 
   @ForeignKey(() => User)
-  @Column
+  @Column({ type: DataType.UUID, allowNull: false })
   userId: string
 
   @ForeignKey(() => Answer)
-  @Column
+  @Column({ type: DataType.UUID, allowNull: false })
   answerId: string
 
   @ForeignKey(() => Question)
-  @Column
+  @Column({ type: DataType.UUID, allowNull: false })
   questionId: string
 
   @ForeignKey(() => Quest)
-  @Column
+  @Column({ type: DataType.UUID, allowNull: false })
   questId: string
 }

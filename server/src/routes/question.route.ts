@@ -19,6 +19,8 @@ router.get('/answer', isAuth, questionController.answerOnQuestion);
 
 router.get('/questId/:questId', questionController.getQuestionsByQuestId);
 
+router.post('/changeOrder', questionController.changeOrder);
+
 router.post('/', upload.single('file'), questionController.addQuestion);
 
 router.get('/:id', questionController.getQuestion);

@@ -119,7 +119,8 @@ function App() {
     try {
       const response = await axios.get<{ accessToken: string }>(`/auth/refresh-token`);
       if (response) {
-        originalRequest.headers['Authorization'] = 'Bearer ' + response.data.accessToken
+        originalRequest.headers.Authorization =
+          'Bearer ' + response.data.accessToken;
         return axios(originalRequest);
       }
     } catch (error) {

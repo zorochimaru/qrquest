@@ -67,6 +67,7 @@ const QuestionEditor = (props: any) => {
         text: activeQuestion?.text || '',
         locationLink: activeQuestion?.locationLink || '',
         answers: activeQuestion?.answers || [],
+        order: activeQuestion?.order || props?.nextQuestionOrder || 0,
         file: activeQuestion?.file || null,
         imgUrl: activeQuestion?.imgUrl || '',
         questId: currentQuestId
@@ -92,6 +93,7 @@ const QuestionEditor = (props: any) => {
                 }
                 fData.append('questId', data.questId);
                 fData.append('text', data.text);
+                fData.append('order', String(data.order));
                 fData.append('locationLink', data.locationLink);
                 fData.append('answers', JSON.stringify(data.answers));
                 let response: AxiosResponse<any>;

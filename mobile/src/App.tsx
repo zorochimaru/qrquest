@@ -133,6 +133,7 @@ export default function App() {
       if (response) {
         originalRequest.headers.Authorization =
           'Bearer ' + response.data.accessToken;
+        dispatch(authActions.setAccessToken(response.data.accessToken));
         return axios(originalRequest);
       }
     } catch (error) {

@@ -5,6 +5,7 @@ import { File } from '../models/file.model';
 import { Quest } from '../models/quest.model';
 import UserAnswer from '../models/user_answer.model';
 import { Op } from "sequelize";
+import { send } from 'process';
 
 class QuestionController {
     addQuestion = async (req: Request, res: Response) => {
@@ -18,6 +19,7 @@ class QuestionController {
             const question = await Question.create({
                 text: body.text,
                 questId: body.questId,
+                order: +body.order,
                 imgUrl: file ? `${process.env.API_LINK}/${file?.path}` : null,
                 authorId: authorId,
                 locationLink: body.locationLink
@@ -85,7 +87,7 @@ class QuestionController {
                     attributes: ['name', 'date']
                 }
                 ],
-                order: [['createdAt', 'DESC']],
+                order: [['order', 'ASC']],
             });
             res.send(questionResponce.rows);
         } catch (error) {
@@ -145,9 +147,9 @@ class QuestionController {
             const questId = params.questId?.toString();
             const questionId = params.questionId?.toString();
             const answerId = params.answerId?.toString();
-            const usersAnswer = await Answer.findByPk(answerId);
+            // const usersAnswer = await Answer.findByPk(answerId);
             const userId = req.session.logedUser?.user.id;
-            if (usersAnswer?.isRight && questId && questionId && answerId) {
+            if (questId && questionId && answerId) {
                 // await UserAnswer.create({ userId, answerId, questId, questionId })
                 // const quest = await Quest.findByPk(questId);
                 // const usersAnswers = await UserAnswer.findAll({ where: { questId } });
@@ -165,26 +167,52 @@ class QuestionController {
                 //     // },
 
                 // })
-                const t = await UserAnswer.findAll();
-
-                const test = await Question.findAll({
+                const a = await Question.findAll({
                     where: {
-                        id: {
-                            [Op.notIn]: [...t.map(t => t.questionId)]
-                        }
-                    }
+                        questId,
+                    },
+                    include: {
+                        model: UserAnswer,
+                        required: false,
+                    },
                 });
-                console.log('\x1b[36m%s\x1b[0m', test[0].text);
+                // TODO add 'order' column 
+                const b = a.filter(q => q.userAnsweredQuestions.length > 0);
+                if (b.length) {
+                    res.send(b[0].locationLink);
+                } else {
+                    res.send('FIN');
+                }
+                // const t = await UserAnswer.findAll();
 
+                // const test = await Question.findAll({
+                //     where: {
+                //         id: {
+                //             [Op.notIn]: [...t.map(t => t.questionId)]
+                //         }
+                //     }
+                // });
                 // const userLeftQuestions = quest?.questions.filter(question => usersAnswers.some(x => x.questionId !== question.id));
-                res.send('userLeftQuestions');
-                // if (userLeftQuestions?.length) {
-                //     res.send(userLeftQuestions[0].locationLink);
-                // } else {
-                //     res.send('FIN');
-                // }
+
             }
             res.status(400).send('OOOpse');
+        } catch (error) {
+            res.status(400).send('error');
+        }
+    }
+
+    changeOrder = async (req: Request, res: Response) => {
+        try {
+            const body = req.body;
+            const fromId = body.fromId;
+            const toId = body.toId;
+            const toIndex = body.toIndex;
+            const fromIndex = body.fromIndex;
+
+            await Question.update({ order: toIndex }, { where: { id: fromId } });
+            await Question.update({ order: fromIndex }, { where: { id: toId } });
+
+            res.sendStatus(200);
         } catch (error) {
             res.status(400).send('error');
         }

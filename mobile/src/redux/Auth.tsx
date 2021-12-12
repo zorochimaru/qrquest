@@ -36,6 +36,9 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.firstLoging = false;
     },
+    setAccessToken(state, action: PayloadAction<string>) {
+      state.accessToken = action.payload;
+    },
     logOut(state: AuthState) {
       state.user = undefined;
     },
@@ -72,6 +75,7 @@ export const login = (data: { email: string; password: string }) => {
   return async (dispatch: any) => {
     const response = await axios.post('/auth/signin', data);
     if (response?.status === 200) {
+      console.log(response.data);
       Toast.show({
         type: 'success',
         text1: 'Loged',

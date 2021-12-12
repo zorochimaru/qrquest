@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { DropResult } from 'react-beautiful-dnd';
 import { toast } from 'react-toastify';
 export interface Answer {
     id?: string;
@@ -11,6 +12,7 @@ export interface Question {
     questId: string,
     text: string,
     locationLink: string,
+    order?: number,
     answers: Answer[],
     imgUrl?: string,
     file?: File | null,
@@ -76,12 +78,33 @@ const questSlice = createSlice({
         clearQuestId(state) {
             state.currentQuestId = '';
         },
+        changeOrder(state, action: PayloadAction<DropResult>) {
+            const temp = [...state.questionList];
+            const d = temp[action.payload.destination!.index];
+            temp[action.payload.destination!.index] = temp[action.payload.source.index];
+            temp[action.payload.source.index] = d;
+            state.questionList = temp;
+        },
     },
 });
 
+export const changeOrderOnDB = (dropRes: DropResult, fromId: string, toId: string) => {
+    return async (dispatch: any) => {
+        const response = await axios
+            .post('questions/changeOrder',
+                { fromId, toId, fromIndex: dropRes.source.index, toIndex: dropRes.destination?.index });
+        if (response?.status === 200) {
+            dispatch(questActions.changeOrder(dropRes));
+        }
+
+        console.log(dropRes.source.index, dropRes.destination?.index)
+    }
+}
+
+
 export const getSignleQuestion = (id: number) => {
     return async (dispatch: any) => {
-        const response = await axios.get<Question>(`/question/${id}`);
+        const response = await axios.get<Question>(`/questions/${id}`);
         if (response?.status === 200) {
             dispatch(questActions.setSingleQuestion(response.data));
         }

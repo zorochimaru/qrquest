@@ -56,10 +56,9 @@ export const answerToQuestion = (
           answerId: answerId,
         },
       });
-      // if (response?.status === 200) {
-      //   Linking.openURL(response.data);
-      // }
-      console.log(response.data);
+      if (response?.status === 200) {
+        Linking.openURL(response.data);
+      }
     } catch (error) {
       console.log(error);
     }

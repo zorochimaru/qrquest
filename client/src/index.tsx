@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import azLocale from 'date-fns/locale/az';
+import { injectStore } from './api/httpClient';
 
 declare module '@mui/styles/defaultTheme' {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -36,7 +37,7 @@ const theme = createTheme(
   azAZ,
 );
 
-
+injectStore(store);
 
 ReactDOM.render(
   <React.StrictMode>

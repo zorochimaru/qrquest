@@ -1,16 +1,16 @@
 import { Paper, TableRow, TableBody, TableContainer, Table, TableHead, TableCell, Button, Autocomplete, TextField, CircularProgress, Stack, Grid, Typography } from "@mui/material";
-import { FC, useCallback, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../redux/store";
 
 import { RouteComponentProps } from "@reach/router";
 import QuestionEditor from "./QuestionEditor/QuestionEditor";
 import { getQuestionsByQuestId, Question, questActions, Quest, changeOrderOnDB } from "../../../redux/Quest";
-import axios from 'axios';
 import { debounce } from 'lodash';
 import { DragDropContext, Draggable, DraggableProvided, DraggableStateSnapshot, Droppable, DroppableProvided, DropResult, ResponderProvided } from 'react-beautiful-dnd';
 import { Reorder } from '@mui/icons-material';
 import { format } from 'date-fns';
+import { httpClient } from '../../../api/httpClient';
 
 
 
@@ -19,10 +19,13 @@ const QuestionController: FC<RouteComponentProps> = () => {
     const [activeQuestion, setActiveQuestion] = useState<Question | null>(null);
     const questionsList = useSelector((state: RootState) => state.quest.questionList);
     const currentQuestId = useSelector((state: RootState) => state.quest.currentQuestId);
+    const loading = useSelector((state: RootState) => state.quest.loading);
     const [openDialog, setOpenDialog] = useState(false);
     const [questId, setQuestId] = useState('');
     const [quests, setQuests] = useState<Quest[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [parentSize, setParentSize] = useState(0);
+    const parentRef = useRef<any>(null);
+
 
     const handleEdit = (item: Question) => {
         setActiveQuestion(item);
@@ -40,7 +43,7 @@ const QuestionController: FC<RouteComponentProps> = () => {
     };
 
     const handleSearchQuest = async (text: string) => {
-        const res = await axios.get(`quests?name=${text.toLowerCase()}`)
+        const res = await httpClient.get(`quests?name=${text.toLowerCase()}`, { headers: { 'disableGlobalLoader': 1 } })
         if (res && res.data) {
             setQuests(res.data);
         }
@@ -70,10 +73,10 @@ const QuestionController: FC<RouteComponentProps> = () => {
         const fromId = questionsList[result.source.index]?.id;
         const toId = questionsList[result.destination.index]?.id;
         if (fromId && toId) {
-            dispatch(changeOrderOnDB(result, fromId, toId));
+            dispatch(changeOrderOnDB(result, fromId, toId, questId));
         }
 
-    }, [dispatch, questionsList])
+    }, [dispatch, questionsList, questId])
 
     const handleChangeQuestId = (val: string | undefined) => {
         if (val) {
@@ -81,6 +84,14 @@ const QuestionController: FC<RouteComponentProps> = () => {
             handleFetchQuestionsByQuestId(val);
         }
     }
+
+    useEffect(() => {
+        if (parentRef.current) {
+            const { clientHeight, clientWidth } = parentRef.current;
+            setParentSize(Math.min(clientHeight, clientWidth));
+        }
+    }, []);
+
     return (
         <>
             <QuestionEditor
@@ -127,7 +138,8 @@ const QuestionController: FC<RouteComponentProps> = () => {
                     <Table stickyHeader>
                         <colgroup>
                             <col style={{ width: "5%" }} />
-                            <col style={{ width: "55%" }} />
+                            <col style={{ width: "45%" }} />
+                            <col style={{ width: "10%" }} />
                             <col style={{ width: "20%" }} />
                             <col style={{ width: "20%" }} />
                         </colgroup>
@@ -135,6 +147,7 @@ const QuestionController: FC<RouteComponentProps> = () => {
                             <TableRow>
                                 <TableCell align="left">&nbsp;</TableCell>
                                 <TableCell>Question</TableCell>
+                                <TableCell>Order</TableCell>
                                 <TableCell align="right">Quest name</TableCell>
                                 <TableCell align="right">Date</TableCell>
                             </TableRow>
@@ -145,7 +158,23 @@ const QuestionController: FC<RouteComponentProps> = () => {
                                     <TableBody
                                         ref={droppableProvided.innerRef}
                                         {...droppableProvided.droppableProps}
+                                        style={{ position: 'relative' }}
                                     >
+
+                                        {loading && (
+                                            <div
+                                                ref={parentRef}
+                                                style={{
+                                                    height: '100%',
+                                                    width: '100%',
+                                                    background: 'rgba(0,0,0, .3)',
+                                                    position: 'absolute',
+                                                    display: 'grid',
+                                                    placeItems: 'center'
+                                                }}>
+                                                <CircularProgress size={0.5 * parentSize} />
+                                            </div>
+                                        )}
                                         {questionsList.map((item, index: number) => (
                                             <Draggable
                                                 key={item.id}
@@ -175,9 +204,10 @@ const QuestionController: FC<RouteComponentProps> = () => {
                                                                     <Reorder />
                                                                 </div>
                                                             </TableCell>
-                                                            <TableCell  sx={{ background: `url(${item.imgUrl})` }}>
+                                                            <TableCell sx={{ background: `url(${item.imgUrl})` }}>
                                                                 <Typography variant="body1" color="initial">{item.text}</Typography>
-                                                                 </TableCell>
+                                                            </TableCell>
+                                                            <TableCell align="left">{item.order + 1}</TableCell>
                                                             <TableCell align="right">{item.quest?.name}</TableCell>
                                                             <TableCell align="right">{format(new Date(item.quest?.date || ''), 'dd.MM.yyyy/HH:mm')}</TableCell>
                                                         </TableRow>

@@ -22,11 +22,12 @@ import { Field, FieldArray, Form, Formik } from "formik";
 import { Question } from "../../../../redux/Quest";
 import ClearIcon from '@mui/icons-material/Clear';
 import CustomFileField from "../../../../components/CustomFileField";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxOutlinedIcon from '@mui/icons-material/CheckBoxOutlined';
 import { Refresh } from '@mui/icons-material';
+import { httpClient } from '../../../../api/httpClient';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement },
@@ -59,7 +60,14 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     }),
 );
-const QuestionEditor = (props: any) => {
+interface QuestionEditorProps {
+    nextQuestionOrder: number;
+    activeQuestion: Question | null;
+    currentQuestId: string;
+    open: boolean;
+    handleClose: () => void;
+}
+const QuestionEditor = (props: QuestionEditorProps) => {
     const classes = useStyles();
     const activeQuestion = props?.activeQuestion;
     const currentQuestId = props?.currentQuestId;
@@ -67,7 +75,7 @@ const QuestionEditor = (props: any) => {
         text: activeQuestion?.text || '',
         locationLink: activeQuestion?.locationLink || '',
         answers: activeQuestion?.answers || [],
-        order: activeQuestion?.order || props?.nextQuestionOrder || 0,
+        order: activeQuestion && activeQuestion.order >= 0 ? activeQuestion?.order : props?.nextQuestionOrder,
         file: activeQuestion?.file || null,
         imgUrl: activeQuestion?.imgUrl || '',
         questId: currentQuestId
@@ -75,7 +83,7 @@ const QuestionEditor = (props: any) => {
 
     const handleDelete = async () => {
         if (activeQuestion && activeQuestion.id) {
-            const response = await axios.delete(`/questions/${activeQuestion.id}`);
+            const response = await httpClient.delete(`/questions/${activeQuestion.id}/${activeQuestion.questId}`);
             if (response?.status === 200) {
                 toast.success(response.data);
                 props.handleClose();
@@ -98,9 +106,9 @@ const QuestionEditor = (props: any) => {
                 fData.append('answers', JSON.stringify(data.answers));
                 let response: AxiosResponse<any>;
                 if (activeQuestion) {
-                    response = await axios.put(`/questions/${activeQuestion.id}`, fData);
+                    response = await httpClient.put(`/questions/${activeQuestion.id}`, fData);
                 } else {
-                    response = await axios.post(`/questions`, fData);
+                    response = await httpClient.post(`/questions`, fData);
                 }
                 if (response?.status === 200) {
                     toast.success(response.data.message);
@@ -123,7 +131,7 @@ const QuestionEditor = (props: any) => {
                                 <CloseIcon />
                             </IconButton>
                             <Typography variant="h6" className={classes.title}>
-                                {activeQuestion?.title}
+                                {activeQuestion?.text}
                             </Typography>
                             {activeQuestion ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
                                 Delete

@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { DropResult } from 'react-beautiful-dnd';
 import { toast } from 'react-toastify';
+import { httpClient } from '../api/httpClient';
 export interface Answer {
     id?: string;
     value: string;
@@ -12,7 +13,7 @@ export interface Question {
     questId: string,
     text: string,
     locationLink: string,
-    order?: number,
+    order: number,
     answers: Answer[],
     imgUrl?: string,
     file?: File | null,
@@ -63,7 +64,7 @@ const questSlice = createSlice({
         setSingleQuestion(state, action: PayloadAction<Question>) {
             state.singleQuestion = action.payload;
         },
-        fillQuestion(state, action: PayloadAction<Question[]>) {
+        fillQuestions(state, action: PayloadAction<Question[]>) {
             state.questionList = action.payload;
         },
         changePage(state, action: PayloadAction<number>) {
@@ -85,26 +86,31 @@ const questSlice = createSlice({
             temp[action.payload.source.index] = d;
             state.questionList = temp;
         },
+        setLoader(state, action: PayloadAction<boolean>) {
+            state.loading = action.payload;
+        },
     },
 });
 
-export const changeOrderOnDB = (dropRes: DropResult, fromId: string, toId: string) => {
+export const changeOrderOnDB = (dropRes: DropResult, fromId: string, toId: string, questId: string) => {
     return async (dispatch: any) => {
-        const response = await axios
+        dispatch(questActions.setLoader(true));
+        const response = await httpClient
             .post('questions/changeOrder',
-                { fromId, toId, fromIndex: dropRes.source.index, toIndex: dropRes.destination?.index });
+                { fromId, toId, fromIndex: dropRes.source.index, toIndex: dropRes.destination?.index }, { headers: { 'disableGlobalLoader': 1 } });
         if (response?.status === 200) {
-            dispatch(questActions.changeOrder(dropRes));
+            
+            dispatch(getQuestionsByQuestId(questId));
+            // dispatch(questActions.changeOrder(dropRes));
+            dispatch(questActions.setLoader(false));
         }
-
-        console.log(dropRes.source.index, dropRes.destination?.index)
     }
 }
 
 
 export const getSignleQuestion = (id: number) => {
     return async (dispatch: any) => {
-        const response = await axios.get<Question>(`/questions/${id}`);
+        const response = await httpClient.get<Question>(`/questions/${id}`);
         if (response?.status === 200) {
             dispatch(questActions.setSingleQuestion(response.data));
         }
@@ -115,7 +121,7 @@ export const getSignleQuestion = (id: number) => {
 
 export const editQuestion = (data: { id: string, fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.put(`/questions/${data.id}`, data.fData);
+        const response = await httpClient.put(`/questions/${data.id}`, data.fData);
         if (response?.status === 200) {
             // dispatch(getQuestionsByQuestId({ page: data.page, perPage: data.perPage }));
             toast.success(`${data.fData.get('title')} edited`)
@@ -127,9 +133,9 @@ export const editQuestion = (data: { id: string, fData: FormData, page: number, 
 export const getQuestionsByQuestId = (questId: string) => {
     return async (dispatch: any) => {
         dispatch(questActions.selectCurrentQuestId(questId));
-        const response = await axios.get<Question[]>(`/questions/questId/${questId}`);
+        const response = await httpClient.get<Question[]>(`/questions/questId/${questId}`, { headers: { 'disableGlobalLoader': 1 } });
         if (response?.status === 200) {
-            dispatch(questActions.fillQuestion(response.data));
+            dispatch(questActions.fillQuestions(response.data));
         }
     }
 }
@@ -138,7 +144,7 @@ export const getQuestList = (params: {
     page: number, perPage: number
 }) => {
     return async (dispatch: any) => {
-        const response = await axios.get<{ data: any[], totalPages: number, totalItems: number }>(`/quests`, { params });
+        const response = await httpClient.get<{ data: any[], totalPages: number, totalItems: number }>(`/quests`, { params });
         if (response?.status === 200) {
             dispatch(questActions.fillQuestList({
                 list: response.data?.data,

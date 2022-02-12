@@ -1,21 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface UIState {
-    isLoading: boolean
+    loadStack: string[];
 };
 
 const initialState: UIState = {
 
-    isLoading: false
+    loadStack: []
 };
 
 const uiSlice = createSlice({
     name: 'ui',
     initialState,
     reducers: {
-        setLoading(state, action: PayloadAction<boolean>) {
-            state.isLoading = action.payload
-        }
+        addLoadRequest(state, action: PayloadAction<string>) {
+            state.loadStack.push(action.payload);
+        },
+        removeLoadRequest(state, action: PayloadAction<string>) {
+            state.loadStack = state.loadStack.filter(x => x !== action.payload);
+        },
     }
 })
 

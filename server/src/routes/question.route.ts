@@ -28,7 +28,7 @@ router.get('/:id', questionController.getQuestion);
 router.put('/:id', isAuth, upload.single('file'), questionController.editQuestion);
 
 
-router.delete('/:id', isAuth, questionController.deleteQuestion);
+router.delete('/:id/:questId', isAuth, questionController.deleteQuestion);
 
 
 export default router;

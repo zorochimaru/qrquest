@@ -5,13 +5,13 @@ import NewsReducer, { NewsState } from './News';
 import LibraryReducer, { LibraryState } from './Library';
 import QuestReducer, { QuestState } from './Quest';
 
-export interface RootState {
-    auth: AuthState
-    ui: UIState
-    news: NewsState
-    library: LibraryState
-    quest: QuestState
-}
+// export interface RootState {
+//     auth: AuthState
+//     ui: UIState
+//     news: NewsState
+//     library: LibraryState
+//     quest: QuestState
+// }
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -33,5 +33,9 @@ const store = configureStore({
 
 });
 
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch
 
 export default store;

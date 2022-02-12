@@ -24,6 +24,7 @@ import CustomFileField from "../../../../components/CustomFileField";
 import axios, { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { DatePicker } from 'formik-mui-lab';
+import { httpClient } from '../../../../api/httpClient';
 
 const Transition = React.forwardRef(function Transition(
     props: TransitionProps & { children?: React.ReactElement },
@@ -68,7 +69,7 @@ const QuestEditor = (props: any) => {
 
     const handleDelete = async () => {
         if (activeQuestion && activeQuestion.id) {
-            const response = await axios.delete(`/questions/${activeQuestion.id}`);
+            const response = await httpClient.delete(`/questions/${activeQuestion.id}`);
             if (response?.status === 200) {
                 toast.success(response.data);
                 props.handleClose();
@@ -88,9 +89,9 @@ const QuestEditor = (props: any) => {
                 fData.append('date', data.date.toString());
                 let response: AxiosResponse<any>;
                 if (activeQuestion) {
-                    response = await axios.put(`/quests/${activeQuestion.id}`, fData);
+                    response = await httpClient.put(`/quests/${activeQuestion.id}`, fData);
                 } else {
-                    response = await axios.post(`/quests`, fData);
+                    response = await httpClient.post(`/quests`, fData);
                 }
                 if (response?.status === 200) {
                     toast.success(response.data.message);

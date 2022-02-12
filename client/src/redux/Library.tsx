@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { httpClient } from '../api/httpClient';
 
 export interface Tag {
     id: string,
@@ -27,7 +28,7 @@ const librarySlice = createSlice({
 
 export const deleteTag = (id: string) => {
     return async (dispatch: any) => {
-        const response = await axios.delete('library/tag/' + id);
+        const response = await httpClient.delete('library/tag/' + id);
         if (response?.status === 200) {
             dispatch(fetchTags());
             toast.success(response.data);
@@ -37,7 +38,7 @@ export const deleteTag = (id: string) => {
 
 export const editTag = (tag: Tag) => {
     return async (dispatch: any) => {
-        const response = await axios.put('library/tag', tag);
+        const response = await httpClient.put('library/tag', tag);
         if (response?.status === 200) {
             dispatch(fetchTags());
             toast.success(response.data);
@@ -47,7 +48,7 @@ export const editTag = (tag: Tag) => {
 
 export const createTag = (text: string) => {
     return async (dispatch: any) => {
-        const response = await axios.post('library/tag', { text });
+        const response = await httpClient.post('library/tag', { text });
         if (response?.status === 200) {
             dispatch(fetchTags());
             toast.success(response.data);
@@ -57,7 +58,7 @@ export const createTag = (text: string) => {
 
 export const fetchTags = () => {
     return async (dispatch: any) => {
-        const response = await axios.get<Tag[]>(`library/tags`);
+        const response = await httpClient.get<Tag[]>(`library/tags`);
         if (response?.status === 200) {
             dispatch(libraryActions.fillTags(response.data));
         }

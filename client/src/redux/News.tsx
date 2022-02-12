@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { Tag } from "./Library";
 import { toast } from "react-toastify";
+import { httpClient } from '../api/httpClient';
 export interface News {
     id?: string,
     title: string,
@@ -52,7 +53,7 @@ const newsSlice = createSlice({
 
 export const getSignleNews = (id: number) => {
     return async (dispatch: any) => {
-        const response = await axios.get<News>(`/news/${id}`);
+        const response = await httpClient.get<News>(`/news/${id}`);
         if (response?.status === 200) {
             dispatch(newsActions.setSingleNews(response.data));
         }
@@ -62,7 +63,7 @@ export const getSignleNews = (id: number) => {
 
 export const createNews = (data: { fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.post(`/news/create`, data.fData);
+        const response = await httpClient.post(`/news/create`, data.fData);
         if (response?.status === 200) {
             dispatch(getNews({ page: data.page, perPage: data.perPage }));
             toast.success(response.data);
@@ -72,7 +73,7 @@ export const createNews = (data: { fData: FormData, page: number, perPage: numbe
 
 export const editNews = (data: { id: string, fData: FormData, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.put(`/news/${data.id}`, data.fData);
+        const response = await httpClient.put(`/news/${data.id}`, data.fData);
         if (response?.status === 200) {
             dispatch(getNews({ page: data.page, perPage: data.perPage }));
             toast.success(`${data.fData.get('title')} edited`);
@@ -82,7 +83,7 @@ export const editNews = (data: { id: string, fData: FormData, page: number, perP
 
 export const deleteNews = (data: { id: string, page: number, perPage: number }) => {
     return async (dispatch: any) => {
-        const response = await axios.delete(`/news/delete/${data.id}`);
+        const response = await httpClient.delete(`/news/delete/${data.id}`);
         if (response?.status === 200) {
             dispatch(getNews({ page: data.page, perPage: data.perPage }));
             toast.success(response.data);
@@ -94,7 +95,7 @@ export const getNews = (params: {
     page: number, perPage: number
 }) => {
     return async (dispatch: any) => {
-        const response = await axios.get<NewsState>(`/news`, { params });
+        const response = await httpClient.get<NewsState>(`/news`, { params });
         if (response?.status === 200) {
             dispatch(newsActions.fillNews(response.data));
         }

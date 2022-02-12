@@ -25,8 +25,6 @@ const HomePage: FC<RouteComponentProps> = () => {
         document.title = 'Quest news';
     }, []);
 
-
-
     const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     }
@@ -40,6 +38,9 @@ const HomePage: FC<RouteComponentProps> = () => {
         <div className={classes.main_wrapper}>
 
             <div className={classes.news_wrapper}>
+                {newsList.length===0 && (
+                    <Typography variant='h2'>No news</Typography>
+                )}
                 {newsList?.map(item =>
                 (
                     <Card key={item.id} className={classes.news_item}>

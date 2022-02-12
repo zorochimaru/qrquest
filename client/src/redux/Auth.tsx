@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import ROLES from '../models/roles.model';
 import { toast } from 'react-toastify';
+import { httpClient } from '../api/httpClient';
 
 export interface User {
     id: string,
@@ -15,12 +16,10 @@ export interface User {
 export interface AuthState {
     user?: User,
     accessToken?: string,
-    firstLoging: boolean,
 };
 
-const initialState: AuthState = {
-    firstLoging: true
-};
+const initialState: AuthState = {};
+
 const authSlice = createSlice({
     name: 'authentication',
     initialState,
@@ -28,11 +27,9 @@ const authSlice = createSlice({
         login(state, action: PayloadAction<AuthState>) {
             state.user = action.payload.user;
             state.accessToken = action.payload.accessToken;
-            state.firstLoging = false;
         },
         logOut(state: AuthState) {
             state.user = undefined;
-            sessionStorage.removeItem('accessToken');
         },
     },
 });
@@ -42,7 +39,7 @@ export const register = (data: {
     name: string
 }) => {
     return async (dispatch: any) => {
-        const response = await axios.post(`/auth/signup`, data);
+        const response = await httpClient.post(`/auth/signup`, data);
         if (response) {
             toast.success(response.data.message)
         }
@@ -51,7 +48,7 @@ export const register = (data: {
 
 export const login = (data: { email: string, password: string }) => {
     return async (dispatch: any) => {
-        const response = await axios.post(`/auth/signin`, data);
+        const response = await httpClient.post(`/auth/signin`, data);
         if (response?.status === 200) {
             toast.success('Loged!');
             dispatch(getUser());
@@ -63,7 +60,7 @@ export const login = (data: { email: string, password: string }) => {
 export const confirmEmail = (token: string) => {
     return async (dispatch: any) => {
 
-        const responce = await axios.get(`/auth/confirmation/${token}`);
+        const responce = await httpClient.get(`/auth/confirmation/${token}`);
         if (responce?.status === 200) {
             toast.success(responce.data.message);
         }
@@ -75,7 +72,7 @@ export const sendResetPasswordEmail = (email: string) => {
 
     return async (dispatch: any) => {
         try {
-            const response = await axios.post(`/auth/reset-password`, { email });
+            const response = await httpClient.post(`/auth/reset-password`, { email });
             if (response.status === 200) {
                 toast.success(response.data.message);
                 navigate('/');
@@ -90,7 +87,7 @@ export const resetPassword = (token: string, password: string, confirmPassword: 
 
     return async (dispatch: any) => {
         try {
-            const response = await axios.post(`/auth/confirm-password`, { token, password, confirmPassword });
+            const response = await httpClient.post(`/auth/confirm-password`, { token, password, confirmPassword });
             if (response.status === 200) {
                 toast.success(response.data.message);
             }
@@ -103,7 +100,7 @@ export const resetPassword = (token: string, password: string, confirmPassword: 
 export const getUser = () => {
     return async (dispatch: any) => {
         try {
-            const response = await axios.get<AuthState>(`/auth/get-user`);
+            const response = await httpClient.get<AuthState>(`/auth/get-user`);
             if (response) {
                 dispatch(authActions.login(response.data));
             }
@@ -113,11 +110,10 @@ export const getUser = () => {
     }
 }
 
-
 export const logOut = () => {
     return async (dispatch: any) => {
         try {
-            const response = await axios.post(`/auth/logout`);
+            const response = await httpClient.post(`/auth/logout`);
             if (response) {
                 dispatch(authActions.logOut());
                 navigate(`/login`);
@@ -127,8 +123,6 @@ export const logOut = () => {
         }
     }
 }
-
-
 
 export const authActions = authSlice.actions;
 

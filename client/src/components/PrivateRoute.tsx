@@ -7,7 +7,6 @@ import { RootState } from "../redux/store";
 
 export const PrivateRoute = (props: any) => {
     const user = useSelector((state: RootState) => state.auth.user);
-    const firstLoging = useSelector((state: RootState) => state.auth.firstLoging);
     const logedUser = user;
     let { as: Comp, ...otherProps } = props;
     const title = props.title;
@@ -15,7 +14,7 @@ export const PrivateRoute = (props: any) => {
         document.title = title || '';
     }, [title]);
     return !Comp ? props.children :
-        logedUser || firstLoging ? (
+        logedUser ? (
             <Comp {...otherProps} />
         ) : (
             <Redirect to="/login" replace={true} noThrow={true} />

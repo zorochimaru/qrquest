@@ -2,18 +2,15 @@ import { Backdrop, CircularProgress, CssBaseline, Theme, useTheme } from "@mui/m
 import createStyles from '@mui/styles/createStyles';
 import makeStyles from '@mui/styles/makeStyles';
 import { Router } from "@reach/router";
-import axios, { AxiosResponse } from "axios";
 import React, { Suspense, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Header from "./components/Header";
-import { authActions, getUser } from "./redux/Auth";
+import { getUser } from "./redux/Auth";
 import { RootState } from "./redux/store";
-import { uiActions } from "./redux/Ui";
 import clsx from 'clsx';
 import Sidebar from "./components/Sidebar";
 import Page404 from "./pages/Page404/Page404";
 import { PrivateRoute } from "./components/PrivateRoute";
-import { toast } from "react-toastify";
 import QuestController from './pages/Control/QuestController/QuestController';
 
 const HomePage = React.lazy(() => import('./pages/Home/Home'));
@@ -95,12 +92,7 @@ function App() {
   const theme = useTheme();
   const [openSidebar, setOpenSidebar] = useState(false);
   const dispatch = useDispatch();
-  const isLoading = useSelector((state: RootState) => state.ui.isLoading);
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
-  // Set API url to axios
-  axios.defaults.baseURL = process.env.REACT_APP_API_URL;
-  axios.defaults.withCredentials = true;
-
+  const inLoad = useSelector((state: RootState) => state.ui.loadStack.length > 0);
 
   useEffect(() => {
     dispatch(getUser())
@@ -114,80 +106,6 @@ function App() {
     setOpenSidebar(false);
   };
 
-  async function refreshToken(originalRequest: any) {
-    originalRequest._retry = true;
-    try {
-      const response = await axios.get<{ accessToken: string }>(`/auth/refresh-token`);
-      if (response) {
-        originalRequest.headers.Authorization =
-          'Bearer ' + response.data.accessToken;
-        return axios(originalRequest);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  function responseNotificationHandler(response: AxiosResponse<any>) {
-    dispatch(
-      uiActions.setLoading(false)
-    );
-    return response
-  }
-
-  function errorResponseHandler(error: any) {
-    if (error.response?.status === 403) {
-      dispatch(authActions.logOut());
-    }
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      refreshToken(originalRequest);
-    }
-    // check for errorHandle config
-    if (error.config?.hasOwnProperty('errorHandle') && error.config.errorHandle === false) {
-      return Promise.reject(error);
-    }
-    // if has response show the error
-    if (error.response) {
-      if (error.response?.data?.errors) {
-        for (const err of error.response?.data?.errors) {
-          toast.error(err.message);
-        }
-      }
-      if (error.response?.data?.message) {
-        toast.error(error.response?.data.message);
-      }
-      if (error.response?.data?.name && error.response?.data?.name === 'SequelizeDatabaseError') {
-        toast.error(error.response?.data.original?.sqlMessage);
-      }
-    }
-    if (!error.response) {
-      toast.error(error?.message || 'Server error')
-    }
-  }
-
-  axios.interceptors.request.use((successfulReq) => {
-    // Set loader
-    dispatch(
-      uiActions.setLoading(true)
-    );
-
-    // Set Auth header if has jwt token
-
-    if (accessToken) {
-      successfulReq.headers.common['Authorization'] = 'Bearer ' + accessToken;
-    }
-    return successfulReq;
-  }, error => {
-
-    return Promise.reject(error);
-  });
-
-  axios.interceptors.response.use(
-    responseNotificationHandler,
-    errorResponseHandler
-  );
-
   return (
 
     <div className={classes.root}>
@@ -195,7 +113,7 @@ function App() {
       <Backdrop style={{
         zIndex: 1000,
         color: '#fff',
-      }} open={isLoading} >
+      }} open={inLoad} >
         <CircularProgress color="inherit" />
       </Backdrop>
 

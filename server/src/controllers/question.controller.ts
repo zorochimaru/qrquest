@@ -6,6 +6,7 @@ import { Quest } from '../models/quest.model';
 import UserAnswer from '../models/user_answer.model';
 import { Op } from "sequelize";
 import { send } from 'process';
+import { User } from '../models/user.model';
 
 class QuestionController {
     addQuestion = async (req: Request, res: Response) => {
@@ -39,6 +40,7 @@ class QuestionController {
             res.status(400).send(error);
         }
     }
+
     editQuestion = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
@@ -114,6 +116,7 @@ class QuestionController {
             res.status(400).send(error);
         }
     }
+
     getQuestion = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
@@ -132,15 +135,26 @@ class QuestionController {
             res.status(400).send(error);
         }
     }
+
     deleteQuestion = async (req: Request, res: Response) => {
         try {
             const id = req.params.id;
-            await Question.destroy({ where: { id } })
-            res.send({ message: `Item deleted` });
+            const questId = req.params.questId;
+            await Question.destroy({ where: { id } });
+            const questions = await Question.findAll({ where: { questId }, order: [['order', 'ASC']] });
+            const fixedOrderQuestions = questions.map((question, i) => {
+                question.order = i;
+                return question
+            })
+            for (const item of fixedOrderQuestions) {
+                await Question.update({ order: item.order }, { where: { id: item.id } })
+            }
+            res.send({ message: `Question deleted` });
         } catch (error) {
             res.status(400).send(error);
         }
     }
+
     answerOnQuestion = async (req: Request, res: Response) => {
         try {
             const params = req.query;
@@ -201,6 +215,15 @@ class QuestionController {
         }
     }
 
+    changeOrderNew = async (req: Request, res: Response) => {
+        try {
+            Question.bulkBuild(req.body, {})
+        } catch (error) {
+            console.log(error);
+            res.send(error).status(400);
+        }
+    }
+
     changeOrder = async (req: Request, res: Response) => {
         try {
             const body = req.body;
@@ -208,7 +231,6 @@ class QuestionController {
             const toId = body.toId;
             const toIndex = body.toIndex;
             const fromIndex = body.fromIndex;
-
             await Question.update({ order: toIndex }, { where: { id: fromId } });
             await Question.update({ order: fromIndex }, { where: { id: toId } });
 

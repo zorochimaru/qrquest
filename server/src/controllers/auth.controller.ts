@@ -175,7 +175,9 @@ class AuthController {
             if (findUser && findUser.status === STATUS.ACTIVE) {
                 const doMatchPasswords = await bcrypt.compare(password, findUser.password);
                 if (doMatchPasswords) {
-                    const refreshToken = await jwt.sign({ refreshToken: crypto.randomBytes(20).toString('hex') }, process.env.JWT_SECRET, { expiresIn: '30s' });
+                    const refreshToken = await jwt.sign({
+                        refreshToken: crypto.randomBytes(20).toString('hex')
+                    }, process.env.JWT_SECRET, { expiresIn: '30s' });
                     req.session.logedUser = {
                         user: findUser,
                         refreshToken
@@ -186,7 +188,7 @@ class AuthController {
                     res.status(400).send({ message: 'Wrong password!' });
                 }
             }
-          
+
         } catch (e: any) {
             res.status(500).send({ message: e.toString() });
         }

@@ -18,20 +18,25 @@ import makeStyles from '@mui/styles/makeStyles';
 import { TransitionProps } from "@mui/material/transitions";
 import CloseIcon from '@mui/icons-material/Close';
 import { Field, Form, Formik } from "formik";
-import { Quest, Question } from "../../../../redux/Quest";
+import { Quest } from "../../../../redux/Quest";
 import ClearIcon from '@mui/icons-material/Clear';
 import CustomFileField from "../../../../components/CustomFileField";
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import { DatePicker } from 'formik-mui-lab';
 import { httpClient } from '../../../../api/httpClient';
-
+interface QuestEditorPorps {
+    activeQuest: Quest | null;
+    open: boolean;
+    handleClose: () => void;
+}
 const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & { children?: React.ReactElement },
+    props: TransitionProps & { children: React.ReactElement },
     ref: React.Ref<unknown>,
 ) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         appBar: {
@@ -57,19 +62,20 @@ const useStyles = makeStyles((theme: Theme) =>
         }
     }),
 );
-const QuestEditor = (props: any) => {
+
+const QuestEditor = (props: QuestEditorPorps) => {
     const classes = useStyles();
-    const activeQuestion = props?.activeQuestion;
+    const activeQuest = props.activeQuest;
     const initialValues: Quest = {
-        name: activeQuestion?.name || '',
-        date: activeQuestion?.date || '',
-        file: activeQuestion?.file || null,
-        imgUrl: activeQuestion?.imgUrl || ''
+        name: activeQuest?.name || '',
+        date: activeQuest?.date || '',
+        file: activeQuest?.file || null,
+        imgUrl: activeQuest?.imgUrl || ''
     }
 
     const handleDelete = async () => {
-        if (activeQuestion && activeQuestion.id) {
-            const response = await httpClient.delete(`/questions/${activeQuestion.id}`);
+        if (activeQuest && activeQuest.id) {
+            const response = await httpClient.delete(`/quests/${activeQuest.id}`);
             if (response?.status === 200) {
                 toast.success(response.data);
                 props.handleClose();
@@ -88,8 +94,8 @@ const QuestEditor = (props: any) => {
                 fData.append('name', data.name);
                 fData.append('date', data.date.toString());
                 let response: AxiosResponse<any>;
-                if (activeQuestion) {
-                    response = await httpClient.put(`/quests/${activeQuestion.id}`, fData);
+                if (activeQuest) {
+                    response = await httpClient.put(`/quests/${activeQuest.id}`, fData);
                 } else {
                     response = await httpClient.post(`/quests`, fData);
                 }
@@ -101,7 +107,7 @@ const QuestEditor = (props: any) => {
                 props.handleClose();
             }}
         >{({ values, errors, isSubmitting, setFieldValue, handleReset }) => (
-            <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
+            <Dialog TransitionComponent={Transition} fullScreen open={props.open} onClose={() => props.handleClose()} >
                 <Form>
                     <AppBar className={classes.appBar}>
                         <Toolbar>
@@ -114,9 +120,9 @@ const QuestEditor = (props: any) => {
                                 <CloseIcon />
                             </IconButton>
                             <Typography variant="h6" className={classes.title}>
-                                {activeQuestion?.title}
+                                {activeQuest?.name}
                             </Typography>
-                            {activeQuestion ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
+                            {activeQuest ? <Button color="secondary" variant="contained" style={{ marginRight: 15 }} onClick={handleDelete}>
                                 Delete
                             </Button> : null}
                             <Button type="submit" disabled={isSubmitting} autoFocus color="inherit">

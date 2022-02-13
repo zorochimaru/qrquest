@@ -31,7 +31,7 @@ app.use(session({
     cookie: {
         maxAge: 1000 * 60 * 60 * 6,
         path: '/',
-        sameSite: true,
+        sameSite: false, //! change to 'true' on deploy to server
         httpOnly: true,
         secure: false,
     }

@@ -1,17 +1,9 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import authReducer, { AuthState } from './Auth';
-import UiReducer, { UIState } from './Ui';
-import NewsReducer, { NewsState } from './News';
-import LibraryReducer, { LibraryState } from './Library';
-import QuestReducer, { QuestState } from './Quest';
-
-// export interface RootState {
-//     auth: AuthState
-//     ui: UIState
-//     news: NewsState
-//     library: LibraryState
-//     quest: QuestState
-// }
+import authReducer from './Auth';
+import UiReducer from './Ui';
+import NewsReducer from './News';
+import LibraryReducer from './Library';
+import QuestReducer from './Quest';
 
 const rootReducer = combineReducers({
     auth: authReducer,

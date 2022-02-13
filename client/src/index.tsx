@@ -36,7 +36,6 @@ const theme = createTheme(
   },
   azAZ,
 );
-
 injectStore(store);
 
 ReactDOM.render(

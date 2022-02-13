@@ -30,11 +30,12 @@ import TagDialogController from "./TagDialogController";
 
 
 const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & { children?: React.ReactElement },
+    props: TransitionProps & { children: React.ReactElement },
     ref: React.Ref<unknown>,
 ) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         appBar: {
@@ -119,7 +120,7 @@ const NewsEditor = (props: any) => {
     }
     return <>
 
-        <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
+        <Dialog TransitionComponent={Transition} fullScreen open={props.open} onClose={() => props.handleClose()}  >
             <AppBar className={classes.appBar}>
                 <Toolbar>
                     <IconButton

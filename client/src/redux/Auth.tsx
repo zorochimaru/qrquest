@@ -1,6 +1,5 @@
 import { navigate } from '@reach/router';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
 import ROLES from '../models/roles.model';
 import { toast } from 'react-toastify';
 import { httpClient } from '../api/httpClient';
@@ -14,22 +13,31 @@ export interface User {
 }
 
 export interface AuthState {
-    user?: User,
-    accessToken?: string,
+    user: User | null;
+    accessToken: string | null;
 };
 
-const initialState: AuthState = {};
+const initialState: AuthState = {
+    user: null,
+    accessToken: null
+};
 
 const authSlice = createSlice({
     name: 'authentication',
     initialState,
     reducers: {
-        login(state, action: PayloadAction<AuthState>) {
+        setUserAndToken(state, action: PayloadAction<AuthState>) {
             state.user = action.payload.user;
             state.accessToken = action.payload.accessToken;
         },
+        updateAccessToken(state, action: PayloadAction<string>) {
+            state.accessToken = action.payload;
+        },
         logOut(state: AuthState) {
-            state.user = undefined;
+            state.user = null;
+            state.accessToken = null;
+            httpClient.get('auth/logout')
+            navigate('/');
         },
     },
 });
@@ -102,7 +110,7 @@ export const getUser = () => {
         try {
             const response = await httpClient.get<AuthState>(`/auth/get-user`);
             if (response) {
-                dispatch(authActions.login(response.data));
+                dispatch(authActions.setUserAndToken(response.data));
             }
         } catch (error) {
             console.log(error)

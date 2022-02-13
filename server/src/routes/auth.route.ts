@@ -16,7 +16,7 @@ router.post('/signin', AuthController.signIn);
 
 router.get('/get-user', AuthController.getUser);
 
-router.post('/logout', AuthController.logOut);
+router.get('/logout', AuthController.logOut);
 
 router.get('/refresh-token', AuthController.refreshToken);
 

@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import { DropResult } from 'react-beautiful-dnd';
 import { toast } from 'react-toastify';
 import { httpClient } from '../api/httpClient';

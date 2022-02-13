@@ -56,7 +56,7 @@ const QuestController: FC<RouteComponentProps> = () => {
         setOpenDialog(false);
     };
     return <>
-        <QuestEditor activeQuestion={activeQuest} open={openDialog} handleClose={handleClose} />
+        <QuestEditor activeQuest={activeQuest} open={openDialog} handleClose={handleClose} />
         <Button style={{ marginBottom: 20 }} color="primary" variant="contained" onClick={handleClickOpen}>Create new</Button>
         <Paper>
             <TableContainer >

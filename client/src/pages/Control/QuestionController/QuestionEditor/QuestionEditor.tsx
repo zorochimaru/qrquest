@@ -30,11 +30,14 @@ import { Refresh } from '@mui/icons-material';
 import { httpClient } from '../../../../api/httpClient';
 
 const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & { children?: React.ReactElement },
+    props: TransitionProps & {
+        children: React.ReactElement<any, any>;
+    },
     ref: React.Ref<unknown>,
 ) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         appBar: {
@@ -118,7 +121,7 @@ const QuestionEditor = (props: QuestionEditorProps) => {
                 props.handleClose();
             }}
         >{({ values, errors, isSubmitting, setFieldValue, handleReset }) => (
-            <Dialog fullScreen open={props.open} onClose={() => props.handleClose()} TransitionComponent={Transition}>
+            <Dialog TransitionComponent={Transition} fullScreen open={props.open} onClose={() => props.handleClose()} >
                 <Form>
                     <AppBar className={classes.appBar}>
                         <Toolbar>
